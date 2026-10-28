@@ -284,21 +284,22 @@ function App() {
       }
 
       map.addSource('saved-polygons', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
-      map.addLayer({
+       map.addLayer({
         id: 'saved-polygons-fill',
         type: 'fill',
         source: 'saved-polygons',
         paint: {
           'fill-color': [
             'match', ['get', 'status_color'],
-            'green', '#22c55e',
-            'yellow', '#eab308',
-            'red', '#ef4444',
-            '#9ca3af',
+            'green', '#4CAF80',
+            'yellow', '#E9B949',
+            'red', '#E76F70',
+            '#A8B0BB',
           ],
-          'fill-opacity': 0.38,
+          'fill-opacity': 0.4,
         },
       })
+
       map.addLayer({
         id: 'saved-polygons-line',
         type: 'line',
@@ -306,14 +307,15 @@ function App() {
         paint: {
           'line-color': [
             'match', ['get', 'status_color'],
-            'green', '#15803d',
-            'yellow', '#a16207',
-            'red', '#b91c1c',
-            '#6b7280',
+            'green', '#287D52',
+            'yellow', '#A87916',
+            'red', '#B94B50',
+            '#737D8A',
           ],
-          'line-width': 2,
+          'line-width': 1.5,
         },
       })
+
 
       // Клик по полигону открывает карточку состояния сектора.
       map.on('click', 'saved-polygons-fill', (event) => {
