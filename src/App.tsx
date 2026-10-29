@@ -88,7 +88,8 @@ function App() {
   const [selectedSector, setSelectedSector] =
     useState<Sector | null>(null)
 
-  const [editorOpen, setEditorOpen] = useState(false)
+  const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin'
+  const [editorOpen, setEditorOpen] = useState(isAdminRoute)
   const [drawingMode, setDrawingMode] = useState(false)
   const [editorMode, setEditorMode] = useState<'idle' | 'new' | 'selected' | 'editing'>('idle')
   const [selectedSavedSector, setSelectedSavedSector] = useState<SavedSector | null>(null)
@@ -778,56 +779,56 @@ function App() {
         </div>
 
       </header>
-
-      <div className="editor-toolbar">
-        <button onClick={() => { if (editorOpen) resetEditorToList(); setEditorOpen(!editorOpen); setDrawingMode(false) }}> {editorOpen ? 'Закрыть редактор' : 'Редактор секторов'} </button>
-        {editorOpen && <div className="editor-panel">
-          {!admin ? <>
-            <strong>Вход администратора</strong>
-            <label>Email<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" /></label>
-            <label>Пароль<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" /></label>
-            <button onClick={() => void handleAdminLogin()} disabled={authBusy}>{authBusy ? 'Входим…' : 'Войти'}</button>
-            <small>Рисование и сохранение доступны только аккаунту, добавленному в beach_map_admins.</small>
-          </> : <>
-            <div className="editor-admin-row"><strong>Редактор секторов</strong><button onClick={() => void handleAdminLogout()}>Выйти</button></div>
-            {editorMode === 'idle' && <>
-              <button onClick={beginNewSector}>Новый сектор</button>
-              <button onClick={exportDraftGeoJSON}>Скачать GeoJSON</button>
-              <strong>Сохранённые секторы</strong>
-              {savedGeometry.length === 0 && <small>Пока нет секторов с геометрией.</small>}
-              <div className="saved-sector-list">{savedGeometry.map(sector => <button key={sector.id} onClick={() => selectSavedSector(sector)}>#{sector.id} · {sector.name}</button>)}</div>
+      {isAdminRoute && (
+        <div className="editor-toolbar">
+          <button onClick={() => { if (editorOpen) resetEditorToList(); setEditorOpen(!editorOpen); setDrawingMode(false) }}> {editorOpen ? 'Закрыть редактор' : 'Редактор секторов'} </button>
+          {editorOpen && <div className="editor-panel">
+            {!admin ? <>
+              <strong>Вход администратора</strong>
+              <label>Email<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" /></label>
+              <label>Пароль<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" /></label>
+              <button onClick={() => void handleAdminLogin()} disabled={authBusy}>{authBusy ? 'Входим…' : 'Войти'}</button>
+              <small>Рисование и сохранение доступны только аккаунту, добавленному в beach_map_admins.</small>
+            </> : <>
+              <div className="editor-admin-row"><strong>Редактор секторов</strong><button onClick={() => void handleAdminLogout()}>Выйти</button></div>
+              {editorMode === 'idle' && <>
+                <button onClick={beginNewSector}>Новый сектор</button>
+                <button onClick={exportDraftGeoJSON}>Скачать GeoJSON</button>
+                <strong>Сохранённые секторы</strong>
+                {savedGeometry.length === 0 && <small>Пока нет секторов с геометрией.</small>}
+                <div className="saved-sector-list">{savedGeometry.map(sector => <button key={sector.id} onClick={() => selectSavedSector(sector)}>#{sector.id} · {sector.name}</button>)}</div>
+              </>}
+              {editorMode === 'new' && <>
+                <strong>Новый сектор</strong>
+                <label>Название сектора *<input value={sectorName} onChange={e => setSectorName(e.target.value)} placeholder="Например, Центральный пляж" required /></label>
+                <label>Название проезда (необязательно)<input value={accessName} onChange={e => setAccessName(e.target.value)} placeholder="Например, Центральный" /></label>
+                <p>Точек: {draftVertices.length}. Нажимайте на карту, чтобы добавлять вершины.</p>
+                <button onClick={() => setDrawingMode(!drawingMode)} className={drawingMode ? 'active' : ''}>{drawingMode ? 'Добавление точек включено' : 'Добавлять точки'}</button>
+                <button onClick={() => setDraftVertices(v => { const next = v.slice(0, -1); draftVerticesRef.current = next; return next })} disabled={!draftVertices.length}>Убрать последнюю точку</button>
+                <button onClick={() => void handleSaveSector()} disabled={saving}>{saving ? 'Сохраняю…' : 'Сохранить сектор'}</button>
+                <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
+              </>}
+              {editorMode === 'selected' && selectedSavedSector && <>
+                <strong>Выбран сектор #{selectedSavedSector.id}</strong>
+                <p>{selectedSavedSector.name}</p>
+                <button onClick={beginEditingSelected}>Редактировать</button>
+                <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
+                <button onClick={() => resetEditorToList()}>Назад к списку</button>
+              </>}
+              {editorMode === 'editing' && <>
+                <strong>Редактирование сектора #{editingId}</strong>
+                <label>Название сектора *<input value={sectorName} onChange={e => setSectorName(e.target.value)} required /></label>
+                <label>Название проезда (необязательно)<input value={accessName} onChange={e => setAccessName(e.target.value)} /></label>
+                <p>Точек: {draftVertices.length}. Перетаскивайте белые вершины для изменения границ.</p>
+                <button onClick={() => void handleSaveSector()} disabled={saving}>{saving ? 'Сохраняю…' : 'Сохранить'}</button>
+                <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
+                <button onClick={() => selectSavedSector(selectedSavedSector!)} disabled={saving}>Отмена редактирования</button>
+              </>}
             </>}
-            {editorMode === 'new' && <>
-              <strong>Новый сектор</strong>
-              <label>Название сектора *<input value={sectorName} onChange={e => setSectorName(e.target.value)} placeholder="Например, Центральный пляж" required /></label>
-              <label>Название проезда (необязательно)<input value={accessName} onChange={e => setAccessName(e.target.value)} placeholder="Например, Центральный" /></label>
-              <p>Точек: {draftVertices.length}. Нажимайте на карту, чтобы добавлять вершины.</p>
-              <button onClick={() => setDrawingMode(!drawingMode)} className={drawingMode ? 'active' : ''}>{drawingMode ? 'Добавление точек включено' : 'Добавлять точки'}</button>
-              <button onClick={() => setDraftVertices(v => { const next = v.slice(0, -1); draftVerticesRef.current = next; return next })} disabled={!draftVertices.length}>Убрать последнюю точку</button>
-              <button onClick={() => void handleSaveSector()} disabled={saving}>{saving ? 'Сохраняю…' : 'Сохранить сектор'}</button>
-              <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
-            </>}
-            {editorMode === 'selected' && selectedSavedSector && <>
-              <strong>Выбран сектор #{selectedSavedSector.id}</strong>
-              <p>{selectedSavedSector.name}</p>
-              <button onClick={beginEditingSelected}>Редактировать</button>
-              <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
-              <button onClick={() => resetEditorToList()}>Назад к списку</button>
-            </>}
-            {editorMode === 'editing' && <>
-              <strong>Редактирование сектора #{editingId}</strong>
-              <label>Название сектора *<input value={sectorName} onChange={e => setSectorName(e.target.value)} required /></label>
-              <label>Название проезда (необязательно)<input value={accessName} onChange={e => setAccessName(e.target.value)} /></label>
-              <p>Точек: {draftVertices.length}. Перетаскивайте белые вершины для изменения границ.</p>
-              <button onClick={() => void handleSaveSector()} disabled={saving}>{saving ? 'Сохраняю…' : 'Сохранить'}</button>
-              <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
-              <button onClick={() => selectSavedSector(selectedSavedSector!)} disabled={saving}>Отмена редактирования</button>
-            </>}
-          </>}
-          {adminMessage && <p className="editor-message" role="status">{adminMessage}</p>}
-        </div>}
-      </div>
-
+            {adminMessage && <p className="editor-message" role="status">{adminMessage}</p>}
+          </div>}
+        </div>
+      )}
       <main
         className="map-container"
         ref={mapContainer}
