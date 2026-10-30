@@ -34,7 +34,7 @@ type Sector = {
   main_icon: string | null
 
   last_updated: string | null
-  confirmations_count: number
+  confirmation_count: number
 }
 
 function getStatusText(status: string) {
@@ -183,9 +183,9 @@ function App() {
           last_updated:
             row.last_updated ?? null,
 
-          confirmations_count:
+          confirmation_count:
             Number(
-              row.confirmations_count ?? 0
+              row.confirmation_count ?? 0
             ),
         }))
 
@@ -342,7 +342,7 @@ function App() {
             status_color: 'gray',
             main_icon: null,
             last_updated: null,
-            confirmations_count: 0,
+            confirmation_count: 0,
           })
         }
       })
@@ -934,7 +934,7 @@ function App() {
             <div>
               Подтверждений:{' '}
               {
-                selectedSector.confirmations_count
+                selectedSector.confirmation_count
               }
             </div>
 
