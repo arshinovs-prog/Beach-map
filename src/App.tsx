@@ -107,6 +107,11 @@ function App() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [savedGeometry, setSavedGeometry] = useState<SavedSector[]>([])
   const [saving, setSaving] = useState(false)
+  const [reportAlgae, setReportAlgae] = useState('none')
+  const [reportWaves, setReportWaves] = useState('none')
+  const [reportJellyfish, setReportJellyfish] = useState('none')
+  const [reportBusy, setReportBusy] = useState(false)
+  const [reportMessage, setReportMessage] = useState('')
 
   /*
    * =====================================================
@@ -630,6 +635,73 @@ function App() {
     ;(map.getSource('editor-draft') as maplibregl.GeoJSONSource).setData({ type: 'FeatureCollection', features })
   }, [draftVertices, editorMode])
 
+  async function refreshSectorStatuses() {
+    const { data, error } = await supabase
+      .from('sector_current_status')
+      .select('*')
+      .order('sector_id')
+    if (error) throw error
+    const normalized: Sector[] = (data ?? []).map((row: any) => ({
+      sector_id: Number(row.sector_id),
+      name: row['Имя'] ?? row.name ?? 'Без названия',
+      access_name: row.access_name ?? null,
+      latitude: Number(row.latitude),
+      longitude: Number(row.longitude),
+      report_id: row.report_id != null ? Number(row.report_id) : null,
+      algae: row.algae ?? null,
+      waves: row.waves ?? null,
+      jellyfish: row.jellyfish ?? null,
+      status_color: row.status_color ?? 'gray',
+      main_icon: row.main_icon ?? null,
+      last_updated: row.last_updated ?? null,
+      confirmation_count: Number(row.confirmation_count ?? 0),
+    }))
+    sectorsRef.current = normalized
+    setSectors(normalized)
+    setSelectedSector((current) => current
+      ? normalized.find((item) => item.sector_id === current.sector_id) ?? current
+      : null)
+  }
+
+  async function handleSubmitReport() {
+    if (!selectedSector || reportBusy) return
+    setReportBusy(true)
+    setReportMessage('')
+    try {
+      const { error } = await supabase.rpc('submit_beach_report', {
+        p_sector_id: selectedSector.sector_id,
+        p_algae: reportAlgae,
+        p_waves: reportWaves,
+        p_jellyfish: reportJellyfish,
+      })
+      if (error) throw error
+      await refreshSectorStatuses()
+      setReportMessage('Спасибо! Ваш отчёт опубликован.')
+    } catch (e) {
+      setReportMessage(e instanceof Error ? e.message : 'Не удалось отправить отчёт.')
+    } finally {
+      setReportBusy(false)
+    }
+  }
+
+  async function handleConfirmReport() {
+    if (!selectedSector?.report_id || reportBusy) return
+    setReportBusy(true)
+    setReportMessage('')
+    try {
+      const { error } = await supabase.rpc('confirm_beach_report', {
+        p_report_id: selectedSector.report_id,
+      })
+      if (error) throw error
+      await refreshSectorStatuses()
+      setReportMessage('Спасибо! Вы подтвердили состояние пляжа.')
+    } catch (e) {
+      setReportMessage(e instanceof Error ? e.message : 'Не удалось подтвердить отчёт.')
+    } finally {
+      setReportBusy(false)
+    }
+  }
+
   async function handleAdminLogin() {
     setAuthBusy(true); setAdminMessage('')
     try { await signInBeachMapAdmin(email, password); setAdmin(true); setPassword(''); setAdminMessage('Вход выполнен. Права администратора подтверждены.') }
@@ -927,6 +999,41 @@ function App() {
 
             </div>
 
+          </div>
+
+          <div className="report-form">
+            <h3>Сообщить о состоянии</h3>
+            <label>Водоросли
+              <select value={reportAlgae} onChange={e => setReportAlgae(e.target.value)}>
+                <option value="none">Нет</option>
+                <option value="low">Мало</option>
+                <option value="high">Много</option>
+              </select>
+            </label>
+            <label>Волны
+              <select value={reportWaves} onChange={e => setReportWaves(e.target.value)}>
+                <option value="none">Нет</option>
+                <option value="medium">Средние</option>
+                <option value="high">Большие</option>
+              </select>
+            </label>
+            <label>Медузы
+              <select value={reportJellyfish} onChange={e => setReportJellyfish(e.target.value)}>
+                <option value="none">Нет</option>
+                <option value="low">Мало</option>
+                <option value="high">Много</option>
+              </select>
+            </label>
+            <button onClick={() => void handleSubmitReport()} disabled={reportBusy}>
+              {reportBusy ? 'Отправляем…' : 'Отправить отчёт'}
+            </button>
+            {selectedSector.report_id !== null && (
+              <button onClick={() => void handleConfirmReport()} disabled={reportBusy}>
+                Подтвердить текущий отчёт
+              </button>
+            )}
+            {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
+            <small>Ограничение: до 5 отчётов и 20 подтверждений в час на пользователя.</small>
           </div>
 
           <div className="sector-info">
