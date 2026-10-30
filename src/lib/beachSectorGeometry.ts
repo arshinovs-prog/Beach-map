@@ -1,5 +1,6 @@
 import type { Feature, Polygon } from 'geojson'
 import { supabase } from './supabase'
+import { ensureAnonymousSession } from './anonymousAuth'
 
 export type SavedSector = {
   id: number
@@ -66,6 +67,7 @@ export async function signInBeachMapAdmin(email: string, password: string): Prom
   if (error) throw error
   if (!(await isBeachMapAdmin())) {
     await supabase.auth.signOut()
+    await ensureAnonymousSession()
     throw new Error('Этот аккаунт не имеет прав администратора')
   }
 }
@@ -73,4 +75,5 @@ export async function signInBeachMapAdmin(email: string, password: string): Prom
 export async function signOutBeachMapAdmin(): Promise<void> {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
+  await ensureAnonymousSession()
 }
