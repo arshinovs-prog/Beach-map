@@ -239,3 +239,70 @@ body,
 .editor-panel .saved-sector-list { display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow: auto; }
 .editor-panel .saved-sector-list button { text-align: left; }
 .editor-message { overflow-wrap: anywhere; font-size: 13px; color: #075985; }
+
+
+.report-form {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.report-form h3 {
+  margin: 0 0 3px;
+  font-size: 16px;
+}
+.report-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #555;
+  font-size: 13px;
+}
+.report-form select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 7px 9px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: white;
+  font: inherit;
+}
+.report-form button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 12px;
+  background: #087f8c;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.report-form button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+.report-form small,
+.report-message {
+  margin: 2px 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.report-message {
+  color: #075985;
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .sector-panel {
+    left: 10px;
+    right: 10px;
+    bottom: 68px;
+    width: auto;
+    max-height: 65%;
+    overflow-y: auto;
+  }
+}
