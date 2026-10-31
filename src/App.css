@@ -306,3 +306,43 @@ body,
     overflow-y: auto;
   }
 }
+
+/* Визуальный выбор состояния моря */
+.report-form { gap: 13px; }
+.report-hint { margin: -7px 0 0 !important; color: #64748b; font-size: 13px; }
+.report-group { display: flex; flex-direction: column; gap: 7px; }
+.report-group-title { color: #263746; font-size: 14px; font-weight: 700; }
+.report-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.report-option {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 7px; min-width: 0; min-height: 92px; padding: 9px 4px;
+  border: 1.5px solid #dce5e9; border-radius: 12px; background: #f8fbfc;
+  color: #344653; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.report-option-image {
+  display: flex; align-items: center; justify-content: center; width: 100%; height: 43px;
+  border-radius: 8px; background: linear-gradient(145deg, #dff3f3, #b8dfe7); font-size: 27px;
+}
+.report-option.selected { border: 2px solid #07899a; background: #eefafb; color: #075d68; }
+.report-option-check {
+  position: absolute; top: 5px; right: 6px; display: grid; place-items: center;
+  width: 19px; height: 19px; border-radius: 50%; background: #07899a; color: white; font-size: 12px;
+}
+.report-form .report-submit, .report-form .report-confirm {
+  min-height: 48px; border-radius: 11px; font-size: 15px;
+}
+.report-form .report-confirm { background: #e8f3f5; color: #075d68; border: 1px solid #c5e1e5; }
+.report-form .report-message { padding: 10px 12px; border-radius: 9px; background: #eef8f5; }
+@media (max-width: 600px) {
+  .sector-panel {
+    position: fixed; left: 8px; right: 8px; bottom: 8px; width: auto;
+    max-height: min(84dvh, 760px); overflow-y: auto; overscroll-behavior: contain;
+    padding: 20px 16px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 18px; z-index: 30;
+  }
+  .sector-panel h2 { padding-right: 34px; }
+  .report-form { gap: 12px; }
+  .report-option { min-height: 88px; font-size: 14px; }
+  .report-option-image { height: 42px; font-size: 28px; }
+  .report-form .report-submit { position: sticky; bottom: 0; z-index: 2; box-shadow: 0 -5px 14px rgba(255,255,255,.9); }
+}
