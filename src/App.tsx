@@ -1003,37 +1003,77 @@ function App() {
 
           <div className="report-form">
             <h3>Сообщить о состоянии</h3>
-            <label>Водоросли
-              <select value={reportAlgae} onChange={e => setReportAlgae(e.target.value)}>
-                <option value="none">Нет</option>
-                <option value="low">Мало</option>
-                <option value="high">Много</option>
-              </select>
-            </label>
-            <label>Волны
-              <select value={reportWaves} onChange={e => setReportWaves(e.target.value)}>
-                <option value="none">Нет</option>
-                <option value="medium">Средние</option>
-                <option value="high">Большие</option>
-              </select>
-            </label>
-            <label>Медузы
-              <select value={reportJellyfish} onChange={e => setReportJellyfish(e.target.value)}>
-                <option value="none">Нет</option>
-                <option value="low">Мало</option>
-                <option value="high">Много</option>
-              </select>
-            </label>
-            <button onClick={() => void handleSubmitReport()} disabled={reportBusy}>
+            <p className="report-hint">Как сейчас выглядит море?</p>
+
+            <div className="report-group">
+              <div className="report-group-title">🌿 Водоросли</div>
+              <div className="report-options">
+                {[
+                  { value: 'none', label: 'Нет', icon: '🌊' },
+                  { value: 'low', label: 'Мало', icon: '🌿' },
+                  { value: 'high', label: 'Много', icon: '🌱' },
+                ].map(option => (
+                  <button key={option.value} type="button"
+                    className={reportAlgae === option.value ? 'report-option selected' : 'report-option'}
+                    aria-pressed={reportAlgae === option.value}
+                    onClick={() => setReportAlgae(option.value)}>
+                    <span className="report-option-image">{option.icon}</span>
+                    <span>{option.label}</span>
+                    {reportAlgae === option.value && <span className="report-option-check">✓</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="report-group">
+              <div className="report-group-title">🌊 Волны</div>
+              <div className="report-options">
+                {[
+                  { value: 'none', label: 'Нет', icon: '🏖️' },
+                  { value: 'medium', label: 'Средние', icon: '🌊' },
+                  { value: 'high', label: 'Большие', icon: '🌊' },
+                ].map(option => (
+                  <button key={option.value} type="button"
+                    className={reportWaves === option.value ? 'report-option selected' : 'report-option'}
+                    aria-pressed={reportWaves === option.value}
+                    onClick={() => setReportWaves(option.value)}>
+                    <span className="report-option-image">{option.icon}</span>
+                    <span>{option.label}</span>
+                    {reportWaves === option.value && <span className="report-option-check">✓</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="report-group">
+              <div className="report-group-title">🪼 Медузы</div>
+              <div className="report-options">
+                {[
+                  { value: 'none', label: 'Нет', icon: '🌊' },
+                  { value: 'low', label: 'Мало', icon: '🪼' },
+                  { value: 'high', label: 'Много', icon: '🪼' },
+                ].map(option => (
+                  <button key={option.value} type="button"
+                    className={reportJellyfish === option.value ? 'report-option selected' : 'report-option'}
+                    aria-pressed={reportJellyfish === option.value}
+                    onClick={() => setReportJellyfish(option.value)}>
+                    <span className="report-option-image">{option.icon}</span>
+                    <span>{option.label}</span>
+                    {reportJellyfish === option.value && <span className="report-option-check">✓</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button className="report-submit" onClick={() => void handleSubmitReport()} disabled={reportBusy}>
               {reportBusy ? 'Отправляем…' : 'Отправить отчёт'}
             </button>
             {selectedSector.report_id !== null && (
-              <button onClick={() => void handleConfirmReport()} disabled={reportBusy}>
+              <button className="report-confirm" onClick={() => void handleConfirmReport()} disabled={reportBusy}>
                 Подтвердить текущий отчёт
               </button>
             )}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
-            <small>Ограничение: до 5 отчётов и 20 подтверждений в час на пользователя.</small>
           </div>
 
           <div className="sector-info">
