@@ -985,7 +985,7 @@ function App() {
             </div>
             <div className="sector-info"><div>Участников: {selectedSector.confirmation_count}</div>{selectedSector.last_updated && <div>Обновлено: {new Date(selectedSector.last_updated).toLocaleString('ru-RU')}</div>}</div>
             <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние пляжа'}</button>
-            <button className={hasDraftChanges ? 'report-edit-action changed' : 'report-edit-action'} onClick={() => { if (hasDraftChanges) void handleSubmitReport(); else { setReportAlgae(myReport?.algae ?? selectedSector.algae ?? 'none'); setReportWaves(myReport?.waves ?? selectedSector.waves ?? 'none'); setReportJellyfish(myReport?.jellyfish ?? selectedSector.jellyfish ?? 'none'); setReportMode('edit'); setReportMessage('') } }} disabled={reportBusy || !hasDraftChanges && !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : hasDraftChanges ? 'Изменить состояние' : 'Изменить состояние'}</button>
+            <button className={hasDraftChanges ? 'report-edit-action changed' : 'report-edit-action'} onClick={() => void handleSubmitReport()} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Изменить состояние'}</button>
             {cooldownUntil && <p className="cooldown-message">Новый отчёт можно отправить через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </> : <div className="report-form">
