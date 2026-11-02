@@ -316,25 +316,6 @@ function App() {
         'Карта MapLibre загружена'
       )
 
-      /*
-       * Источник секторов
-       */
-
-      if (!map.getSource('sectors')) {
-        map.addSource(
-          'sectors',
-          {
-            type: 'geojson',
-
-            data: {
-              type: 'FeatureCollection',
-
-              features: [],
-            },
-          }
-        )
-      }
-
       map.addSource('saved-polygons', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
        map.addLayer({
         id: 'saved-polygons-fill',
@@ -413,8 +394,6 @@ function App() {
       map.addLayer({ id: 'editor-draft-line', type: 'line', source: 'editor-draft', paint: { 'line-color': '#087f8c', 'line-width': 3 } })
       map.addLayer({ id: 'editor-draft-points', type: 'circle', source: 'editor-draft', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 6, 'circle-color': '#ffffff', 'circle-stroke-color': '#087f8c', 'circle-stroke-width': 3 } })
 
-      // Старые точечные маркеры отключены: карта показывает только сектора-полигоны.
-
       console.log(
         'Источник и слой секторов готовы'
       )
@@ -485,126 +464,9 @@ function App() {
 
   /*
    * =====================================================
-   * 3. ПЕРЕДАЁМ СЕКТОРА В MAPLIBRE
+   * 3. ОБНОВЛЕНИЕ СОХРАНЁННЫХ ПОЛИГОНОВ НА КАРТЕ
    * =====================================================
-   *
-   * Здесь исправлена проблема, из-за которой
-   * Supabase уже отдавал сектора, но кружки
-   * не появлялись на карте.
    */
-
-  useEffect(() => {
-    const map =
-      mapRef.current
-
-    if (!map) {
-      console.log(
-        'Карта ещё не создана'
-      )
-
-      return
-    }
-
-    const updateSource = () => {
-      const source =
-        map.getSource(
-          'sectors'
-        ) as
-          | maplibregl.GeoJSONSource
-          | undefined
-
-      if (!source) {
-        console.log(
-          'Источник sectors ещё не создан'
-        )
-
-        return
-      }
-
-      const geojson = {
-        type:
-          'FeatureCollection' as const,
-
-        features:
-          sectors.map(
-            (sector) => ({
-              type:
-                'Feature' as const,
-
-              geometry: {
-                type:
-                  'Point' as const,
-
-                coordinates: [
-                  sector.longitude,
-                  sector.latitude,
-                ],
-              },
-
-              properties: {
-                sector_id:
-                  sector.sector_id,
-
-                name:
-                  sector.name,
-
-                status_color:
-                  sector.status_color,
-
-                main_icon:
-                  sector.main_icon,
-              },
-            })
-          ),
-      }
-
-      console.log(
-        'Обновляем точки на карте:',
-        geojson.features.length
-      )
-
-      source.setData(
-        geojson
-      )
-    }
-
-    /*
-     * Если источник уже существует,
-     * обновляем сразу.
-     */
-
-    if (
-      map.getSource(
-        'sectors'
-      )
-    ) {
-      updateSource()
-
-      return
-    }
-
-    /*
-     * Если карта ещё не успела
-     * создать источник — ждём load.
-     */
-
-    const handleLoad =
-      () => {
-        updateSource()
-      }
-
-    map.once(
-      'load',
-      handleLoad
-    )
-
-    return () => {
-      map.off(
-        'load',
-        handleLoad
-      )
-    }
-  }, [sectors])
 
   useEffect(() => {
     let cancelled = false
