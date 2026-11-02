@@ -772,3 +772,69 @@ body,
   .condition-card .condition-detail-hint { font-size:9px; }
   .condition-card .condition-detail-option { font-size:9px; min-height:36px; }
 }
+
+
+/* Общая нижняя панель подробностей на всю ширину трёх условий */
+.condition-selector {
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  min-width:0;
+  gap:0;
+}
+.condition-selector .condition-circles {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  width:100%;
+  gap:7px;
+  align-items:stretch;
+}
+.condition-selector .condition-circle {
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+.condition-selector .condition-circle.active {
+  border-radius:13px 13px 0 0;
+  outline:none;
+  border-bottom-color:transparent;
+}
+.condition-selector.has-expanded.tone-green .condition-circle.active { background:#e1f2e5; color:#246442; }
+.condition-selector.has-expanded.tone-yellow .condition-circle.active { background:#fff1cf; color:#805b14; }
+.condition-selector.has-expanded.tone-red .condition-circle.active { background:#f9e0e1; color:#963b42; }
+.condition-selector .condition-detail-attached {
+  display:block;
+  width:100%;
+  min-width:0;
+  margin:0 0 10px;
+  padding:12px;
+  box-sizing:border-box;
+  border:1px solid #e5ded1;
+  border-radius:0 0 13px 13px;
+  background:#fffdf8;
+}
+.condition-selector.has-expanded.tone-green .condition-detail-attached { background:#e1f2e5; border-color:#c6e5ce; }
+.condition-selector.has-expanded.tone-yellow .condition-detail-attached { background:#fff1cf; border-color:#f0dfae; }
+.condition-selector.has-expanded.tone-red .condition-detail-attached { background:#f9e0e1; border-color:#edc7ca; }
+.condition-selector .condition-detail-content { width:100%; }
+.condition-selector .condition-detail-options {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  width:100%;
+  gap:7px;
+}
+.condition-selector .condition-detail-option {
+  min-height:47px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:10px;
+}
+@media(max-width:600px) {
+  .condition-selector .condition-circles { gap:5px; }
+  .condition-selector .condition-circle { padding-left:3px; padding-right:3px; }
+  .condition-selector .condition-detail-attached { padding:10px 8px; }
+  .condition-selector .condition-detail-options { gap:5px; }
+  .condition-selector .condition-detail-option { min-height:43px; font-size:9px; }
+}
