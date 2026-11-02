@@ -689,11 +689,12 @@ body,
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   padding: 12px 14px calc(13px + env(safe-area-inset-bottom));
-  border: 0 !important;
+  border: 1px solid #e8e0d1;
+  border-bottom: 0;
   border-radius: 20px 20px 0 0;
-  background: transparent !important;
+  background: #f7f3e9;
   color: #263b42;
-  box-shadow: none !important;
+  box-shadow: 0 -5px 28px rgba(0, 0, 0, .20);
   z-index: 40;
 }
 
