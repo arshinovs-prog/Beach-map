@@ -437,3 +437,22 @@ body,
   .report-options { gap: 6px; }
   .report-option { min-height: 84px; }
 }
+
+
+/* Интерактивный выбор состояния прямо в карточке пляжа */
+.interactive-conditions { display:flex; flex-direction:column; gap:13px; margin-top:8px; }
+.interactive-condition { padding:11px 10px 12px; border:1px solid #e5edf0; border-radius:14px; background:#fbfdfe; }
+.interactive-condition-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:9px; color:#263746; font-size:14px; font-weight:700; }
+.interactive-condition-heading small { color:#82909a; font-size:11px; font-weight:400; }
+.interactive-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+.interactive-option { position:relative; display:flex; min-width:0; flex-direction:column; align-items:center; gap:5px; padding:4px 2px 2px; border:0; background:transparent; color:#344653; cursor:pointer; }
+.interactive-option-image { display:grid; place-items:center; width:clamp(54px,17vw,68px); aspect-ratio:1; border:3px solid #dce5e9; border-radius:50%; background:linear-gradient(145deg,#dff3f3,#b8dfe7); font-size:29px; transition:border-color .15s,transform .15s,box-shadow .15s; }
+.interactive-option-label { font-size:12px; font-weight:600; }
+.interactive-option.selected .interactive-option-image { border-color:#13a66a; box-shadow:0 0 0 3px #d8f4e7; transform:scale(1.04); }
+.interactive-option.selected::after { content:'✓'; position:absolute; top:0; right:calc(50% - 37px); display:grid; place-items:center; width:21px; height:21px; border-radius:50%; background:#13a66a; color:#fff; font-size:13px; font-weight:700; }
+.report-confirm.primary-action { background:#13a66a; color:#fff; border:0; }
+.report-confirm.primary-action:disabled { background:#dce4e8; color:#82909a; opacity:1; }
+.report-edit-action { background:#f2f7f8; color:#075d68; border:1px solid #c5e1e5; }
+.report-edit-action.changed { background:#13a66a; color:#fff; border-color:#13a66a; }
+.report-edit-action:disabled { opacity:.5; }
+@media (max-width:600px) { .interactive-condition { padding:9px 8px 10px; } .interactive-options { gap:5px; } .interactive-option-image { width:clamp(52px,16vw,64px); } }
