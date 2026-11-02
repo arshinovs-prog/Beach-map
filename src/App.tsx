@@ -136,11 +136,30 @@ function App() {
     const map = mapRef.current
     if (!selectedSector || !map) { setExpandedConditions([]); return }
     setFiltersOpen(false)
-    // При открытии карточки центрируем выбранный сектор и приближаем карту,
-    // чтобы сектор был хорошо различим над карточкой.
-    if (selectedSector.latitude && selectedSector.longitude) {
-      const height = map.getCanvas().clientHeight
-      map.flyTo({ center: [selectedSector.longitude, selectedSector.latitude], zoom: Math.max(map.getZoom(), 15.5), duration: 850, padding: { top: 24, bottom: Math.min(300, Math.round(height * 0.36)), left: 12, right: 12 } })
+    // Подбираем масштаб по границам самого сектора, чтобы он целиком
+    // помещался в свободной области карты над карточкой.
+    const features = map.querySourceFeatures('saved-polygons')
+    const feature = features.find(item => Number(item.properties?.sector_id) === selectedSector.sector_id)
+    if (feature?.geometry) {
+      const bounds = new maplibregl.LngLatBounds()
+      const addCoordinates = (value: unknown): void => {
+        if (Array.isArray(value) && typeof value[0] === 'number' && typeof value[1] === 'number') {
+          bounds.extend([value[0], value[1]])
+        } else if (Array.isArray(value)) {
+          value.forEach(addCoordinates)
+        }
+      }
+      addCoordinates((feature.geometry as any).coordinates)
+      if (!bounds.isEmpty()) {
+        const panelHeight = document.querySelector('.sector-panel')?.getBoundingClientRect().height ?? 0
+        map.fitBounds(bounds, {
+          padding: { top: 32, bottom: Math.round(panelHeight + 28), left: 36, right: 36 },
+          maxZoom: 14,
+          duration: 850,
+        })
+      }
+    } else if (selectedSector.latitude && selectedSector.longitude) {
+      map.flyTo({ center: [selectedSector.longitude, selectedSector.latitude], zoom: 12.8, duration: 850 })
     }
   }, [selectedSector?.sector_id])
 
