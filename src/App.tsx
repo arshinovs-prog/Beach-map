@@ -136,12 +136,12 @@ function App() {
     const map = mapRef.current
     if (!selectedSector || !map) { setExpandedConditions([]); return }
     setFiltersOpen(false)
-    // Временный тест: отключаем автоматическое перемещение карты при открытии карточки сектора.
-    // Если светлая область исчезнет, проблема связана с flyTo/padding.
-    // if (selectedSector.latitude && selectedSector.longitude) {
-    //   const height = map.getCanvas().clientHeight
-    //   map.flyTo({ center: [selectedSector.longitude, selectedSector.latitude], zoom: Math.max(map.getZoom(), 13.8), duration: 850, padding: { top: 24, bottom: Math.min(300, Math.round(height * 0.36)), left: 12, right: 12 } })
-    // }
+    // При открытии карточки центрируем выбранный сектор и приближаем карту,
+    // чтобы сектор был хорошо различим над карточкой.
+    if (selectedSector.latitude && selectedSector.longitude) {
+      const height = map.getCanvas().clientHeight
+      map.flyTo({ center: [selectedSector.longitude, selectedSector.latitude], zoom: Math.max(map.getZoom(), 15.5), duration: 850, padding: { top: 24, bottom: Math.min(300, Math.round(height * 0.36)), left: 12, right: 12 } })
+    }
   }, [selectedSector?.sector_id])
 
   const hasDraftChanges = !!selectedSector && (
