@@ -35,6 +35,7 @@ type Sector = {
 
   last_updated: string | null
   confirmation_count: number
+  beach_type: 'sand' | 'pebble'
 }
 
 function getStatusText(status: string) {
@@ -84,6 +85,9 @@ function App() {
 
   const [sectors, setSectors] =
     useState<Sector[]>([])
+  const [surfaceFilter, setSurfaceFilter] = useState<'all' | 'sand' | 'pebble'>('all')
+  const [statusFilters, setStatusFilters] = useState<Array<'green' | 'yellow' | 'red' | 'gray'>>(['green','yellow','red','gray'])
+  const visibleSectors = sectors.filter(sector => (surfaceFilter === 'all' || sector.beach_type === surfaceFilter) && statusFilters.includes(sector.status_color))
 
   const [selectedSector, setSelectedSector] =
     useState<Sector | null>(null)
@@ -104,6 +108,7 @@ function App() {
   const [adminMessage, setAdminMessage] = useState('')
   const [sectorName, setSectorName] = useState('')
   const [accessName, setAccessName] = useState('')
+  const [beachType, setBeachType] = useState<'sand' | 'pebble'>('sand')
   const [editingId, setEditingId] = useState<number | null>(null)
   const [savedGeometry, setSavedGeometry] = useState<SavedSector[]>([])
   const [saving, setSaving] = useState(false)
@@ -203,6 +208,7 @@ function App() {
             Number(
               row.confirmation_count ?? 0
             ),
+          beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
         }))
 
       console.log(
@@ -359,6 +365,7 @@ function App() {
             main_icon: null,
             last_updated: null,
             confirmation_count: 0,
+            beach_type: feature?.properties?.beach_type === 'pebble' ? 'pebble' : 'sand',
           })
         }
       })
@@ -580,6 +587,10 @@ function App() {
       if (!source) return false
 
       const features: Feature<Polygon>[] = savedGeometry.flatMap((sector) => {
+        const status = sectorsRef.current.find((item) => item.sector_id === Number(sector.id))
+        const beachType = status?.beach_type ?? sector.beach_type ?? 'sand'
+        if (surfaceFilter !== 'all' && beachType !== surfaceFilter) return []
+        if (status && !statusFilters.includes(status.status_color)) return []
         const raw: any = sector.geometry
         if (!raw) return []
         let geometry = raw
@@ -588,7 +599,6 @@ function App() {
         }
         if (geometry?.type === 'Feature') geometry = geometry.geometry
         if (geometry?.type !== 'Polygon' || !Array.isArray(geometry.coordinates)) return []
-        const status = sectorsRef.current.find((item) => item.sector_id === Number(sector.id))
         return [{
           type: 'Feature',
           properties: {
@@ -597,6 +607,7 @@ function App() {
             status_color: status?.status_color ?? 'gray',
             latitude: status?.latitude ?? sector.latitude,
             longitude: status?.longitude ?? sector.longitude,
+            beach_type: status?.beach_type ?? sector.beach_type ?? 'sand',
           },
           geometry,
         } as Feature<Polygon>]
@@ -620,7 +631,7 @@ function App() {
       cancelled = true
       if (timer) clearInterval(timer)
     }
-  }, [savedGeometry, sectors])
+  }, [savedGeometry, sectors, surfaceFilter, statusFilters])
 
   useEffect(() => {
     drawingModeRef.current = drawingMode
@@ -666,6 +677,7 @@ function App() {
       main_icon: row.main_icon ?? null,
       last_updated: row.last_updated ?? null,
       confirmation_count: Number(row.confirmation_count ?? 0),
+      beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
     }))
     sectorsRef.current = normalized
     setSectors(normalized)
@@ -784,6 +796,7 @@ function App() {
     setEditingId(null)
     setSectorName('')
     setAccessName('')
+    setBeachType('sand')
     setDraftVertices([])
     draftVerticesRef.current = []
     setDrawingMode(true)
@@ -796,6 +809,7 @@ function App() {
     setEditingId(sector.id)
     setSectorName(sector.name)
     setAccessName(sector.access_name ?? '')
+    setBeachType(sector.beach_type ?? 'sand')
     setDrawingMode(false)
     setDraftVertices([])
     draftVerticesRef.current = []
@@ -835,7 +849,7 @@ function App() {
     setSaving(true); setAdminMessage('Сохраняю полигон в Supabase…')
     try {
       const polygon: Polygon = { type: 'Polygon', coordinates: [ring] }
-      const id = await saveBeachSector({ id: editorMode === 'editing' ? editingId : null, name: sectorName.trim(), accessName: accessName.trim() || null, polygon })
+      const id = await saveBeachSector({ id: editorMode === 'editing' ? editingId : null, name: sectorName.trim(), accessName: accessName.trim() || null, beachType, polygon })
       const geometry = await loadActiveSectorGeometries()
       setSavedGeometry(geometry)
       resetEditorToList(`Сектор #${id} сохранён. Вы вернулись к списку секторов.`)
@@ -904,6 +918,11 @@ function App() {
         </div>
 
       </header>
+      <div className="map-filters">
+        <div className="filter-row"><span>Покрытие</span>{([{value:'all',label:'Все'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" className={surfaceFilter === item.value ? 'active' : ''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
+        <div className="filter-row"><span>Условия</span>{([{value:'green',label:'🟢'},{value:'yellow',label:'🟡'},{value:'red',label:'🔴'},{value:'gray',label:'⚪'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'active' : ''} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}>{item.label}</button>)}</div>
+        <small>Показано секторов: {visibleSectors.length} из {sectors.length}</small>
+      </div>
       {isAdminRoute && (
         <div className="editor-toolbar">
           <button onClick={() => { if (editorOpen) resetEditorToList(); setEditorOpen(!editorOpen); setDrawingMode(false) }}> {editorOpen ? 'Закрыть редактор' : 'Редактор секторов'} </button>
@@ -927,6 +946,7 @@ function App() {
                 <strong>Новый сектор</strong>
                 <label>Название сектора *<input value={sectorName} onChange={e => setSectorName(e.target.value)} placeholder="Например, Центральный пляж" required /></label>
                 <label>Название проезда (необязательно)<input value={accessName} onChange={e => setAccessName(e.target.value)} placeholder="Например, Центральный" /></label>
+                <label>Тип пляжа<select value={beachType} onChange={e => setBeachType(e.target.value as 'sand' | 'pebble')}><option value="sand">Песчаный</option><option value="pebble">Галечный</option></select></label>
                 <p>Точек: {draftVertices.length}. Нажимайте на карту, чтобы добавлять вершины.</p>
                 <button onClick={() => setDrawingMode(!drawingMode)} className={drawingMode ? 'active' : ''}>{drawingMode ? 'Добавление точек включено' : 'Добавлять точки'}</button>
                 <button onClick={() => setDraftVertices(v => { const next = v.slice(0, -1); draftVerticesRef.current = next; return next })} disabled={!draftVertices.length}>Убрать последнюю точку</button>
@@ -944,6 +964,7 @@ function App() {
                 <strong>Редактирование сектора #{editingId}</strong>
                 <label>Название сектора *<input value={sectorName} onChange={e => setSectorName(e.target.value)} required /></label>
                 <label>Название проезда (необязательно)<input value={accessName} onChange={e => setAccessName(e.target.value)} /></label>
+                <label>Тип пляжа<select value={beachType} onChange={e => setBeachType(e.target.value as 'sand' | 'pebble')}><option value="sand">Песчаный</option><option value="pebble">Галечный</option></select></label>
                 <p>Точек: {draftVertices.length}. Перетаскивайте белые вершины для изменения границ.</p>
                 <button onClick={() => void handleSaveSector()} disabled={saving}>{saving ? 'Сохраняю…' : 'Сохранить'}</button>
                 <button onClick={() => handleDeleteSector()} disabled={saving}>Удалить сектор</button>
@@ -962,7 +983,7 @@ function App() {
       {selectedSector && (
         <div className="sector-panel" role="dialog" aria-label={`Состояние пляжа: ${selectedSector.name}`}>
           <div className="sector-panel-header">
-            <div><h2>{selectedSector.name}</h2>{selectedSector.access_name && <div className="sector-access">📍 {selectedSector.access_name}</div>}</div>
+            <div><h2>{selectedSector.name}</h2>{selectedSector.access_name && <div className="sector-access">📍 {selectedSector.access_name}</div>}<div className="sector-access">{selectedSector.beach_type === 'pebble' ? '🪨 Галечный пляж' : '🏖️ Песчаный пляж'}</div></div>
             <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>×</button>
           </div>
           {reportMode === 'view' ? <>
