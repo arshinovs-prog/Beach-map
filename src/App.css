@@ -56,31 +56,11 @@ body,
   z-index: 2;
 }
 
-.sector-panel {
-  position: absolute;
-  left: 20px;
-  bottom: 75px;
-  width: 280px;
-  padding: 18px;
-  box-sizing: border-box;
 
-  background: white;
-  border-radius: 12px;
 
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
-  z-index: 10;
-}
 
-.sector-panel h2 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 20px;
-}
 
-.sector-panel p {
-  margin: 8px 0;
-}
 
 .close-button {
   position: absolute;
@@ -253,14 +233,7 @@ body,
   font-size: 13px;
 }
 @media (max-width: 600px) {
-  .sector-panel {
-    left: 10px;
-    right: 10px;
-    bottom: 68px;
-    width: auto;
-    max-height: 65%;
-    overflow-y: auto;
-  }
+  
 }
 
 /* Визуальный выбор состояния моря */
@@ -290,13 +263,8 @@ body,
 .report-form .report-confirm { background: #e8f3f5; color: #075d68; border: 1px solid #c5e1e5; }
 .report-form .report-message { padding: 10px 12px; border-radius: 9px; background: #eef8f5; }
 @media (max-width: 600px) {
-  .sector-panel {
-    position: fixed; left: 8px; right: 8px; bottom: 8px; width: auto;
-    max-height: min(84dvh, 760px); overflow-y: auto; overscroll-behavior: contain;
-    padding: 20px 16px calc(18px + env(safe-area-inset-bottom));
-    border-radius: 18px; z-index: 30;
-  }
-  .sector-panel h2 { padding-right: 34px; }
+  
+  
   .report-form { gap: 12px; }
   .report-option { min-height: 88px; font-size: 14px; }
   .report-option-image { height: 42px; font-size: 28px; }
@@ -304,35 +272,10 @@ body,
 }
 
 
-/* Карточка сектора: фиксированная область просмотра, прокручивается только содержимое */
-.sector-panel {
-  position: fixed;
-  top: 76px;
-  bottom: 68px;
-  left: 18px;
-  width: min(390px, calc(100vw - 36px));
-  max-height: none;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  padding: 18px;
-  z-index: 40;
-}
-.sector-panel-header {
-  position: sticky;
-  top: -18px;
-  z-index: 5;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin: -18px -18px 12px;
-  padding: 18px 48px 10px 18px;
-  background: #fff;
-  border-radius: 12px 12px 0 0;
-}
-.sector-panel-header h2 { margin: 0; }
-.sector-panel .close-button { position: absolute; top: 12px; right: 12px; z-index: 6; }
+
+
+
+
 .status-hero {
   display: flex;
   align-items: center;
@@ -372,23 +315,8 @@ body,
 .sector-panel button:disabled { cursor: not-allowed; opacity: .55; }
 
 @media (max-width: 600px) {
-  .sector-panel {
-    top: auto;
-    left: 8px;
-    right: 8px;
-    bottom: calc(8px + env(safe-area-inset-bottom));
-    width: auto;
-    max-height: min(82dvh, 760px);
-    overflow-y: auto;
-    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
-    border-radius: 18px;
-  }
-  .sector-panel-header {
-    top: -18px;
-    margin: -18px -16px 12px;
-    padding: 18px 48px 10px 16px;
-    border-radius: 18px 18px 0 0;
-  }
+  
+  
   .status-hero-icon { flex-basis: 56px; width: 56px; height: 56px; font-size: 34px; }
   .report-options { gap: 6px; }
   .report-option { min-height: 84px; }
@@ -441,8 +369,8 @@ body,
 .compact-choice.selected{border:2px solid #13a66a;background:#eefaf4;color:#126b49;font-weight:700}
 .compact-choice.selected b{background:#d5f1e3;color:#126b49}
 .compact-sector-info{display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding-top:7px;font-size:11px}
-.sector-panel{width:min(350px,calc(100vw - 36px));padding:14px}
-.sector-panel-header{margin:-14px -14px 8px;padding:14px 44px 7px 14px}
+
+
 .status{margin:8px 0;padding:8px 10px;font-size:13px}
 .status-hero{margin:8px 0 10px;padding:10px;gap:9px}
 .status-hero-icon{width:42px;height:42px;flex-basis:42px;font-size:25px}
@@ -454,8 +382,8 @@ body,
  .footer-tools{width:100%;justify-content:center;gap:8px}
  .footer-surfaces{border-left:0;padding-left:0;gap:4px}
  .footer-surfaces button{padding:4px 7px;font-size:10px}
- .sector-panel{top:auto;left:8px;right:8px;bottom:calc(78px + env(safe-area-inset-bottom));width:auto;max-height:min(62dvh,560px);overflow-y:auto;padding:14px 13px}
- .sector-panel-header{margin:-14px -13px 8px;padding:14px 44px 7px 13px}
+ 
+ 
  .compact-condition-list{gap:6px;margin:8px 0}
  .compact-condition-row{gap:4px;padding-bottom:5px}
  .compact-choice{min-height:32px;font-size:11px}
@@ -471,11 +399,11 @@ body,
 .footer.filters-open .footer-legend{padding:4px 0 7px;}
 .footer-legend small{width:100%;text-align:center;color:#77858e;font-size:11px;}
 .footer-surfaces{border:0;padding:0;justify-content:center;}
-.sector-panel{position:fixed;left:50%;right:auto;top:auto;bottom:0;transform:translateX(-50%);width:min(560px,100vw);max-height:min(58dvh,520px);overflow-y:auto;padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;box-shadow:0 -5px 28px rgba(0,0,0,.2);z-index:40;}
-.sector-panel-header{position:relative;top:auto;margin:-14px -16px 8px;padding:14px 48px 7px 16px;border-radius:20px 20px 0 0;}
-.sector-panel-header h2{margin:0;font-size:19px;}
-.sector-panel .sector-access{margin:4px 0 0;font-size:12px;}
-.sector-panel .status{margin:7px 0 10px;padding:8px 11px;border-radius:10px;font-size:14px;}
+
+
+
+
+
 .status-green{background:#e6f5eb;color:#17643b;}
 .status-yellow{background:#fff3d6;color:#805600;}
 .status-red{background:#fde8e8;color:#a22c32;}
@@ -494,56 +422,34 @@ body,
 .compact-choice-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0 9px 7px;}
 .compact-choice{min-height:32px;font-size:12px;}
 .condition-votes{padding:0 10px 8px;color:#74818a;font-size:10px;line-height:1.4;}
-.sector-panel .report-confirm.primary-action,.sector-panel .report-edit-action{min-height:43px;margin-top:7px;font-size:13px;}
+
 @media(max-width:600px){
  .footer{min-height:44px;padding:5px 8px calc(5px + env(safe-area-inset-bottom));}
  .footer-legend{gap:5px;}
  .footer-filter{font-size:11px;padding:5px 7px;}
  .footer-surfaces{gap:5px;}
  .footer-surfaces button{font-size:11px;padding:5px 8px;}
- .sector-panel{left:0;right:0;bottom:0;width:100%;max-height:min(58dvh,520px);padding:12px 13px calc(12px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;}
- .sector-panel-header{margin:-12px -13px 7px;padding:12px 46px 7px 13px;}
+ 
+ 
  .beach-photo{height:92px;}
  .condition-summary{min-height:39px;padding:7px 10px;}
 }
 
 
-/* Финальная компоновка карточки: карта не перекрывается пустой панелью */
-.sector-panel{
-  left:50%;right:auto;top:auto;bottom:0;transform:translateX(-50%);
-  width:min(560px,100vw);max-height:min(58dvh,520px);
-  background:#f7f3e9;color:#263b42;border:1px solid #e8e0d1;
-  padding:12px 14px calc(13px + env(safe-area-inset-bottom));
-  border-radius:20px 20px 0 0;overflow-y:auto;z-index:40;
-}
-.sector-panel-header{
-  position:absolute;top:0;left:0;right:0;z-index:3;
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:8px;margin:0;padding:13px 58px 42px 15px;
-  background:linear-gradient(180deg,rgba(18,47,54,.76),rgba(18,47,54,.18));
-  border-radius:19px 19px 0 0;color:#fff;
-}
-.sector-panel-header h2{margin:0 0 3px;font-size:19px;color:#fff;}
-.sector-panel .sector-access{margin:3px 0 0;color:rgba(255,255,255,.94);font-size:12px;}
-.sector-panel .status{display:inline-flex;margin:9px 0 0;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;border:0;}
-.sector-panel .status-green{background:#d9f0df;color:#17643b;}
-.sector-panel .status-yellow{background:#fff0c7;color:#805600;}
-.sector-panel .status-red{background:#f9dadd;color:#9d3038;}
-.sector-panel .status-gray{background:#e4e8eb;color:#58636c;}
-.sector-panel .close-button{
-  position:absolute;right:10px;top:10px;z-index:5;
-  display:grid;place-items:center;width:38px;height:38px;
-  border:1px solid rgba(255,255,255,.55);border-radius:50%;
-  background:rgba(247,243,233,.92);color:#8b5d32;
-  font-size:23px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.16);
-}
-.sector-panel .beach-photo{
-  height:164px;margin:-12px -14px 13px;border-radius:19px 19px 12px 12px;
-  background:linear-gradient(180deg,#8fc4d2 0 33%,#c4e0d9 34% 43%,#3f91a5 44% 67%,#e7d3ad 68% 83%,#c8b58f 84%);
-}
-.sector-panel .beach-photo:before{top:43%;height:42px;}
-.sector-panel .beach-photo:after{bottom:-20px;height:55px;}
-.sector-panel .beach-photo-caption{padding:24px 12px 9px;background:linear-gradient(transparent,rgba(0,0,0,.64));}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .condition-circles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;width:100%;margin:7px 0 11px;}
 .condition-circle{
   position:relative;display:flex;min-width:0;min-height:112px;
@@ -574,16 +480,11 @@ body,
 .report-edit-action.changed.tone-yellow{background:#d6a52d;color:#392b08;border-color:#d6a52d;}
 .report-edit-action.changed.tone-red{background:#c94f57;color:#fff;border-color:#c94f57;}
 @media(max-width:600px){
-  .sector-panel{
-    left:0;right:0;bottom:0;transform:none;width:100%;
-    max-height:min(58dvh,520px);box-sizing:border-box;
-    padding:10px 12px calc(12px + env(safe-area-inset-bottom));
-    border-radius:18px 18px 0 0;
-  }
-  .sector-panel .beach-photo{height:154px;margin:-10px -12px 11px;border-radius:17px 17px 11px 11px;}
-  .sector-panel-header{padding:11px 54px 39px 13px;border-radius:17px 17px 0 0;}
-  .sector-panel-header h2{font-size:18px;}
-  .sector-panel .close-button{right:9px;top:9px;width:36px;height:36px;}
+  
+  
+  
+  
+  
   .condition-circles{gap:6px;margin:6px 0 9px;}
   .condition-circle{min-height:104px;padding:7px 3px 17px;}
   .condition-circle strong{font-size:10px;}
@@ -593,46 +494,24 @@ body,
 }
 
 
-/* Финальная типографика и выравнивание карточки */
-.sector-panel .sector-panel-header{
-  display:flex;justify-content:center;align-items:center;text-align:center;
-  padding:15px 58px 15px;
-  background:linear-gradient(180deg,rgba(18,47,54,.82),rgba(18,47,54,.28));
-}
-.sector-panel-title{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;}
-.sector-panel-title h2{
-  margin:0;font-family:ui-rounded,"Avenir Next",Nunito,system-ui,sans-serif;
-  font-size:22px;font-weight:750;letter-spacing:.1px;line-height:1.15;
-}
-.sector-panel .sector-access{margin:0;font-size:12px;font-weight:550;letter-spacing:.2px;}
-.sector-panel .status{
-  display:flex;align-items:center;justify-content:center;width:100%;
-  box-sizing:border-box;margin:7px 0 0;padding:8px 12px;
-  border-radius:10px;font-size:13px;font-weight:750;text-align:center;
-}
-.sector-panel .close-button{
-  color:#35545d;background:rgba(247,243,233,.96);font-family:Arial,sans-serif;
-  font-size:27px;font-weight:400;line-height:1;
-}
+
+
+
+
+
+
 .condition-circle-icon{display:grid;place-items:center;color:#315d66;}
 .condition-circle-icon svg{display:block;width:30px;height:30px;stroke:currentColor;}
 .condition-detail-hint{
   margin:-3px 0 9px;color:#74838a;font-size:11px;line-height:1.4;text-align:left;
 }
-.sector-panel .report-edit-action{
-  background:#e8f1f8;color:#315f83;border:1px solid #c9ddeb;
-  transition:background .16s,border-color .16s,color .16s;
-}
-.sector-panel .report-edit-action.changed{
-  background:#287fbd;color:#fff;border-color:#287fbd;opacity:1;
-}
-.sector-panel .report-edit-action:disabled{
-  background:#e8f1f8;color:#6f899d;border-color:#d8e5ee;opacity:1;
-}
+
+
+
 @media(max-width:600px){
-  .sector-panel .sector-panel-header{padding:13px 52px 13px;}
-  .sector-panel-title h2{font-size:20px;}
-  .sector-panel .status{font-size:12px;padding:7px 9px;}
+  
+  
+  
 }
 
 
@@ -779,25 +658,10 @@ body,
 @media(max-width:600px){.report-review-dialog{padding:16px;border-radius:16px}.report-review-row{grid-template-columns:75px minmax(0,1fr);}.report-review-row small{grid-column:2;}}
 
 
-/* Карточка не должна создавать сплошную подложку поверх карты */
-.sector-panel{
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-}
-.sector-panel > *{
-  position:relative;
-}
-.sector-panel .beach-photo{
-  box-shadow:0 3px 12px rgba(0,0,0,.16);
-}
-.sector-panel .condition-selector,
-.sector-panel .report-confirm,
-.sector-panel .report-edit-action,
-.sector-panel .report-message,
-.sector-panel .cooldown-message{
-  position:relative;
-}
+
+
+
+
 
 
 /* Кнопки управления фильтром */
@@ -808,4 +672,217 @@ body,
 @media(max-width:600px){
   .filter-actions{gap:6px;}
   .filter-actions .filter-toggle,.filter-actions .filter-reset{min-height:34px;padding:6px 12px;font-size:12px;}
+}
+
+/* Карточка сектора — единый набор стилей */
+.sector-panel {
+  position: fixed;
+  top: auto;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, 100vw);
+  max-height: min(58dvh, 520px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 14px calc(13px + env(safe-area-inset-bottom));
+  border: 0 !important;
+  border-radius: 20px 20px 0 0;
+  background: transparent !important;
+  color: #263b42;
+  box-shadow: none !important;
+  z-index: 40;
+}
+
+.sector-panel h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.sector-panel p {
+  margin: 8px 0;
+}
+
+.sector-panel-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 15px 58px;
+  border-radius: 19px 19px 0 0;
+  background: linear-gradient(180deg, rgba(18, 47, 54, .82), rgba(18, 47, 54, .28));
+  color: #fff;
+  text-align: center;
+}
+
+.sector-panel-header h2 {
+  margin: 0;
+  font-size: 19px;
+  color: #fff;
+}
+
+.sector-panel-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.sector-panel-title h2 {
+  margin: 0;
+  font-family: ui-rounded, "Avenir Next", Nunito, system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: .1px;
+  line-height: 1.15;
+}
+
+.sector-panel .sector-access {
+  margin: 0;
+  color: rgba(255, 255, 255, .94);
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: .2px;
+}
+
+.sector-panel .status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 7px 0 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.sector-panel .status-green { background: #d9f0df; color: #17643b; }
+.sector-panel .status-yellow { background: #fff0c7; color: #805600; }
+.sector-panel .status-red { background: #f9dadd; color: #9d3038; }
+.sector-panel .status-gray { background: #e4e8eb; color: #58636c; }
+
+.sector-panel .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, .55);
+  border-radius: 50%;
+  background: rgba(247, 243, 233, .96);
+  color: #35545d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+  font-family: Arial, sans-serif;
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.sector-panel .beach-photo {
+  position: relative;
+  height: 164px;
+  margin: -12px -14px 13px;
+  overflow: hidden;
+  border-radius: 19px 19px 12px 12px;
+  background: linear-gradient(180deg, #8fc4d2 0 33%, #c4e0d9 34% 43%, #3f91a5 44% 67%, #e7d3ad 68% 83%, #c8b58f 84%);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .16);
+  isolation: isolate;
+}
+
+.sector-panel .beach-photo:before { top: 43%; height: 42px; }
+.sector-panel .beach-photo:after { bottom: -20px; height: 55px; }
+.sector-panel .beach-photo-caption {
+  padding: 24px 12px 9px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .64));
+}
+
+.sector-panel .report-confirm.primary-action,
+.sector-panel .report-edit-action {
+  min-height: 43px;
+  margin-top: 7px;
+  font-size: 13px;
+}
+
+.sector-panel .report-edit-action {
+  border: 1px solid #c9ddeb;
+  background: #e8f1f8;
+  color: #315f83;
+  transition: background .16s, border-color .16s, color .16s;
+}
+
+.sector-panel .report-edit-action.changed {
+  border-color: #287fbd;
+  background: #287fbd;
+  color: #fff;
+  opacity: 1;
+}
+
+.sector-panel .report-edit-action:disabled {
+  border-color: #d8e5ee;
+  background: #e8f1f8;
+  color: #6f899d;
+  opacity: 1;
+}
+
+.sector-panel > * { position: relative; }
+
+.sector-panel .condition-selector,
+.sector-panel .report-confirm,
+.sector-panel .report-edit-action,
+.sector-panel .report-message,
+.sector-panel .cooldown-message {
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .sector-panel {
+    right: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-height: min(58dvh, 520px);
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+    border-radius: 18px 18px 0 0;
+  }
+
+  .sector-panel h2 { padding-right: 34px; }
+
+  .sector-panel-header {
+    padding: 13px 52px;
+    border-radius: 17px 17px 0 0;
+  }
+
+  .sector-panel-title h2 { font-size: 20px; }
+
+  .sector-panel .status { padding: 7px 9px; font-size: 12px; }
+
+  .sector-panel .close-button {
+    top: 9px;
+    right: 9px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .sector-panel .beach-photo {
+    height: 154px;
+    margin: -10px -12px 11px;
+    border-radius: 17px 17px 11px 11px;
+  }
 }
