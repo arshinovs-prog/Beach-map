@@ -884,6 +884,7 @@ function App() {
 
       {selectedSector && (
         <div className="sector-panel" role="dialog" aria-label={'Состояние пляжа: ' + selectedSector.name}>
+          <div className="sector-panel-scroll">
           {reportMode === 'view' ? <>
             <div className="beach-photo" role="img" aria-label="Иллюстрация морского пляжа">
               <div className="sector-panel-header">
@@ -937,6 +938,7 @@ function App() {
             {cooldownUntil && <p className="cooldown-message">Повторно отправить отчёт можно через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </div>}
+          </div>
         </div>
       )}
       {reviewReportOpen && selectedSector && (
