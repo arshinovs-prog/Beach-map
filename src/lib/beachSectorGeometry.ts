@@ -6,6 +6,7 @@ export type SavedSector = {
   id: number
   name: string
   access_name: string | null
+  beach_type: 'sand' | 'pebble'
   latitude: number
   longitude: number
   is_active: boolean
@@ -24,6 +25,7 @@ export async function saveBeachSector(input: {
   id: number | null
   name: string
   accessName?: string | null
+  beachType?: 'sand' | 'pebble'
   polygon: Feature<Polygon> | Polygon
 }): Promise<number> {
   const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -37,6 +39,7 @@ export async function saveBeachSector(input: {
     p_name: input.name,
     p_access_name: input.accessName ?? null,
     p_geojson: geometry,
+    p_beach_type: input.beachType ?? 'sand',
   })
   if (error) throw error
   return Number(data)
@@ -45,7 +48,7 @@ export async function saveBeachSector(input: {
 export async function loadActiveSectorGeometries(): Promise<SavedSector[]> {
   const { data, error } = await supabase
     .from('beach_sectors')
-    .select('id,name,access_name,latitude,longitude,is_active,geometry')
+    .select('id,name,access_name,beach_type,latitude,longitude,is_active,geometry')
     .eq('is_active', true)
     .not('geometry', 'is', null)
     .order('id', { ascending: true })
