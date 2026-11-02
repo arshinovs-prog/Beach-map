@@ -717,17 +717,23 @@ body,
   border-radius:14px 14px 0 0;
   outline:none;
 }
-.condition-selector.has-expanded.tone-green .condition-circle.active{
-  background:#e1f2e5;color:#246442;border-color:#a9d5b6;
+.condition-selector.has-expanded.tone-green{
   --detail-bg:#e1f2e5;--detail-border:#a9d5b6;
 }
-.condition-selector.has-expanded.tone-yellow .condition-circle.active{
-  background:#fff1cf;color:#805b14;border-color:#e4ca83;
+.condition-selector.has-expanded.tone-yellow{
   --detail-bg:#fff1cf;--detail-border:#e4ca83;
 }
-.condition-selector.has-expanded.tone-red .condition-circle.active{
-  background:#f9e0e1;color:#963b42;border-color:#e0aeb2;
+.condition-selector.has-expanded.tone-red{
   --detail-bg:#f9e0e1;--detail-border:#e0aeb2;
+}
+.condition-selector.has-expanded.tone-green .condition-circle.active{
+  background:var(--detail-bg);color:#246442;border-color:var(--detail-border);
+}
+.condition-selector.has-expanded.tone-yellow .condition-circle.active{
+  background:var(--detail-bg);color:#805b14;border-color:var(--detail-border);
+}
+.condition-selector.has-expanded.tone-red .condition-circle.active{
+  background:var(--detail-bg);color:#963b42;border-color:var(--detail-border);
 }
 /* Панель широкая, но от соседних кнопок отделена зазором.
    Псевдоэлемент активной кнопки образует перемычку без общей черты. */
