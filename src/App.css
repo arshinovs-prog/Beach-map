@@ -905,3 +905,10 @@ body,
     border-radius: 17px 17px 11px 11px;
   }
 }
+
+
+/* На широких экранах карточка компактнее; мобильные размеры не меняем. */
+@media (min-width: 601px) {
+  .sector-panel { width: min(440px, calc(100vw - 32px)); }
+  .sector-panel-scroll { max-height: min(44dvh, 420px); }
+}
