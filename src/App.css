@@ -842,3 +842,14 @@ body,
 .sector-panel .cooldown-message{
   position:relative;
 }
+
+
+/* Кнопки управления фильтром */
+.filter-actions{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;}
+.filter-actions .filter-toggle,.filter-reset{min-height:36px;padding:7px 16px;border:1px solid #d5e0e4;border-radius:18px;background:#fff;color:#344653;font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.filter-actions .filter-reset{border-color:#e4c9c5;color:#a34a43;background:#fffaf9;}
+.filter-actions .filter-reset:disabled{opacity:.45;cursor:default;}
+@media(max-width:600px){
+  .filter-actions{gap:6px;}
+  .filter-actions .filter-toggle,.filter-actions .filter-reset{min-height:34px;padding:6px 12px;font-size:12px;}
+}
