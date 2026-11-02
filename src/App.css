@@ -688,7 +688,7 @@ body,
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding: 12px 14px calc(13px + env(safe-area-inset-bottom));
+  padding: 0 14px calc(13px + env(safe-area-inset-bottom));
   border: 1px solid #e8e0d1;
   border-bottom: 0;
   border-radius: 20px 20px 0 0;
@@ -799,7 +799,7 @@ body,
 .sector-panel .beach-photo {
   position: relative;
   height: 164px;
-  margin: -12px -14px 13px;
+  margin: 0 -14px 13px;
   overflow: hidden;
   border-radius: 19px 19px 12px 12px;
   background: linear-gradient(180deg, #8fc4d2 0 33%, #c4e0d9 34% 43%, #3f91a5 44% 67%, #e7d3ad 68% 83%, #c8b58f 84%);
@@ -859,7 +859,7 @@ body,
     transform: none;
     width: 100%;
     max-height: min(58dvh, 520px);
-    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+    padding: 0 12px calc(12px + env(safe-area-inset-bottom));
     border-radius: 18px 18px 0 0;
   }
 
@@ -883,7 +883,7 @@ body,
 
   .sector-panel .beach-photo {
     height: 154px;
-    margin: -10px -12px 11px;
+    margin: 0 -12px 11px;
     border-radius: 17px 17px 11px 11px;
   }
 }
