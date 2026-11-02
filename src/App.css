@@ -802,3 +802,22 @@ body,
   .condition-selector .condition-circle.active{margin-bottom:-8px;}
   .condition-selector .condition-circle.active::after{bottom:-9px;height:10px;}
 }
+
+
+/* Проверка отчёта перед отправкой */
+.report-review-backdrop{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(15,30,36,.48);}
+.report-review-dialog{width:min(420px,100%);box-sizing:border-box;padding:18px;border:1px solid #e3e8e9;border-radius:18px;background:#fffdf8;color:#263b42;box-shadow:0 12px 40px rgba(0,0,0,.24);}
+.report-review-dialog h3{margin:0 0 6px;font-size:19px;}
+.report-review-dialog>p{margin:0 0 13px;color:#687980;font-size:12px;line-height:1.45;}
+.report-review-row{display:grid;grid-template-columns:85px minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf0ef;font-size:12px;}
+.report-review-row>strong{font-size:12px;}
+.report-review-row>span{min-width:0;}
+.report-review-row small{color:#75838a;font-size:10px;white-space:nowrap;}
+.report-review-row small.is-changed{color:#167b53;font-weight:750;}
+.report-review-dialog .report-review-note{margin:13px 0;color:#586a70;}
+.report-review-actions{display:grid;grid-template-columns:1fr 1.5fr;gap:8px;margin-top:14px;}
+.report-review-actions button{min-height:42px;padding:8px;border-radius:10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+.report-review-cancel{border:1px solid #d9e1e3;background:#fff;color:#42565e;}
+.report-review-confirm{border:1px solid #287fbd;background:#287fbd;color:#fff;}
+.report-review-confirm:disabled{opacity:.6;}
+@media(max-width:600px){.report-review-dialog{padding:16px;border-radius:16px}.report-review-row{grid-template-columns:75px minmax(0,1fr);}.report-review-row small{grid-column:2;}}
