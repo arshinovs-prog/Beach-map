@@ -217,6 +217,15 @@ function App() {
             Number(
               row.confirmation_count ?? 0
             ),
+          algae_none_count: Number(row.algae_none_count ?? 0),
+          algae_low_count: Number(row.algae_low_count ?? 0),
+          algae_high_count: Number(row.algae_high_count ?? 0),
+          waves_none_count: Number(row.waves_none_count ?? 0),
+          waves_medium_count: Number(row.waves_medium_count ?? 0),
+          waves_high_count: Number(row.waves_high_count ?? 0),
+          jellyfish_none_count: Number(row.jellyfish_none_count ?? 0),
+          jellyfish_low_count: Number(row.jellyfish_low_count ?? 0),
+          jellyfish_high_count: Number(row.jellyfish_high_count ?? 0),
           beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
         }))
 
