@@ -821,3 +821,24 @@ body,
 .report-review-confirm{border:1px solid #287fbd;background:#287fbd;color:#fff;}
 .report-review-confirm:disabled{opacity:.6;}
 @media(max-width:600px){.report-review-dialog{padding:16px;border-radius:16px}.report-review-row{grid-template-columns:75px minmax(0,1fr);}.report-review-row small{grid-column:2;}}
+
+
+/* Карточка не должна создавать сплошную подложку поверх карты */
+.sector-panel{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.sector-panel > *{
+  position:relative;
+}
+.sector-panel .beach-photo{
+  box-shadow:0 3px 12px rgba(0,0,0,.16);
+}
+.sector-panel .condition-selector,
+.sector-panel .report-confirm,
+.sector-panel .report-edit-action,
+.sector-panel .report-message,
+.sector-panel .cooldown-message{
+  position:relative;
+}
