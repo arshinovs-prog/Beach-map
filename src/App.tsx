@@ -119,6 +119,8 @@ function App() {
   const [reportWaves, setReportWaves] = useState('none')
   const [reportJellyfish, setReportJellyfish] = useState('none')
   const [reportBusy, setReportBusy] = useState(false)
+  const [reviewReportOpen, setReviewReportOpen] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [reportMessage, setReportMessage] = useState('')
   const [reportMode, setReportMode] = useState<'view' | 'edit'>('view')
   const [myReport, setMyReport] = useState<{ id: number; algae: string; waves: string; jellyfish: string; created_at: string } | null>(null)
@@ -723,7 +725,8 @@ function App() {
   async function loadMySectorActivity(sectorId: number) {
     const { data: authData } = await supabase.auth.getUser()
     const userId = authData.user?.id
-    if (!userId) { setMyReport(null); setMyConfirmedReportId(null); setCooldownUntil(null); return }
+    if (!userId) { setIsAuthenticated(false); setMyReport(null); setMyConfirmedReportId(null); setCooldownUntil(null); return }
+    setIsAuthenticated(true)
     const { data: ownReports, error: ownError } = await supabase.from('reports')
       .select('id, algae, waves, jellyfish, created_at').eq('sector_id', sectorId).eq('user_id', userId)
       .order('created_at', { ascending: false }).limit(1)
@@ -764,6 +767,7 @@ function App() {
 
   async function handleSubmitReport() {
     if (!selectedSector || reportBusy || cooldownUntil) return
+    setReviewReportOpen(false)
     setReportBusy(true); setReportMessage('')
     try {
       const { error } = await supabase.rpc('submit_beach_report', { p_sector_id: selectedSector.sector_id, p_algae: reportAlgae, p_waves: reportWaves, p_jellyfish: reportJellyfish })
@@ -774,7 +778,7 @@ function App() {
       }
       await refreshSectorStatuses()
       await loadMySectorActivity(selectedSector.sector_id)
-      setReportMode('view'); setReportMessage('Спасибо за ваш отчёт!')
+      setReportMode('view'); setReviewReportOpen(false); setReportMessage('Спасибо за ваш отчёт!')
     } catch (e) { setReportMessage(e instanceof Error ? e.message : 'Не удалось отправить отчёт.') }
     finally { setReportBusy(false) }
   }
@@ -1044,15 +1048,14 @@ function App() {
                 </div>
                 {active && <div className="condition-detail condition-detail-attached" >
                   <div className="condition-detail-content">
-                    <div className="condition-detail-title">{active.title}</div>
                     <p className="condition-detail-hint">Вы можете изменить данные о состоянии пляжа и отправить нам обновление.</p>
-                    <div className="condition-detail-options">{active.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (active.draft === option.value ? ' selected' : '')} aria-pressed={active.draft === option.value} onClick={() => active.set(option.value)}><span>{option.label}</span><b>{option.count}</b></button>)}</div>
+                    <div className="condition-detail-options">{active.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (active.draft === option.value ? ' selected' : '')} aria-pressed={active.draft === option.value} onClick={() => active.set(option.value)}><span>{option.label}</span><b>Подтвердили: {option.count}{isAuthenticated && !myReport && active.draft === option.value ? ' · Ваш голос: +1' : ''}</b></button>)}</div>
                   </div>
                 </div>}
               </div>
             })()}
             <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
-            <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => void handleSubmitReport()} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Отправить изменения'}</button>
+            <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => setReviewReportOpen(true)} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Отправить изменения'}</button>
             {cooldownUntil && <p className="cooldown-message">Новый отчёт можно отправить через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </> : <div className="report-form">
@@ -1065,6 +1068,30 @@ function App() {
             {cooldownUntil && <p className="cooldown-message">Повторно отправить отчёт можно через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </div>}
+        </div>
+      )}
+      {reviewReportOpen && selectedSector && (
+        <div className="report-review-backdrop" role="presentation" onClick={() => setReviewReportOpen(false)}>
+          <section className="report-review-dialog" role="dialog" aria-modal="true" aria-labelledby="report-review-title" onClick={event => event.stopPropagation()}>
+            <h3 id="report-review-title">Проверьте ваш отчёт</h3>
+            <p>Перед отправкой проверьте все три показателя.</p>
+            {([
+              { label: 'Водоросли', value: reportAlgae, original: selectedSector.algae ?? 'none', names: { none: 'Нет водорослей', low: 'Мало водорослей', high: 'Много водорослей' } },
+              { label: 'Волны', value: reportWaves, original: selectedSector.waves ?? 'none', names: { none: 'Нет волн', medium: 'Средние волны', high: 'Большие волны' } },
+              { label: 'Медузы', value: reportJellyfish, original: selectedSector.jellyfish ?? 'none', names: { none: 'Нет медуз', low: 'Мало медуз', high: 'Много медуз' } },
+            ] as const).map(item => (
+              <div className="report-review-row" key={item.label}>
+                <strong>{item.label}</strong>
+                <span>{item.names[item.value as keyof typeof item.names]}</span>
+                <small className={item.value !== item.original ? 'is-changed' : ''}>{item.value !== item.original ? 'Изменено' : 'Без изменений'}</small>
+              </div>
+            ))}
+            <p className="report-review-note">Все три показателя будут отправлены, включая те, которые вы не меняли.</p>
+            <div className="report-review-actions">
+              <button type="button" className="report-review-cancel" onClick={() => setReviewReportOpen(false)}>Отменить</button>
+              <button type="button" className="report-review-confirm" disabled={reportBusy} onClick={() => void handleSubmitReport()}>{reportBusy ? 'Отправляем…' : 'Подтвердить и отправить'}</button>
+            </div>
+          </section>
         </div>
       )}
       {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'}>
