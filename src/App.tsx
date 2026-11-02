@@ -35,6 +35,15 @@ type Sector = {
 
   last_updated: string | null
   confirmation_count: number
+  algae_none_count: number
+  algae_low_count: number
+  algae_high_count: number
+  waves_none_count: number
+  waves_medium_count: number
+  waves_high_count: number
+  jellyfish_none_count: number
+  jellyfish_low_count: number
+  jellyfish_high_count: number
   beach_type: 'sand' | 'pebble'
 }
 
@@ -365,6 +374,9 @@ function App() {
             main_icon: null,
             last_updated: null,
             confirmation_count: 0,
+            algae_none_count: 0, algae_low_count: 0, algae_high_count: 0,
+            waves_none_count: 0, waves_medium_count: 0, waves_high_count: 0,
+            jellyfish_none_count: 0, jellyfish_low_count: 0, jellyfish_high_count: 0,
             beach_type: feature?.properties?.beach_type === 'pebble' ? 'pebble' : 'sand',
           })
         }
@@ -677,6 +689,15 @@ function App() {
       main_icon: row.main_icon ?? null,
       last_updated: row.last_updated ?? null,
       confirmation_count: Number(row.confirmation_count ?? 0),
+      algae_none_count: Number(row.algae_none_count ?? 0),
+      algae_low_count: Number(row.algae_low_count ?? 0),
+      algae_high_count: Number(row.algae_high_count ?? 0),
+      waves_none_count: Number(row.waves_none_count ?? 0),
+      waves_medium_count: Number(row.waves_medium_count ?? 0),
+      waves_high_count: Number(row.waves_high_count ?? 0),
+      jellyfish_none_count: Number(row.jellyfish_none_count ?? 0),
+      jellyfish_low_count: Number(row.jellyfish_low_count ?? 0),
+      jellyfish_high_count: Number(row.jellyfish_high_count ?? 0),
       beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
     }))
     sectorsRef.current = normalized
@@ -989,19 +1010,19 @@ function App() {
           {reportMode === 'view' ? <>
             <div className={`status status-${selectedSector.status_color}`}>{selectedSector.status_color === 'green' ? '🟢 ' : selectedSector.status_color === 'yellow' ? '🟡 ' : selectedSector.status_color === 'red' ? '🔴 ' : '⚪ '}{getStatusText(selectedSector.status_color)}</div>
             <div className="status-hero"><div className="status-hero-icon">{selectedSector.status_color === 'gray' ? '🏖️' : selectedSector.main_icon === 'algae' ? '🌿' : selectedSector.main_icon === 'waves' ? '🌊' : selectedSector.main_icon === 'jellyfish' ? '🪼' : '🌊'}</div>
-              <strong>{selectedSector.status_color === 'gray' ? 'Пока нет актуальной информации' : `Общее состояние по ${selectedSector.confirmation_count} подтверждениям`}</strong></div>
+              <strong>{selectedSector.status_color === 'gray' ? 'Пока нет актуальной информации' : `Общее состояние по ${selectedSector.confirmation_count} участникам`}</strong></div>
             <div className="interactive-conditions">
               <div className="interactive-condition">
                 <div className="interactive-condition-heading"><span>🌿 Водоросли</span><small>Выберите состояние</small></div>
-                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🌿'},{value:'high',label:'Много',icon:'🟢'}].map(o => <button key={o.value} type="button" className={reportAlgae === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportAlgae === o.value} onClick={() => setReportAlgae(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span></button>)}</div>
+                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🌿'},{value:'high',label:'Много',icon:'🟢'}].map(o => <button key={o.value} type="button" className={reportAlgae === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportAlgae === o.value} onClick={() => setReportAlgae(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span><small className="vote-count">{o.value === "none" ? selectedSector.algae_none_count : o.value === "low" ? selectedSector.algae_low_count : selectedSector.algae_high_count}</small></button>)}</div>
               </div>
               <div className="interactive-condition">
                 <div className="interactive-condition-heading"><span>🌊 Волны</span><small>Выберите состояние</small></div>
-                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🏖️'},{value:'medium',label:'Средние',icon:'🌊'},{value:'high',label:'Большие',icon:'🌊'}].map(o => <button key={o.value} type="button" className={reportWaves === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportWaves === o.value} onClick={() => setReportWaves(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span></button>)}</div>
+                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🏖️'},{value:'medium',label:'Средние',icon:'🌊'},{value:'high',label:'Большие',icon:'🌊'}].map(o => <button key={o.value} type="button" className={reportWaves === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportWaves === o.value} onClick={() => setReportWaves(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span><small className="vote-count">{o.value === "none" ? selectedSector.waves_none_count : o.value === "medium" ? selectedSector.waves_medium_count : selectedSector.waves_high_count}</small></button>)}</div>
               </div>
               <div className="interactive-condition">
                 <div className="interactive-condition-heading"><span>🪼 Медузы</span><small>Выберите состояние</small></div>
-                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🪼'},{value:'high',label:'Много',icon:'🪼'}].map(o => <button key={o.value} type="button" className={reportJellyfish === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportJellyfish === o.value} onClick={() => setReportJellyfish(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span></button>)}</div>
+                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🪼'},{value:'high',label:'Много',icon:'🪼'}].map(o => <button key={o.value} type="button" className={reportJellyfish === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportJellyfish === o.value} onClick={() => setReportJellyfish(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span><small className="vote-count">{o.value === "none" ? selectedSector.jellyfish_none_count : o.value === "low" ? selectedSector.jellyfish_low_count : selectedSector.jellyfish_high_count}</small></button>)}</div>
               </div>
             </div>
             <div className="sector-info"><div>Участников: {selectedSector.confirmation_count}</div>{selectedSector.last_updated && <div>Обновлено: {new Date(selectedSector.last_updated).toLocaleString('ru-RU')}</div>}</div>
