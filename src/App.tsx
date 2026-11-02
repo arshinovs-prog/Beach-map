@@ -1026,27 +1026,25 @@ function App() {
             </div>
             <div className="condition-circles">
               {[
-                {key:'algae',icon:<ConditionIcon kind="algae" />,title:'Водоросли',value:selectedSector.algae,draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',short:'Нет',count:selectedSector.algae_none_count},{value:'low',label:'Мало водорослей',short:'Мало',count:selectedSector.algae_low_count},{value:'high',label:'Много водорослей',short:'Много',count:selectedSector.algae_high_count}]},
-                {key:'waves',icon:<ConditionIcon kind="waves" />,title:'Волны',value:selectedSector.waves,draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',short:'Нет',count:selectedSector.waves_none_count},{value:'medium',label:'Средние волны',short:'Средние',count:selectedSector.waves_medium_count},{value:'high',label:'Большие волны',short:'Большие',count:selectedSector.waves_high_count}]},
-                {key:'jellyfish',icon:<ConditionIcon kind="jellyfish" />,title:'Медузы',value:selectedSector.jellyfish,draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',short:'Нет',count:selectedSector.jellyfish_none_count},{value:'low',label:'Мало медуз',short:'Мало',count:selectedSector.jellyfish_low_count},{value:'high',label:'Много медуз',short:'Много',count:selectedSector.jellyfish_high_count}]},
+                {key:'algae',icon:<ConditionIcon kind="algae" />,title:'Водоросли',draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',count:selectedSector.algae_none_count,tone:'green'},{value:'low',label:'Мало водорослей',count:selectedSector.algae_low_count,tone:'yellow'},{value:'high',label:'Много водорослей',count:selectedSector.algae_high_count,tone:'red'}]},
+                {key:'waves',icon:<ConditionIcon kind="waves" />,title:'Волны',draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',count:selectedSector.waves_none_count,tone:'green'},{value:'medium',label:'Средние волны',count:selectedSector.waves_medium_count,tone:'yellow'},{value:'high',label:'Большие волны',count:selectedSector.waves_high_count,tone:'red'}]},
+                {key:'jellyfish',icon:<ConditionIcon kind="jellyfish" />,title:'Медузы',draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',count:selectedSector.jellyfish_none_count,tone:'green'},{value:'low',label:'Мало медуз',count:selectedSector.jellyfish_low_count,tone:'yellow'},{value:'high',label:'Много медуз',count:selectedSector.jellyfish_high_count,tone:'red'}]},
               ].map(item => {
                 const chosen = item.options.find(option => option.value === item.draft) ?? item.options[0]
-                const tone = chosen.value === 'high' ? 'red' : chosen.value === 'low' || chosen.value === 'medium' ? 'yellow' : 'green'
+                const tone = chosen.tone
                 const expanded = expandedConditions.includes(item.key)
-                return <button type="button" key={item.key} className={'condition-circle condition-' + tone + (expanded ? ' active' : '')} aria-expanded={expanded} onClick={() => setExpandedConditions([item.key])}>
-                  <span className="condition-circle-icon">{item.icon}</span><strong>{chosen.label}</strong><span className="condition-circle-arrow">{expanded ? '⌃' : '⌄'}</span>
-                </button>
+                return <div key={item.key} className={'condition-card' + (expanded ? ' expanded tone-' + tone : '')}>
+                  <button type="button" className={'condition-circle condition-' + tone + (expanded ? ' active' : '')} aria-expanded={expanded} onClick={() => setExpandedConditions(current => current.includes(item.key) ? [] : [item.key])}>
+                    <span className="condition-circle-icon">{item.icon}</span><strong>{chosen.label}</strong><span className="condition-circle-arrow">{expanded ? '⌃' : '⌄'}</span>
+                  </button>
+                  {expanded && <div className="condition-detail condition-detail-attached">
+                    <div className="condition-detail-title">{item.title}</div>
+                    <p className="condition-detail-hint">Вы можете изменить данные о состоянии пляжа и отправить нам обновление.</p>
+                    <div className="condition-detail-options">{item.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (item.draft === option.value ? ' selected' : '')} aria-pressed={item.draft === option.value} onClick={() => item.set(option.value)}><span>{option.label}</span><b>{option.count}</b></button>)}</div>
+                  </div>}
+                </div>
               })}
             </div>
-            {(() => {
-              const activeKey = expandedConditions[0]
-              const item = [
-                {key:'algae',title:'Водоросли',draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',count:selectedSector.algae_none_count,tone:'green'},{value:'low',label:'Мало водорослей',count:selectedSector.algae_low_count,tone:'yellow'},{value:'high',label:'Много водорослей',count:selectedSector.algae_high_count,tone:'red'}]},
-                {key:'waves',title:'Волны',draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',count:selectedSector.waves_none_count,tone:'green'},{value:'medium',label:'Средние волны',count:selectedSector.waves_medium_count,tone:'yellow'},{value:'high',label:'Большие волны',count:selectedSector.waves_high_count,tone:'red'}]},
-                {key:'jellyfish',title:'Медузы',draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',count:selectedSector.jellyfish_none_count,tone:'green'},{value:'low',label:'Мало медуз',count:selectedSector.jellyfish_low_count,tone:'yellow'},{value:'high',label:'Много медуз',count:selectedSector.jellyfish_high_count,tone:'red'}]},
-              ].find(condition => condition.key === activeKey)
-              return item ? <div className="condition-detail"><div className="condition-detail-title">{item.title}</div><p className="condition-detail-hint">Вы можете изменить данные о состоянии пляжа и отправить нам обновление.</p><div className="condition-detail-options">{item.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (item.draft === option.value ? ' selected' : '')} aria-pressed={item.draft === option.value} onClick={() => item.set(option.value)}><span>{option.label}</span><b>{option.count}</b></button>)}</div></div> : null
-            })()}
             <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
             <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => void handleSubmitReport()} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Отправить изменения'}</button>
             {cooldownUntil && <p className="cooldown-message">Новый отчёт можно отправить через {cooldownText || '5:00'}.</p>}
