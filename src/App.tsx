@@ -90,6 +90,11 @@ function App() {
   const [statusFilters, setStatusFilters] = useState<Array<'green' | 'yellow' | 'red' | 'gray'>>(['green','yellow','red','gray'])
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [expandedConditions, setExpandedConditions] = useState<string[]>([])
+  const hasActiveFilters = surfaceFilter !== 'all' || statusFilters.length !== 4
+  const resetFilters = () => {
+    setSurfaceFilter('all')
+    setStatusFilters(['green', 'yellow', 'red', 'gray'])
+  }
   const visibleSectors = sectors.filter(sector => (surfaceFilter === 'all' || sector.beach_type === surfaceFilter) && statusFilters.includes(sector.status_color))
 
   const [selectedSector, setSelectedSector] =
@@ -1100,7 +1105,10 @@ function App() {
           <div className="footer-surfaces">{([{value:'all',label:'Все пляжи'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" className={surfaceFilter===item.value?'active':''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
           <small>{visibleSectors.length} из {sectors.length} секторов</small>
         </div>}
-        <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтры ⌄' : '☷ Фильтр'}</button>
+        <div className="filter-actions">
+          <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтр' : 'Открыть фильтр'}</button>
+          {(filtersOpen || hasActiveFilters) && <button type="button" className="filter-reset" onClick={resetFilters} disabled={!hasActiveFilters}>Сбросить фильтр</button>}
+        </div>
       </footer>}
 
     </div>
