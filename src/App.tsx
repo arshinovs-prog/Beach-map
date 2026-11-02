@@ -63,6 +63,17 @@ function getStatusText(status: string) {
   }
 }
 
+function ConditionIcon({ kind }: { kind: 'algae' | 'waves' | 'jellyfish' }) {
+  const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  return (
+    <svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true" {...common}>
+      {kind === 'algae' && <><path d="M24 39V10M24 25c-9 0-13-6-12-13 8 0 13 5 12 13ZM24 31c9 0 13-6 12-13-8 0-13 5-12 13ZM24 19c-5-2-7-6-6-11 5 1 7 5 6 11Z" /><path d="M17 40h14" /></>}
+      {kind === 'waves' && <><path d="M5 17c5 0 5-5 10-5s5 5 10 5 5-5 10-5 5 5 8 5" /><path d="M5 27c5 0 5-5 10-5s5 5 10 5 5-5 10-5 5 5 8 5" /><path d="M5 37c5 0 5-5 10-5s5 5 10 5 5-5 10-5 5 5 8 5" /></>}
+      {kind === 'jellyfish' && <><path d="M8 23a16 16 0 0 1 32 0c0 6-7 9-16 9S8 29 8 23Z" /><path d="M15 32c1 4-2 6-1 10M23 32v9M31 32c-1 4 2 6 1 10M12 22c2-2 4-2 6 0M30 22c2-2 4-2 6 0" /></>}
+    </svg>
+  )
+}
+
 function App() {
   const mapContainer =
     useRef<HTMLDivElement>(null)
@@ -1003,18 +1014,21 @@ function App() {
           {reportMode === 'view' ? <>
             <div className="beach-photo" role="img" aria-label="Иллюстрация морского пляжа">
               <div className="sector-panel-header">
-                <div><h2>{selectedSector.name}</h2>{selectedSector.access_name && <div className="sector-access">📍 {selectedSector.access_name}</div>}<div className="sector-access">{selectedSector.beach_type === 'pebble' ? '🪨 Галечный пляж' : '🏖️ Песчаный пляж'}</div>
+                <div className="sector-panel-title">
+                  <h2>{selectedSector.name}</h2>
+                  <div className="sector-access">{selectedSector.beach_type === 'pebble' ? 'Галечный пляж' : 'Песчаный пляж'}</div>
+                  {selectedSector.access_name && <div className="sector-access">{selectedSector.access_name}</div>}
                   <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
                 </div>
-                <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>⭐</button>
+                <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>×</button>
               </div>
               <div className="beach-photo-caption"><span>{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span></div>
             </div>
             <div className="condition-circles">
               {[
-                {key:'algae',icon:'🌿',title:'Водоросли',value:selectedSector.algae,draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',short:'Нет',count:selectedSector.algae_none_count},{value:'low',label:'Мало водорослей',short:'Мало',count:selectedSector.algae_low_count},{value:'high',label:'Много водорослей',short:'Много',count:selectedSector.algae_high_count}]},
-                {key:'waves',icon:'🌊',title:'Волны',value:selectedSector.waves,draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',short:'Нет',count:selectedSector.waves_none_count},{value:'medium',label:'Средние волны',short:'Средние',count:selectedSector.waves_medium_count},{value:'high',label:'Большие волны',short:'Большие',count:selectedSector.waves_high_count}]},
-                {key:'jellyfish',icon:'🪼',title:'Медузы',value:selectedSector.jellyfish,draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',short:'Нет',count:selectedSector.jellyfish_none_count},{value:'low',label:'Мало медуз',short:'Мало',count:selectedSector.jellyfish_low_count},{value:'high',label:'Много медуз',short:'Много',count:selectedSector.jellyfish_high_count}]},
+                {key:'algae',icon:<ConditionIcon kind="algae" />,title:'Водоросли',value:selectedSector.algae,draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',short:'Нет',count:selectedSector.algae_none_count},{value:'low',label:'Мало водорослей',short:'Мало',count:selectedSector.algae_low_count},{value:'high',label:'Много водорослей',short:'Много',count:selectedSector.algae_high_count}]},
+                {key:'waves',icon:<ConditionIcon kind="waves" />,title:'Волны',value:selectedSector.waves,draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',short:'Нет',count:selectedSector.waves_none_count},{value:'medium',label:'Средние волны',short:'Средние',count:selectedSector.waves_medium_count},{value:'high',label:'Большие волны',short:'Большие',count:selectedSector.waves_high_count}]},
+                {key:'jellyfish',icon:<ConditionIcon kind="jellyfish" />,title:'Медузы',value:selectedSector.jellyfish,draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',short:'Нет',count:selectedSector.jellyfish_none_count},{value:'low',label:'Мало медуз',short:'Мало',count:selectedSector.jellyfish_low_count},{value:'high',label:'Много медуз',short:'Много',count:selectedSector.jellyfish_high_count}]},
               ].map(item => {
                 const chosen = item.options.find(option => option.value === item.draft) ?? item.options[0]
                 const tone = chosen.value === 'high' ? 'red' : chosen.value === 'low' || chosen.value === 'medium' ? 'yellow' : 'green'
@@ -1031,10 +1045,10 @@ function App() {
                 {key:'waves',title:'Волны',draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',count:selectedSector.waves_none_count,tone:'green'},{value:'medium',label:'Средние волны',count:selectedSector.waves_medium_count,tone:'yellow'},{value:'high',label:'Большие волны',count:selectedSector.waves_high_count,tone:'red'}]},
                 {key:'jellyfish',title:'Медузы',draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',count:selectedSector.jellyfish_none_count,tone:'green'},{value:'low',label:'Мало медуз',count:selectedSector.jellyfish_low_count,tone:'yellow'},{value:'high',label:'Много медуз',count:selectedSector.jellyfish_high_count,tone:'red'}]},
               ].find(condition => condition.key === activeKey)
-              return item ? <div className="condition-detail"><div className="condition-detail-title">{item.title}</div><div className="condition-detail-options">{item.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (item.draft === option.value ? ' selected' : '')} aria-pressed={item.draft === option.value} onClick={() => item.set(option.value)}><span>{option.label}</span><b>{option.count}</b></button>)}</div></div> : null
+              return item ? <div className="condition-detail"><div className="condition-detail-title">{item.title}</div><p className="condition-detail-hint">Вы можете изменить данные о состоянии пляжа и отправить нам обновление.</p><div className="condition-detail-options">{item.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (item.draft === option.value ? ' selected' : '')} aria-pressed={item.draft === option.value} onClick={() => item.set(option.value)}><span>{option.label}</span><b>{option.count}</b></button>)}</div></div> : null
             })()}
             <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
-            <button className={'report-edit-action' + (hasDraftChanges ? ' changed ' + ([reportAlgae, reportWaves, reportJellyfish].some(value => value === 'high') ? 'tone-red' : [reportAlgae, reportWaves, reportJellyfish].some(value => value === 'low' || value === 'medium') ? 'tone-yellow' : 'tone-green') : '')} onClick={() => void handleSubmitReport()} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Отправить изменения'}</button>
+            <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => void handleSubmitReport()} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Отправить изменения'}</button>
             {cooldownUntil && <p className="cooldown-message">Новый отчёт можно отправить через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </> : <div className="report-form">
