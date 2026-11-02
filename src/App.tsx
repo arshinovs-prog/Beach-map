@@ -63,25 +63,6 @@ function getStatusText(status: string) {
   }
 }
 
-function getLevelText(value: string | null) {
-  switch (value) {
-    case 'none':
-      return 'нет'
-
-    case 'low':
-      return 'мало'
-
-    case 'medium':
-      return 'средние'
-
-    case 'high':
-      return 'много'
-
-    default:
-      return 'нет данных'
-  }
-}
-
 function App() {
   const mapContainer =
     useRef<HTMLDivElement>(null)
@@ -128,7 +109,7 @@ function App() {
   const [reportMessage, setReportMessage] = useState('')
   const [reportMode, setReportMode] = useState<'view' | 'edit'>('view')
   const [myReport, setMyReport] = useState<{ id: number; algae: string; waves: string; jellyfish: string; created_at: string } | null>(null)
-  const [myConfirmedReportId, setMyConfirmedReportId] = useState<number | null>(null)
+  const [, setMyConfirmedReportId] = useState<number | null>(null)
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
   const [cooldownText, setCooldownText] = useState('')
   const hasDraftChanges = !!selectedSector && (
