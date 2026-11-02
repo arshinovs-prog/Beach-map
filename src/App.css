@@ -680,226 +680,116 @@ body,
 }
 
 
-/* Раскрывающиеся карточки условий: единый блок с подробностями */
-.condition-circles {
-  align-items: start;
-}
-.condition-card {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid transparent;
-  border-radius: 15px;
-  transition: background .16s, border-color .16s;
-}
-.condition-card.expanded {
-  grid-column: 1 / -1;
-  border-color: #d8e3e8;
-  background: #fffdf8;
-}
-.condition-card .condition-circle {
-  width: 100%;
-  border-radius: 14px;
-  transition: border-radius .16s, background .16s;
-}
-.condition-card.expanded .condition-circle {
-  border-radius: 13px 13px 0 0;
-  outline: none;
-  border-color: transparent;
-}
-.condition-card.expanded.tone-green { background: #e1f2e5; border-color: #c6e5ce; }
-.condition-card.expanded.tone-yellow { background: #fff1cf; border-color: #f0dfae; }
-.condition-card.expanded.tone-red { background: #f9e0e1; border-color: #edc7ca; }
-.condition-card .condition-detail-attached {
-  margin: 0;
-  width: 100%;
-  border: 0;
-  border-top: 1px solid rgba(70,90,100,.13);
-  border-radius: 0 0 13px 13px;
-  background: transparent;
-  box-sizing: border-box;
-}
-.condition-card .condition-detail-title,
-.condition-card .condition-detail-hint {
-  color: #465b62;
-}
-.condition-card.expanded .condition-circle.condition-green { background: #e1f2e5; }
-.condition-card.expanded .condition-circle.condition-yellow { background: #fff1cf; }
-.condition-card.expanded .condition-circle.condition-red { background: #f9e0e1; }
 
-/* Кнопка подтверждения: единый синий стиль активного и неактивного состояния */
-.sector-panel .report-confirm.primary-action {
-  background: #287fbd;
-  color: #fff;
-  border: 1px solid #287fbd;
-  transition: background .16s, border-color .16s, color .16s;
-}
-.sector-panel .report-confirm.primary-action:disabled {
-  background: #e8f1f8;
-  color: #6f899d;
-  border-color: #d8e5ee;
-  opacity: 1;
-}
-@media(max-width:600px) {
-  .condition-card.expanded { grid-column: 1 / -1; }
-  .condition-card .condition-detail-attached { padding: 8px; }
-}
-
-
-/* Раскрытая карточка остаётся в своей колонке: остальные два условия видны рядом */
-.condition-circles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; }
-.condition-card { min-width:0; width:100%; display:flex; flex-direction:column; align-self:start; overflow:hidden; border:1px solid transparent; border-radius:15px; box-sizing:border-box; }
-.condition-card.expanded { grid-column:auto; border-color:currentColor; }
-.condition-card .condition-circle { width:100%; min-width:0; box-sizing:border-box; }
-.condition-card.expanded .condition-circle { border-radius:13px 13px 0 0; outline:none; border-color:transparent; }
-.condition-card.expanded.tone-green { background:#e1f2e5; border-color:#c6e5ce; }
-.condition-card.expanded.tone-yellow { background:#fff1cf; border-color:#f0dfae; }
-.condition-card.expanded.tone-red { background:#f9e0e1; border-color:#edc7ca; }
-.condition-card .condition-detail-attached { width:100%; min-width:0; margin:0; padding:8px 6px; box-sizing:border-box; border:0; border-top:1px solid rgba(70,90,100,.14); border-radius:0 0 13px 13px; background:transparent; }
-.condition-card .condition-detail-title { margin-bottom:6px; }
-.condition-card .condition-detail-hint { font-size:10px; }
-.condition-card .condition-detail-options { display:flex; flex-direction:column; gap:5px; }
-.condition-card .condition-detail-option { width:100%; min-height:38px; flex-direction:row; justify-content:space-between; gap:4px; padding:6px 7px; text-align:left; font-size:10px; }
-.condition-card .condition-detail-option span { min-width:0; overflow-wrap:anywhere; }
-.condition-card.expanded .condition-circle.condition-green { background:#e1f2e5; }
-.condition-card.expanded .condition-circle.condition-yellow { background:#fff1cf; }
-.condition-card.expanded .condition-circle.condition-red { background:#f9e0e1; }
-@media(max-width:600px) {
-  .condition-circles { grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
-  .condition-card .condition-detail-attached { padding:7px 5px; }
-  .condition-card .condition-detail-title { font-size:11px; }
-  .condition-card .condition-detail-hint { font-size:9px; }
-  .condition-card .condition-detail-option { font-size:9px; min-height:36px; }
-}
-
-
-/* Общая нижняя панель подробностей на всю ширину трёх условий */
-.condition-selector {
+/* Единый селектор условий: три верхние кнопки + общая панель на всю ширину */
+.condition-selector{
   display:flex;
   flex-direction:column;
   width:100%;
   min-width:0;
+  margin:7px 0 11px;
   gap:0;
+  background:transparent;
 }
-.condition-selector .condition-circles {
+.condition-selector .condition-circles{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   width:100%;
   gap:7px;
+  margin:0;
   align-items:stretch;
 }
-.condition-selector .condition-circle {
+.condition-selector .condition-circle{
+  width:100%;
+  min-width:0;
+  min-height:104px;
+  box-sizing:border-box;
+  position:relative;
+  border:1px solid transparent;
+  border-radius:14px;
+  outline:none;
+}
+.condition-selector .condition-circle.active{
+  z-index:2;
+  margin-bottom:-1px;
+  border-width:1.5px;
+  border-bottom-color:transparent;
+  border-radius:14px 14px 0 0;
+  outline:none;
+}
+.condition-selector.has-expanded.tone-green .condition-circle.active{
+  background:#e1f2e5;color:#246442;border-color:#a9d5b6;
+}
+.condition-selector.has-expanded.tone-yellow .condition-circle.active{
+  background:#fff1cf;color:#805b14;border-color:#e4ca83;
+}
+.condition-selector.has-expanded.tone-red .condition-circle.active{
+  background:#f9e0e1;color:#963b42;border-color:#e0aeb2;
+}
+/* Нижняя область — один цельный прямоугольник на всю ширину трёх кнопок */
+.condition-selector .condition-detail-attached{
+  display:block;
+  position:relative;
+  z-index:1;
   width:100%;
   min-width:0;
   box-sizing:border-box;
-}
-.condition-selector .condition-circle.active {
-  border-radius:13px 13px 0 0;
-  outline:none;
-  border-bottom-color:transparent;
-}
-.condition-selector.has-expanded.tone-green .condition-circle.active { background:#e1f2e5; color:#246442; }
-.condition-selector.has-expanded.tone-yellow .condition-circle.active { background:#fff1cf; color:#805b14; }
-.condition-selector.has-expanded.tone-red .condition-circle.active { background:#f9e0e1; color:#963b42; }
-.condition-selector .condition-detail-attached {
-  display:block;
-  width:100%;
-  min-width:0;
   margin:0 0 10px;
   padding:12px;
-  box-sizing:border-box;
-  border:1px solid #e5ded1;
-  border-radius:0 0 13px 13px;
-  background:#fffdf8;
+  border:1.5px solid #a9d5b6;
+  border-top-width:1.5px;
+  border-radius:0 0 14px 14px;
+  background:#e1f2e5;
+  box-shadow:none;
 }
-.condition-selector.has-expanded.tone-green .condition-detail-attached { background:#e1f2e5; border-color:#c6e5ce; }
-.condition-selector.has-expanded.tone-yellow .condition-detail-attached { background:#fff1cf; border-color:#f0dfae; }
-.condition-selector.has-expanded.tone-red .condition-detail-attached { background:#f9e0e1; border-color:#edc7ca; }
-.condition-selector .condition-detail-content { width:100%; }
-.condition-selector .condition-detail-options {
+.condition-selector.has-expanded.tone-green .condition-detail-attached{
+  background:#e1f2e5;border-color:#a9d5b6;
+}
+.condition-selector.has-expanded.tone-yellow .condition-detail-attached{
+  background:#fff1cf;border-color:#e4ca83;
+}
+.condition-selector.has-expanded.tone-red .condition-detail-attached{
+  background:#f9e0e1;border-color:#e0aeb2;
+}
+.condition-selector .condition-detail-content{width:100%;min-width:0;}
+.condition-selector .condition-detail-title{
+  margin:0 0 7px;color:#465b62;font-size:13px;font-weight:750;
+}
+.condition-selector .condition-detail-hint{
+  margin:0 0 10px;color:#52666d;font-size:11px;line-height:1.4;text-align:left;
+}
+.condition-selector .condition-detail-options{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   width:100%;
   gap:7px;
 }
-.condition-selector .condition-detail-option {
+.condition-selector .condition-detail-option{
+  display:flex;
+  min-width:0;
   min-height:47px;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  text-align:center;
+  gap:3px;
+  padding:7px 5px;
+  box-sizing:border-box;
+  border-radius:10px;
   font-size:10px;
+  text-align:center;
 }
-@media(max-width:600px) {
-  .condition-selector .condition-circles { gap:5px; }
-  .condition-selector .condition-circle { padding-left:3px; padding-right:3px; }
-  .condition-selector .condition-detail-attached { padding:10px 8px; }
-  .condition-selector .condition-detail-options { gap:5px; }
-  .condition-selector .condition-detail-option { min-height:43px; font-size:9px; }
+.condition-selector .condition-detail-option span{overflow-wrap:anywhere;}
+.condition-selector .condition-detail-option b{font-size:12px;}
+/* Панель сектора не должна создавать отдельный белый экран поверх карты */
+.sector-panel{
+  background:rgba(247,243,233,.97);
+  isolation:isolate;
 }
-
-
-/* Чёткая единая Г-образная карточка: окрашен только выбранный таб и общая нижняя панель */
-.condition-selector { gap:0; }
-.condition-selector .condition-circles {
-  gap:7px;
-  align-items:end;
-}
-.condition-selector .condition-circle {
-  position:relative;
-  border:1px solid transparent;
-  border-radius:14px;
-  transition:background .16s,border-color .16s,border-radius .16s;
-}
-.condition-selector .condition-circle.active {
-  z-index:2;
-  margin-bottom:-1px;
-  border:1.5px solid var(--condition-outline, #c6e5ce);
-  border-bottom:0;
-  border-radius:14px 14px 0 0;
-  outline:none;
-}
-.condition-selector.has-expanded.tone-green .condition-circle.active {
-  --condition-outline:#a9d5b6;
-  background:#e1f2e5;
-  color:#246442;
-}
-.condition-selector.has-expanded.tone-yellow .condition-circle.active {
-  --condition-outline:#e4ca83;
-  background:#fff1cf;
-  color:#805b14;
-}
-.condition-selector.has-expanded.tone-red .condition-circle.active {
-  --condition-outline:#e0aeb2;
-  background:#f9e0e1;
-  color:#963b42;
-}
-.condition-selector .condition-detail-attached {
-  position:relative;
-  z-index:1;
-  margin:0 0 10px;
-  padding:12px;
-  border:1.5px solid #c6e5ce;
-  border-radius:0 14px 14px 14px;
-  background:#e1f2e5;
-  box-shadow:none;
-}
-.condition-selector.has-expanded.tone-green .condition-detail-attached {
-  background:#e1f2e5;
-  border-color:#a9d5b6;
-}
-.condition-selector.has-expanded.tone-yellow .condition-detail-attached {
-  background:#fff1cf;
-  border-color:#e4ca83;
-}
-.condition-selector.has-expanded.tone-red .condition-detail-attached {
-  background:#f9e0e1;
-  border-color:#e0aeb2;
-}
-.condition-selector .condition-detail-title,
-.condition-selector .condition-detail-hint { color:#465b62; }
-@media(max-width:600px) {
-  .condition-selector .condition-circles { gap:5px; }
-  .condition-selector .condition-detail-attached { padding:10px 8px; }
+@media(max-width:600px){
+  .condition-selector{margin:6px 0 9px;}
+  .condition-selector .condition-circles{gap:5px;}
+  .condition-selector .condition-circle{min-height:96px;padding-left:3px;padding-right:3px;}
+  .condition-selector .condition-detail-attached{padding:10px 8px;}
+  .condition-selector .condition-detail-options{gap:5px;}
+  .condition-selector .condition-detail-option{min-height:43px;padding:6px 3px;font-size:9px;}
 }
