@@ -1031,10 +1031,9 @@ function App() {
                 {key:'jellyfish',icon:<ConditionIcon kind="jellyfish" />,title:'Медузы',draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',count:selectedSector.jellyfish_none_count,tone:'green'},{value:'low',label:'Мало медуз',count:selectedSector.jellyfish_low_count,tone:'yellow'},{value:'high',label:'Много медуз',count:selectedSector.jellyfish_high_count,tone:'red'}]},
               ].map(item => {
                 const chosen = item.options.find(option => option.value === item.draft) ?? item.options[0]
-                const tone = chosen.tone
                 const expanded = expandedConditions.includes(item.key)
-                return <div key={item.key} className={'condition-card' + (expanded ? ' expanded tone-' + tone : '')}>
-                  <button type="button" className={'condition-circle condition-' + tone + (expanded ? ' active' : '')} aria-expanded={expanded} onClick={() => setExpandedConditions(current => current.includes(item.key) ? [] : [item.key])}>
+                return <div key={item.key} className={'condition-card' + (expanded ? ' expanded tone-' + chosen.tone : '')}>
+                  <button type="button" className={'condition-circle condition-' + chosen.tone + (expanded ? ' active' : '')} aria-expanded={expanded} onClick={() => setExpandedConditions(current => current.includes(item.key) ? [] : [item.key])}>
                     <span className="condition-circle-icon">{item.icon}</span><strong>{chosen.label}</strong><span className="condition-circle-arrow">{expanded ? '⌃' : '⌄'}</span>
                   </button>
                   {expanded && <div className="condition-detail condition-detail-attached">
