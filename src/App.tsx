@@ -1000,13 +1000,14 @@ function App() {
 
       {selectedSector && (
         <div className="sector-panel" role="dialog" aria-label={'Состояние пляжа: ' + selectedSector.name}>
-          <div className="sector-panel-header">
-            <div><h2>{selectedSector.name}</h2>{selectedSector.access_name && <div className="sector-access">📍 {selectedSector.access_name}</div>}<div className="sector-access">{selectedSector.beach_type === 'pebble' ? '🪨 Галечный пляж' : '🏖️ Песчаный пляж'}</div></div>
-            <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>×</button>
-          </div>
           {reportMode === 'view' ? <>
-            <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
             <div className="beach-photo" role="img" aria-label="Иллюстрация морского пляжа">
+              <div className="sector-panel-header">
+                <div><h2>{selectedSector.name}</h2>{selectedSector.access_name && <div className="sector-access">📍 {selectedSector.access_name}</div>}<div className="sector-access">{selectedSector.beach_type === 'pebble' ? '🪨 Галечный пляж' : '🏖️ Песчаный пляж'}</div>
+                  <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
+                </div>
+                <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>⭐</button>
+              </div>
               <div className="beach-photo-caption"><span>{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span></div>
             </div>
             <div className="condition-circles">
