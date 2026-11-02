@@ -678,3 +678,70 @@ body,
   .sector-panel-title h2{font-size:20px;}
   .sector-panel .status{font-size:12px;padding:7px 9px;}
 }
+
+
+/* Раскрывающиеся карточки условий: единый блок с подробностями */
+.condition-circles {
+  align-items: start;
+}
+.condition-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  transition: background .16s, border-color .16s;
+}
+.condition-card.expanded {
+  grid-column: 1 / -1;
+  border-color: #d8e3e8;
+  background: #fffdf8;
+}
+.condition-card .condition-circle {
+  width: 100%;
+  border-radius: 14px;
+  transition: border-radius .16s, background .16s;
+}
+.condition-card.expanded .condition-circle {
+  border-radius: 13px 13px 0 0;
+  outline: none;
+  border-color: transparent;
+}
+.condition-card.expanded.tone-green { background: #e1f2e5; border-color: #c6e5ce; }
+.condition-card.expanded.tone-yellow { background: #fff1cf; border-color: #f0dfae; }
+.condition-card.expanded.tone-red { background: #f9e0e1; border-color: #edc7ca; }
+.condition-card .condition-detail-attached {
+  margin: 0;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(70,90,100,.13);
+  border-radius: 0 0 13px 13px;
+  background: transparent;
+  box-sizing: border-box;
+}
+.condition-card .condition-detail-title,
+.condition-card .condition-detail-hint {
+  color: #465b62;
+}
+.condition-card.expanded .condition-circle.condition-green { background: #e1f2e5; }
+.condition-card.expanded .condition-circle.condition-yellow { background: #fff1cf; }
+.condition-card.expanded .condition-circle.condition-red { background: #f9e0e1; }
+
+/* Кнопка подтверждения: единый синий стиль активного и неактивного состояния */
+.sector-panel .report-confirm.primary-action {
+  background: #287fbd;
+  color: #fff;
+  border: 1px solid #287fbd;
+  transition: background .16s, border-color .16s, color .16s;
+}
+.sector-panel .report-confirm.primary-action:disabled {
+  background: #e8f1f8;
+  color: #6f899d;
+  border-color: #d8e5ee;
+  opacity: 1;
+}
+@media(max-width:600px) {
+  .condition-card.expanded { grid-column: 1 / -1; }
+  .condition-card .condition-detail-attached { padding: 8px; }
+}
