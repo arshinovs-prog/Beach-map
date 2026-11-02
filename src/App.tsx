@@ -1042,7 +1042,7 @@ function App() {
                     </button>
                   })}
                 </div>
-                {active && <div className="condition-detail condition-detail-attached" style={{'--detail-column': conditions.findIndex(item => item.key === active.key)}}>
+                {active && <div className="condition-detail condition-detail-attached" >
                   <div className="condition-detail-content">
                     <div className="condition-detail-title">{active.title}</div>
                     <p className="condition-detail-hint">Вы можете изменить данные о состоянии пляжа и отправить нам обновление.</p>
