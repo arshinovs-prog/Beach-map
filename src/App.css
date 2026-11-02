@@ -635,3 +635,46 @@ body,
   .condition-detail-options{gap:5px;}
   .condition-detail-option{font-size:9px;min-height:45px;}
 }
+
+
+/* Финальная типографика и выравнивание карточки */
+.sector-panel .sector-panel-header{
+  display:flex;justify-content:center;align-items:center;text-align:center;
+  padding:15px 58px 15px;
+  background:linear-gradient(180deg,rgba(18,47,54,.82),rgba(18,47,54,.28));
+}
+.sector-panel-title{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.sector-panel-title h2{
+  margin:0;font-family:ui-rounded,"Avenir Next",Nunito,system-ui,sans-serif;
+  font-size:22px;font-weight:750;letter-spacing:.1px;line-height:1.15;
+}
+.sector-panel .sector-access{margin:0;font-size:12px;font-weight:550;letter-spacing:.2px;}
+.sector-panel .status{
+  display:flex;align-items:center;justify-content:center;width:100%;
+  box-sizing:border-box;margin:7px 0 0;padding:8px 12px;
+  border-radius:10px;font-size:13px;font-weight:750;text-align:center;
+}
+.sector-panel .close-button{
+  color:#35545d;background:rgba(247,243,233,.96);font-family:Arial,sans-serif;
+  font-size:27px;font-weight:400;line-height:1;
+}
+.condition-circle-icon{display:grid;place-items:center;color:#315d66;}
+.condition-circle-icon svg{display:block;width:30px;height:30px;stroke:currentColor;}
+.condition-detail-hint{
+  margin:-3px 0 9px;color:#74838a;font-size:11px;line-height:1.4;text-align:left;
+}
+.sector-panel .report-edit-action{
+  background:#e8f1f8;color:#315f83;border:1px solid #c9ddeb;
+  transition:background .16s,border-color .16s,color .16s;
+}
+.sector-panel .report-edit-action.changed{
+  background:#287fbd;color:#fff;border-color:#287fbd;opacity:1;
+}
+.sector-panel .report-edit-action:disabled{
+  background:#e8f1f8;color:#6f899d;border-color:#d8e5ee;opacity:1;
+}
+@media(max-width:600px){
+  .sector-panel .sector-panel-header{padding:13px 52px 13px;}
+  .sector-panel-title h2{font-size:20px;}
+  .sector-panel .status{font-size:12px;padding:7px 9px;}
+}
