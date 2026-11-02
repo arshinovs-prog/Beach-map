@@ -148,59 +148,15 @@ body,
   line-height: 1.6;
 }
 
-.sector-access {
-  margin-bottom: 12px;
-  color: #666;
-  font-size: 14px;
-}
 
-.status {
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin: 12px 0 16px;
-  font-weight: 600;
-}
 
-.status-green {
-  background: #e8f5e9;
-}
 
-.status-yellow {
-  background: #fff8e1;
-}
 
-.status-red {
-  background: #ffebee;
-}
 
-.status-gray {
-  background: #eeeeee;
-}
 
-.conditions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
-.condition {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-}
 
-.condition strong {
-  font-weight: 600;
-}
 
-.sector-info {
-  margin-top: 18px;
-  padding-top: 12px;
-  border-top: 1px solid #eee;
-  color: #666;
-  font-size: 13px;
-  line-height: 1.6;
-}
 
 .editor-toolbar {
   position: absolute;
