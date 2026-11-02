@@ -683,6 +683,13 @@ body,
   left: 50%;
   transform: translateX(-50%);
   width: min(560px, 100vw);
+  box-sizing: border-box;
+  color: #263b42;
+  z-index: 40;
+}
+
+.sector-panel-scroll {
+  width: 100%;
   max-height: min(58dvh, 520px);
   box-sizing: border-box;
   overflow-y: auto;
@@ -693,9 +700,7 @@ body,
   border-bottom: 0;
   border-radius: 20px 20px 0 0;
   background: #f7f3e9;
-  color: #263b42;
   box-shadow: 0 -5px 28px rgba(0, 0, 0, .20);
-  z-index: 40;
 }
 
 .sector-panel h2 {
@@ -858,6 +863,9 @@ body,
     left: 0;
     transform: none;
     width: 100%;
+  }
+
+  .sector-panel-scroll {
     max-height: min(58dvh, 520px);
     padding: 0 12px calc(12px + env(safe-area-inset-bottom));
     border-radius: 18px 18px 0 0;
