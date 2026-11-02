@@ -693,8 +693,15 @@ body,
   max-height: min(58dvh, 520px);
   box-sizing: border-box;
   overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  background: transparent;
+}
+
+.sector-panel-content {
+  width: 100%;
+  box-sizing: border-box;
   padding: 0 14px calc(13px + env(safe-area-inset-bottom));
   border: 1px solid #e8e0d1;
   border-bottom: 0;
@@ -867,6 +874,9 @@ body,
 
   .sector-panel-scroll {
     max-height: min(58dvh, 520px);
+  }
+
+  .sector-panel-content {
     padding: 0 12px calc(12px + env(safe-area-inset-bottom));
     border-radius: 18px 18px 0 0;
   }
