@@ -117,6 +117,11 @@ function App() {
   const [myConfirmedReportId, setMyConfirmedReportId] = useState<number | null>(null)
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
   const [cooldownText, setCooldownText] = useState('')
+  const hasDraftChanges = !!selectedSector && (
+    reportAlgae !== (selectedSector.algae ?? 'none') ||
+    reportWaves !== (selectedSector.waves ?? 'none') ||
+    reportJellyfish !== (selectedSector.jellyfish ?? 'none')
+  )
 
 
   /*
@@ -693,6 +698,9 @@ function App() {
   useEffect(() => {
     if (!selectedSector) { setReportMode('view'); setMyReport(null); setMyConfirmedReportId(null); return }
     setReportMode('view'); setReportMessage('')
+    setReportAlgae(selectedSector.algae ?? 'none')
+    setReportWaves(selectedSector.waves ?? 'none')
+    setReportJellyfish(selectedSector.jellyfish ?? 'none')
     void loadMySectorActivity(selectedSector.sector_id).catch(error => console.error('Не удалось загрузить ваши действия:', error))
   }, [selectedSector?.sector_id, selectedSector?.report_id])
 
@@ -726,15 +734,24 @@ function App() {
   }
 
   async function handleConfirmReport() {
-    if (!selectedSector?.report_id || reportBusy || myConfirmedReportId === selectedSector.report_id || myReport?.id === selectedSector.report_id) return
+    if (!selectedSector || reportBusy || hasDraftChanges || cooldownUntil) return
     setReportBusy(true); setReportMessage('')
     try {
-      const { error } = await supabase.rpc('confirm_beach_report', { p_report_id: selectedSector.report_id })
-      if (error) throw error
-      setMyConfirmedReportId(selectedSector.report_id)
+      const { error } = await supabase.rpc('submit_beach_report', {
+        p_sector_id: selectedSector.sector_id,
+        p_algae: selectedSector.algae ?? 'none',
+        p_waves: selectedSector.waves ?? 'none',
+        p_jellyfish: selectedSector.jellyfish ?? 'none',
+      })
+      if (error) {
+        if (error.message.includes('Report cooldown')) throw new Error('Повторно отправить отчёт по этому сектору можно через 5 минут после предыдущего.')
+        if (error.message.includes('Report rate limit')) throw new Error('Достигнут лимит: не более 5 отчётов в час.')
+        throw error
+      }
       await refreshSectorStatuses()
-      setReportMessage('Спасибо! Вы подтвердили этот отчёт.')
-    } catch (e) { setReportMessage(e instanceof Error ? e.message : 'Не удалось подтвердить отчёт.') }
+      await loadMySectorActivity(selectedSector.sector_id)
+      setReportMessage('Спасибо! Вы подтвердили текущее состояние пляжа.')
+    } catch (e) { setReportMessage(e instanceof Error ? e.message : 'Не удалось подтвердить состояние.') }
     finally { setReportBusy(false) }
   }
 
@@ -951,17 +968,25 @@ function App() {
           {reportMode === 'view' ? <>
             <div className={`status status-${selectedSector.status_color}`}>{selectedSector.status_color === 'green' ? '🟢 ' : selectedSector.status_color === 'yellow' ? '🟡 ' : selectedSector.status_color === 'red' ? '🔴 ' : '⚪ '}{getStatusText(selectedSector.status_color)}</div>
             <div className="status-hero"><div className="status-hero-icon">{selectedSector.status_color === 'gray' ? '🏖️' : selectedSector.main_icon === 'algae' ? '🌿' : selectedSector.main_icon === 'waves' ? '🌊' : selectedSector.main_icon === 'jellyfish' ? '🪼' : '🌊'}</div>
-              <strong>{selectedSector.status_color === 'gray' ? 'Пока нет актуальной информации' : `По подтверждению ${selectedSector.confirmation_count} пользователей: ${selectedSector.main_icon === 'algae' ? 'водорослей много' : selectedSector.main_icon === 'waves' ? 'сильные волны' : selectedSector.main_icon === 'jellyfish' ? 'много медуз' : 'хорошие условия'}`}</strong></div>
-            <div className="conditions">
-              <div className="condition"><span>🌿 Водоросли</span><strong>{getLevelText(selectedSector.algae)}</strong></div>
-              <div className="condition"><span>🌊 Волны</span><strong>{getLevelText(selectedSector.waves)}</strong></div>
-              <div className="condition"><span>🪼 Медузы</span><strong>{getLevelText(selectedSector.jellyfish)}</strong></div>
+              <strong>{selectedSector.status_color === 'gray' ? 'Пока нет актуальной информации' : `Общее состояние по ${selectedSector.confirmation_count} подтверждениям`}</strong></div>
+            <div className="interactive-conditions">
+              <div className="interactive-condition">
+                <div className="interactive-condition-heading"><span>🌿 Водоросли</span><small>Выберите состояние</small></div>
+                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🌿'},{value:'high',label:'Много',icon:'🟢'}].map(o => <button key={o.value} type="button" className={reportAlgae === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportAlgae === o.value} onClick={() => setReportAlgae(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span></button>)}</div>
+              </div>
+              <div className="interactive-condition">
+                <div className="interactive-condition-heading"><span>🌊 Волны</span><small>Выберите состояние</small></div>
+                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🏖️'},{value:'medium',label:'Средние',icon:'🌊'},{value:'high',label:'Большие',icon:'🌊'}].map(o => <button key={o.value} type="button" className={reportWaves === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportWaves === o.value} onClick={() => setReportWaves(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span></button>)}</div>
+              </div>
+              <div className="interactive-condition">
+                <div className="interactive-condition-heading"><span>🪼 Медузы</span><small>Выберите состояние</small></div>
+                <div className="interactive-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🪼'},{value:'high',label:'Много',icon:'🪼'}].map(o => <button key={o.value} type="button" className={reportJellyfish === o.value ? 'interactive-option selected' : 'interactive-option'} aria-pressed={reportJellyfish === o.value} onClick={() => setReportJellyfish(o.value)}><span className="interactive-option-image">{o.icon}</span><span className="interactive-option-label">{o.label}</span></button>)}</div>
+              </div>
             </div>
-            <div className="sector-info"><div>Подтверждений: {selectedSector.confirmation_count}</div>{selectedSector.last_updated && <div>Обновлено: {new Date(selectedSector.last_updated).toLocaleString('ru-RU')}</div>}</div>
-            {selectedSector.report_id !== null && <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || myConfirmedReportId === selectedSector.report_id || myReport?.id === selectedSector.report_id}>
-              {myReport?.id === selectedSector.report_id ? 'Это ваш отчёт' : myConfirmedReportId === selectedSector.report_id ? 'Вы уже подтвердили отчёт' : reportBusy ? 'Подтверждаем…' : 'Подтвердить этот отчёт'}
-            </button>}
-            <button className="report-edit-action" onClick={() => { setReportAlgae(myReport?.algae ?? selectedSector.algae ?? 'none'); setReportWaves(myReport?.waves ?? selectedSector.waves ?? 'none'); setReportJellyfish(myReport?.jellyfish ?? selectedSector.jellyfish ?? 'none'); setReportMessage(''); setReportMode('edit') }}>{myReport ? 'Изменить отчёт' : 'Сообщить о состоянии'}</button>
+            <div className="sector-info"><div>Участников: {selectedSector.confirmation_count}</div>{selectedSector.last_updated && <div>Обновлено: {new Date(selectedSector.last_updated).toLocaleString('ru-RU')}</div>}</div>
+            <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние пляжа'}</button>
+            <button className={hasDraftChanges ? 'report-edit-action changed' : 'report-edit-action'} onClick={() => { if (hasDraftChanges) void handleSubmitReport(); else { setReportAlgae(myReport?.algae ?? selectedSector.algae ?? 'none'); setReportWaves(myReport?.waves ?? selectedSector.waves ?? 'none'); setReportJellyfish(myReport?.jellyfish ?? selectedSector.jellyfish ?? 'none'); setReportMode('edit'); setReportMessage('') } }} disabled={reportBusy || !hasDraftChanges && !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : hasDraftChanges ? 'Изменить состояние' : 'Изменить состояние'}</button>
+            {cooldownUntil && <p className="cooldown-message">Новый отчёт можно отправить через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </> : <div className="report-form">
             <div className="edit-mode-heading"><h3>{myReport ? 'Изменить мой отчёт' : 'Сообщить о состоянии'}</h3><button type="button" className="text-action" onClick={() => { setReportMode('view'); setReportMessage('') }}>Назад</button></div>
