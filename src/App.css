@@ -1010,15 +1010,15 @@ body,
    чтобы обновлять интерфейс постепенно без риска для логики.
    ========================================================= */
 :root {
-  --coast-ink: #193a3a;
-  --coast-muted: #71817d;
-  --coast-teal: #176b68;
-  --coast-teal-hover: #105653;
-  --coast-sand: #f5f1e8;
-  --coast-surface: #fffefa;
-  --coast-line: rgba(25, 58, 58, .12);
-  --coast-shadow: 0 12px 34px rgba(25, 58, 58, .12);
-  --coast-radius: 18px;
+  --coast-ink: var(--color-deep-sea);
+  --coast-muted: var(--color-muted);
+  --coast-teal: var(--color-sea);
+  --coast-teal-hover: var(--color-sea-hover);
+  --coast-sand: var(--color-sand);
+  --coast-surface: var(--color-surface);
+  --coast-line: var(--color-border);
+  --coast-shadow: var(--shadow-soft);
+  --coast-radius: var(--radius-card);
 }
 
 /* Header: компактная редакционная шапка, без ощущения админ-панели */
