@@ -118,6 +118,8 @@ function App() {
   useEffect(() => { filtersOpenRef.current = filtersOpen }, [filtersOpen])
   const handleFilterDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!filtersOpen || event.button !== 0) return
+    const panel = event.currentTarget.closest('.footer') as HTMLElement | null
+    if (panel) { panel.style.animation = 'none'; panel.style.transition = 'none' }
     filterDragRef.current = { pointerId: event.pointerId, startY: event.clientY, deltaY: 0 }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
@@ -134,6 +136,7 @@ function App() {
     filterDragRef.current = null
     const panel = event.currentTarget.closest('.footer') as HTMLElement | null
     if (!panel) return
+    panel.style.transition = 'transform .23s cubic-bezier(.2,.75,.25,1), opacity .23s ease'
     const threshold = Math.max(90, panel.getBoundingClientRect().height * 0.28)
     if (drag.deltaY >= threshold) {
       panel.style.transform = 'translate3d(-50%, ' + (panel.getBoundingClientRect().height + 40) + 'px, 0)'
@@ -146,6 +149,8 @@ function App() {
   }
   const handlePanelDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return
+    const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
+    if (panel) { panel.style.animation = 'none'; panel.style.transition = 'none' }
     panelDragRef.current = { pointerId: event.pointerId, startY: event.clientY, deltaY: 0 }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
