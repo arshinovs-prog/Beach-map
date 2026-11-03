@@ -120,6 +120,50 @@ function App() {
   }
   const visibleSectors = sectors.filter(sector => (surfaceFilter === 'all' || sector.beach_type === surfaceFilter) && statusFilters.includes(sector.status_color))
 
+
+  // При изменении фильтра автоматически показываем все найденные сектора.
+  // Если результатов нет, сохраняем текущий ракурс — искать нечего.
+  const previousFilterKeyRef = useRef('')
+  useEffect(() => {
+    const filterKey = `${surfaceFilter}|${[...statusFilters].sort().join(',')}`
+    if (!previousFilterKeyRef.current) {
+      previousFilterKeyRef.current = filterKey
+      return
+    }
+    if (previousFilterKeyRef.current === filterKey) return
+    previousFilterKeyRef.current = filterKey
+    if (visibleSectors.length === 0) return
+
+    const matchingIds = new Set(visibleSectors.map(sector => sector.sector_id))
+    const bounds = new maplibregl.LngLatBounds()
+    const extendCoordinates = (value: unknown): void => {
+      if (Array.isArray(value) && typeof value[0] === 'number' && typeof value[1] === 'number') {
+        bounds.extend([value[0], value[1]])
+      } else if (Array.isArray(value)) {
+        value.forEach(extendCoordinates)
+      }
+    }
+    savedGeometry.forEach(item => {
+      if (!matchingIds.has(Number(item.id))) return
+      let geometry: any = item.geometry
+      if (typeof geometry === 'string') {
+        try { geometry = JSON.parse(geometry) } catch { return }
+      }
+      if (geometry?.type === 'Feature') geometry = geometry.geometry
+      if (geometry?.type === 'Polygon' || geometry?.type === 'MultiPolygon') {
+        extendCoordinates(geometry.coordinates)
+      }
+    })
+    const map = mapRef.current
+    if (map && !bounds.isEmpty()) {
+      map.fitBounds(bounds, {
+        padding: { top: 80, bottom: 105, left: 55, right: 55 },
+        maxZoom: 11.5,
+        duration: 700,
+      })
+    }
+  }, [surfaceFilter, statusFilters, sectors, savedGeometry])
+
   const [selectedSector, setSelectedSector] =
     useState<Sector | null>(null)
 
@@ -361,6 +405,7 @@ function App() {
         id: 'saved-polygons-fill',
         type: 'fill',
         source: 'saved-polygons',
+        minzoom: 9.5,
         paint: {
           'fill-color': [
             'match', ['get', 'status_color'],
@@ -377,6 +422,7 @@ function App() {
         id: 'saved-polygons-line',
         type: 'line',
         source: 'saved-polygons',
+        minzoom: 9.5,
         paint: {
           'line-color': [
             'match', ['get', 'status_color'],
@@ -389,9 +435,51 @@ function App() {
         },
       })
 
+      // На общем плане вместо мелких полигонов показываем крупные цветные точки с иконками.
+      map.addLayer({
+        id: 'sector-overview-points',
+        type: 'circle',
+        source: 'saved-polygons',
+        maxzoom: 9.5,
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 7, 9.5, 11],
+          'circle-color': [
+            'match', ['get', 'status_color'],
+            'green', '#4CAF80',
+            'yellow', '#E9B949',
+            'red', '#E76F70',
+            '#A8B0BB',
+          ],
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 2,
+        },
+      })
+      map.addLayer({
+        id: 'sector-overview-icons',
+        type: 'symbol',
+        source: 'saved-polygons',
+        maxzoom: 9.5,
+        layout: {
+          'text-field': [
+            'case',
+            ['==', ['get', 'status_color'], 'green'], '☀️',
+            ['==', ['get', 'algae'], 'high'], '🌿',
+            ['==', ['get', 'algae'], 'low'], '🌿',
+            ['==', ['get', 'waves'], 'high'], '🌊',
+            ['==', ['get', 'waves'], 'medium'], '🌊',
+            ['==', ['get', 'jellyfish'], 'high'], '🪼',
+            ['==', ['get', 'jellyfish'], 'low'], '🪼',
+            '•',
+          ],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 4, 13, 9.5, 17],
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+        },
+      })
+
 
       // Клик по полигону открывает карточку состояния сектора.
-      map.on('click', 'saved-polygons-fill', (event) => {
+      const openSectorFromFeature = (feature: maplibregl.MapGeoJSONFeature | undefined) => {
         if (drawingModeRef.current) return
         const feature = event.features?.[0]
         const id = Number(feature?.properties?.sector_id)
@@ -421,7 +509,9 @@ function App() {
             beach_type: feature?.properties?.beach_type === 'pebble' ? 'pebble' : 'sand',
           })
         }
-      })
+      }
+      map.on('click', 'saved-polygons-fill', (event) => openSectorFromFeature(event.features?.[0]))
+      map.on('click', 'sector-overview-points', (event) => openSectorFromFeature(event.features?.[0]))
       map.on('mouseenter', 'saved-polygons-fill', () => {
         if (!drawingModeRef.current) map.getCanvas().style.cursor = 'pointer'
       })
@@ -539,6 +629,9 @@ function App() {
             sector_id: sector.id,
             name: sector.name,
             status_color: status?.status_color ?? 'gray',
+            algae: status?.algae ?? null,
+            waves: status?.waves ?? null,
+            jellyfish: status?.jellyfish ?? null,
             latitude: status?.latitude ?? sector.latitude,
             longitude: status?.longitude ?? sector.longitude,
             beach_type: status?.beach_type ?? sector.beach_type ?? 'sand',
@@ -1072,8 +1165,9 @@ function App() {
         {filtersOpen && <div className="footer-legend">
           {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}><span>{item.value==='green'?'🟢':item.value==='yellow'?'🟡':item.value==='red'?'🔴':'⚪'}</span>{item.label}</button>)}
           <div className="footer-surfaces">{([{value:'all',label:'Все пляжи'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" className={surfaceFilter===item.value?'active':''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
-          <small>{visibleSectors.length} из {sectors.length} секторов</small>
+          <small className={visibleSectors.length === 0 ? 'filter-results empty' : 'filter-results'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</small>
         </div>}
+        {!filtersOpen && hasActiveFilters && <div className={visibleSectors.length === 0 ? 'filter-result-banner empty' : 'filter-result-banner'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</div>}
         <div className="filter-actions">
           <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтр' : 'Открыть фильтр'}</button>
           {(filtersOpen || hasActiveFilters) && <button type="button" className="filter-reset" onClick={resetFilters} disabled={!hasActiveFilters}>Сбросить фильтр</button>}
