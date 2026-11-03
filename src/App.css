@@ -1305,3 +1305,144 @@ button:focus-visible,
   .map-brand h1 { font-size: 17px; }
   .map-brand span { font-size: 8px; }
 }
+
+
+/* Floating filter dock — карта остаётся главным элементом интерфейса */
+.app { position: relative; min-height: 100dvh; }
+.footer {
+  position: absolute;
+  z-index: 25;
+  right: auto;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(560px, calc(100vw - 32px));
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.footer > * { pointer-events: auto; }
+.footer .filter-actions {
+  width: auto;
+  gap: 9px;
+  padding: 7px;
+  border: 1px solid rgba(25, 58, 58, .10);
+  border-radius: 999px;
+  background: rgba(255, 254, 250, .94);
+  box-shadow: 0 8px 28px rgba(25, 58, 58, .16);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+.footer .filter-toggle,
+.footer .filter-reset {
+  position: relative;
+  min-height: 44px;
+  padding: 10px 21px;
+  white-space: nowrap;
+}
+.filter-active-indicator {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 0 2px 8px;
+  border-radius: 50%;
+  background: var(--color-sun);
+  box-shadow: 0 0 0 3px rgba(233, 168, 91, .18);
+}
+.footer.filters-open {
+  gap: 10px;
+  width: min(560px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid rgba(25, 58, 58, .10);
+  border-radius: 22px;
+  background: rgba(255, 254, 250, .96);
+  box-shadow: 0 12px 38px rgba(25, 58, 58, .18);
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+}
+.footer.filters-open .footer-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 10px;
+  padding: 0;
+}
+.footer-status-filters,
+.footer-surfaces {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  width: 100%;
+}
+.footer .footer-filter,
+.footer .footer-surfaces button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.status-dot {
+  display: inline-block;
+  flex: 0 0 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.status-dot-green { background: var(--color-good); }
+.status-dot-yellow { background: var(--color-warning); }
+.status-dot-red { background: var(--color-danger); }
+.status-dot-gray { background: var(--color-no-data); }
+.footer.filters-open .filter-results {
+  display: block;
+  width: 100%;
+  padding: 2px 0 0;
+  text-align: center;
+  font-size: 12px;
+}
+.footer .filter-result-banner {
+  width: auto;
+  padding: 7px 13px;
+  border: 1px solid rgba(25, 58, 58, .08);
+  border-radius: 999px;
+  background: rgba(255, 254, 250, .94);
+  box-shadow: 0 4px 16px rgba(25, 58, 58, .10);
+  backdrop-filter: blur(12px);
+}
+.footer .filter-result-banner.empty { color: var(--color-danger); }
+@media (max-width: 600px) {
+  .footer {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: calc(100vw - 24px);
+  }
+  .footer .filter-actions { gap: 6px; padding: 6px; }
+  .footer .filter-toggle,
+  .footer .filter-reset { min-height: 44px; padding: 10px 15px; font-size: 12px; }
+  .footer.filters-open {
+    width: calc(100vw - 24px);
+    padding: 12px;
+    border-radius: 18px;
+  }
+  .footer-status-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer .footer-filter { justify-content: flex-start; min-height: 42px; }
+  .footer .footer-surfaces { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .footer .footer-surfaces button { min-height: 42px; padding-inline: 5px; }
+}
+@media (min-width: 900px) {
+  .footer { bottom: 22px; }
+  .footer.filters-open { width: min(600px, calc(100vw - 440px)); }
+}
