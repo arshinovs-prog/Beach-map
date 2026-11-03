@@ -1007,17 +1007,6 @@ function App() {
   return (
     <div className="app">
 
-      <header className="header">
-
-        <h1>
-          Куда купаться?
-        </h1>
-
-        <div className="sector-count">
-          Секторов: {sectors.length}
-        </div>
-
-      </header>
       {isAdminRoute && (
         <div className="editor-toolbar">
           <button onClick={() => { if (editorOpen) resetEditorToList(); setEditorOpen(!editorOpen); setDrawingMode(false) }}> {editorOpen ? 'Закрыть редактор' : 'Редактор секторов'} </button>
