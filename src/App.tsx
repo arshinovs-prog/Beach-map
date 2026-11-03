@@ -206,9 +206,7 @@ function App() {
 
       const { data, error } =
         await supabase
-          .from('sector_current_status')
-          .select('*')
-          .order('sector_id')
+          .rpc('get_sector_current_status')
 
       if (error) {
         console.error(
@@ -596,9 +594,7 @@ function App() {
 
   async function refreshSectorStatuses() {
     const { data, error } = await supabase
-      .from('sector_current_status')
-      .select('*')
-      .order('sector_id')
+      .rpc('get_sector_current_status')
     if (error) throw error
     const normalized: Sector[] = (data ?? []).map((row: any) => ({
       sector_id: Number(row.sector_id),
@@ -637,21 +633,21 @@ function App() {
     const userId = authData.user?.id
     if (!userId) { setIsAuthenticated(false); setMyReport(null); setMyConfirmedReportId(null); setCooldownUntil(null); return }
     setIsAuthenticated(true)
-    const { data: ownReports, error: ownError } = await supabase.from('reports')
-      .select('id, algae, waves, jellyfish, created_at').eq('sector_id', sectorId).eq('user_id', userId)
-      .order('created_at', { ascending: false }).limit(1)
-    if (ownError) throw ownError
-    const own = ownReports?.[0] ?? null
-    setMyReport(own ? { id: Number(own.id), algae: own.algae, waves: own.waves, jellyfish: own.jellyfish, created_at: own.created_at } : null)
-    const until = own ? new Date(own.created_at).getTime() + 5 * 60 * 1000 : 0
+    const { data, error } = await supabase.rpc('get_my_sector_activity', { p_sector_id: sectorId })
+    if (error) throw error
+    const own = data?.[0] ?? null
+    setMyReport(own?.report_id ? {
+      id: Number(own.report_id),
+      algae: own.algae,
+      waves: own.waves,
+      jellyfish: own.jellyfish,
+      created_at: own.created_at,
+    } : null)
+    const until = own?.created_at ? new Date(own.created_at).getTime() + 5 * 60 * 1000 : 0
     setCooldownUntil(until > Date.now() ? until : null)
-    const currentReportId = sectorsRef.current.find(s => s.sector_id === sectorId)?.report_id
-    if (currentReportId) {
-      const { data, error } = await supabase.from('confirmations').select('id')
-        .eq('report_id', currentReportId).eq('user_id', userId).limit(1)
-      if (error) throw error
-      setMyConfirmedReportId(data?.length ? currentReportId : null)
-    } else setMyConfirmedReportId(null)
+    setMyConfirmedReportId(own?.has_confirmed_current_report && sectorsRef.current.find(s => s.sector_id === sectorId)?.report_id
+      ? sectorsRef.current.find(s => s.sector_id === sectorId)!.report_id
+      : null)
   }
 
   useEffect(() => {
