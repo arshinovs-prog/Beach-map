@@ -1257,3 +1257,51 @@ button:focus-visible,
   .header { padding-inline: clamp(42px, 4vw, 88px); }
   .sector-panel { width: clamp(360px, 23vw, 440px); }
 }
+
+
+/* Floating identity: map-first layout with a discreet brand anchor */
+.app { position: relative; }
+.map-container { flex: 1 1 auto; min-height: 0; }
+.map-brand {
+  position: absolute;
+  z-index: 12;
+  top: max(18px, env(safe-area-inset-top));
+  left: max(20px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 17px 11px;
+  border: 1px solid rgba(25, 58, 58, .09);
+  border-radius: 15px;
+  background: rgba(255, 254, 250, .91);
+  box-shadow: 0 5px 22px rgba(25, 58, 58, .10);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  pointer-events: none;
+}
+.map-brand h1 {
+  margin: 0;
+  color: var(--coast-ink);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(19px, 1.8vw, 24px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -.45px;
+}
+.map-brand span {
+  color: var(--coast-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+@media (max-width: 600px) {
+  .map-brand {
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    padding: 9px 12px 8px;
+    border-radius: 12px;
+  }
+  .map-brand h1 { font-size: 17px; }
+  .map-brand span { font-size: 8px; }
+}
