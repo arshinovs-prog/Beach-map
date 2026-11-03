@@ -1446,3 +1446,30 @@ button:focus-visible,
   .footer { bottom: 22px; }
   .footer.filters-open { width: min(600px, calc(100vw - 440px)); }
 }
+
+
+/* Unified motion for the filter dock and sector details */
+.footer {
+  transform: translate3d(-50%, 0, 0);
+  transition: opacity .22s ease, transform .22s cubic-bezier(.2,.75,.25,1);
+}
+.footer.filters-open { animation: coast-filter-in .24s cubic-bezier(.2,.75,.25,1) both; }
+@keyframes coast-filter-in {
+  from { opacity: 0; transform: translate3d(-50%, 16px, 0); }
+  to { opacity: 1; transform: translate3d(-50%, 0, 0); }
+}
+.sector-panel-scroll { animation: coast-sector-in .28s cubic-bezier(.2,.75,.25,1) both; }
+@keyframes coast-sector-in {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@media (min-width: 900px) {
+  .sector-panel-scroll { animation-name: coast-sector-in-desktop; }
+  @keyframes coast-sector-in-desktop {
+    from { opacity: 0; transform: translate3d(-18px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+}
+@media (max-width: 600px) {
+  .footer, .sector-panel-scroll { touch-action: pan-y; }
+}
