@@ -480,8 +480,7 @@ function App() {
 
       // Клик по полигону открывает карточку состояния сектора.
       const openSectorFromFeature = (feature: maplibregl.MapGeoJSONFeature | undefined) => {
-        if (drawingModeRef.current) return
-        const feature = event.features?.[0]
+        if (drawingModeRef.current || !feature) return
         const id = Number(feature?.properties?.sector_id)
         if (!Number.isFinite(id)) return
         const sector = sectorsRef.current.find((item) => item.sector_id === id)
