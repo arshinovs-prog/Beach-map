@@ -1059,6 +1059,12 @@ function App() {
           </div>}
         </div>
       )}
+      {!isAdminRoute && (
+        <div className="map-brand" aria-label="Куда купаться? Пляжи Анапы">
+          <h1>Куда купаться?</h1>
+          <span>Пляжи Анапы сегодня</span>
+        </div>
+      )}
       <main
         className="map-container"
         ref={mapContainer}
