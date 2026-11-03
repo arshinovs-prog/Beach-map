@@ -1143,6 +1143,8 @@ body,
 .sector-panel {
   color: var(--coast-ink);
   filter: drop-shadow(0 10px 28px rgba(18, 48, 48, .13));
+}
+.sector-panel-scroll {
   animation: coast-panel-in .34s cubic-bezier(.2,.75,.25,1) both;
 }
 @keyframes coast-panel-in {
