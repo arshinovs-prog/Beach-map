@@ -996,3 +996,9 @@ body,
 
   .sector-panel-scroll { height: auto; max-height: min(58dvh, 520px); }
 }
+
+
+/* Счётчик результатов фильтра */
+.filter-results{font-size:11px;color:#63727c;white-space:nowrap}
+.filter-results.empty,.filter-result-banner.empty{color:#b94b50;font-weight:700}
+.filter-result-banner{width:100%;text-align:center;font-size:12px;color:#287d52;font-weight:700;padding:2px 0}
