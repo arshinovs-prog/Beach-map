@@ -121,6 +121,29 @@ function App() {
   const visibleSectors = sectors.filter(sector => (surfaceFilter === 'all' || sector.beach_type === surfaceFilter) && statusFilters.includes(sector.status_color))
 
 
+  const [selectedSector, setSelectedSector] =
+    useState<Sector | null>(null)
+
+  const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin'
+  const [editorOpen, setEditorOpen] = useState(isAdminRoute)
+  const [drawingMode, setDrawingMode] = useState(false)
+  const [editorMode, setEditorMode] = useState<'idle' | 'new' | 'selected' | 'editing'>('idle')
+  const [selectedSavedSector, setSelectedSavedSector] = useState<SavedSector | null>(null)
+  const [draftVertices, setDraftVertices] = useState<[number, number][]>([])
+  const drawingModeRef = useRef(false)
+  const draftVerticesRef = useRef<[number, number][]>([])
+  const draggingVertexRef = useRef<number | null>(null)
+  const [admin, setAdmin] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [authBusy, setAuthBusy] = useState(false)
+  const [adminMessage, setAdminMessage] = useState('')
+  const [sectorName, setSectorName] = useState('')
+  const [accessName, setAccessName] = useState('')
+  const [beachType, setBeachType] = useState<'sand' | 'pebble'>('sand')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [savedGeometry, setSavedGeometry] = useState<SavedSector[]>([])
+
   // При изменении фильтра автоматически показываем все найденные сектора.
   // Если результатов нет, сохраняем текущий ракурс — искать нечего.
   const previousFilterKeyRef = useRef('')
@@ -163,29 +186,6 @@ function App() {
       })
     }
   }, [surfaceFilter, statusFilters, sectors, savedGeometry])
-
-  const [selectedSector, setSelectedSector] =
-    useState<Sector | null>(null)
-
-  const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin'
-  const [editorOpen, setEditorOpen] = useState(isAdminRoute)
-  const [drawingMode, setDrawingMode] = useState(false)
-  const [editorMode, setEditorMode] = useState<'idle' | 'new' | 'selected' | 'editing'>('idle')
-  const [selectedSavedSector, setSelectedSavedSector] = useState<SavedSector | null>(null)
-  const [draftVertices, setDraftVertices] = useState<[number, number][]>([])
-  const drawingModeRef = useRef(false)
-  const draftVerticesRef = useRef<[number, number][]>([])
-  const draggingVertexRef = useRef<number | null>(null)
-  const [admin, setAdmin] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [authBusy, setAuthBusy] = useState(false)
-  const [adminMessage, setAdminMessage] = useState('')
-  const [sectorName, setSectorName] = useState('')
-  const [accessName, setAccessName] = useState('')
-  const [beachType, setBeachType] = useState<'sand' | 'pebble'>('sand')
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [savedGeometry, setSavedGeometry] = useState<SavedSector[]>([])
   const [saving, setSaving] = useState(false)
   const [reportAlgae, setReportAlgae] = useState('none')
   const [reportWaves, setReportWaves] = useState('none')
