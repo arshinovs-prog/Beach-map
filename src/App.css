@@ -1478,12 +1478,14 @@ button:focus-visible,
 /* Drag handles: the panel follows the finger only when the handle is grabbed. */
 .filter-drag-handle,
 .panel-drag-handle {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 18px;
+  flex: 0 0 36px;
   width: 100%;
-  min-height: 18px;
+  min-height: 36px;
   cursor: grab;
   touch-action: none;
   user-select: none;
