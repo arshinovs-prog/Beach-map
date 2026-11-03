@@ -47,6 +47,28 @@ type Sector = {
   beach_type: 'sand' | 'pebble'
 }
 
+function getBeachPhotoPath(sector: Sector) {
+  const surface = sector.beach_type === 'pebble' ? 'pebble' : 'sand'
+
+  // Серый статус означает, что отчёт отсутствует или устарел.
+  // В этом случае показываем только море, без пляжа.
+  if (sector.status_color === 'gray' || !sector.report_id) {
+    return '/images/beach/sea-no-data.webp'
+  }
+
+  // Приоритет совпадает с логикой статуса сектора:
+  // водоросли → волны → медузы.
+  let condition = 'clear'
+  if (sector.algae === 'high') condition = 'algae-high'
+  else if (sector.algae === 'low') condition = 'algae-low'
+  else if (sector.waves === 'high') condition = 'waves-high'
+  else if (sector.waves === 'medium') condition = 'waves-medium'
+  else if (sector.jellyfish === 'high') condition = 'jellyfish-high'
+  else if (sector.jellyfish === 'low') condition = 'jellyfish-low'
+
+  return `/images/beach/${surface}-${condition}.webp`
+}
+
 function getStatusText(status: string) {
   switch (status) {
     case 'green':
@@ -906,7 +928,12 @@ function App() {
           <div className="sector-panel-scroll">
             <div className="sector-panel-content">
           {reportMode === 'view' ? <>
-            <div className="beach-photo" role="img" aria-label="Иллюстрация морского пляжа">
+            <div
+              className="beach-photo"
+              role="img"
+              aria-label={selectedSector.status_color === 'gray' ? 'Море, актуальных данных о пляже нет' : 'Фотография пляжа с учётом его типа и текущего состояния'}
+              style={{ backgroundImage: `url("${getBeachPhotoPath(selectedSector)}")` }}
+            >
               <div className="sector-panel-header">
                 <div className="sector-panel-title">
                   <h2>{selectedSector.name}</h2>
