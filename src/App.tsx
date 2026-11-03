@@ -410,8 +410,8 @@ function App() {
         paint: {
           'fill-color': [
             'match', ['get', 'status_color'],
-            'green', '#4CAF80',
-            'yellow', '#E9B949',
+            'green', '#4F9B7A',
+            'yellow', '#E9A85B',
             'red', '#E76F70',
             '#A8B0BB',
           ],
@@ -427,8 +427,8 @@ function App() {
         paint: {
           'line-color': [
             'match', ['get', 'status_color'],
-            'green', '#287D52',
-            'yellow', '#A87916',
+            'green', '#286B4D',
+            'yellow', '#95601C',
             'red', '#B94B50',
             '#737D8A',
           ],
@@ -446,8 +446,8 @@ function App() {
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 7, 9.5, 11],
           'circle-color': [
             'match', ['get', 'status_color'],
-            'green', '#4CAF80',
-            'yellow', '#E9B949',
+            'green', '#4F9B7A',
+            'yellow', '#E9A85B',
             'red', '#E76F70',
             '#A8B0BB',
           ],
