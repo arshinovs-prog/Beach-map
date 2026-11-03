@@ -1162,13 +1162,15 @@ function App() {
       )}
       {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'}>
         {filtersOpen && <div className="footer-legend">
-          {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}><span>{item.value==='green'?'🟢':item.value==='yellow'?'🟡':item.value==='red'?'🔴':'⚪'}</span>{item.label}</button>)}
-          <div className="footer-surfaces">{([{value:'all',label:'Все пляжи'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" className={surfaceFilter===item.value?'active':''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
+          <div className="footer-status-filters">
+            {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}><span className={'status-dot status-dot-' + item.value} aria-hidden="true" />{item.label}</button>)}
+          </div>
+          <div className="footer-surfaces">{([{value:'all',label:'Все пляжи'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" aria-pressed={surfaceFilter===item.value} className={surfaceFilter===item.value?'active':''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
           <small className={visibleSectors.length === 0 ? 'filter-results empty' : 'filter-results'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</small>
         </div>}
         {!filtersOpen && hasActiveFilters && <div className={visibleSectors.length === 0 ? 'filter-result-banner empty' : 'filter-result-banner'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</div>}
         <div className="filter-actions">
-          <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтр' : 'Открыть фильтр'}</button>
+          <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтр' : 'Открыть фильтр'}{hasActiveFilters && !filtersOpen && <span className="filter-active-indicator" aria-label="Фильтр активен" />}</button>
           {(filtersOpen || hasActiveFilters) && <button type="button" className="filter-reset" onClick={resetFilters} disabled={!hasActiveFilters}>Сбросить фильтр</button>}
         </div>
       </footer>}
