@@ -405,7 +405,7 @@ function App() {
         id: 'saved-polygons-fill',
         type: 'fill',
         source: 'saved-polygons',
-        minzoom: 9.5,
+        minzoom: 11.5,
         paint: {
           'fill-color': [
             'match', ['get', 'status_color'],
@@ -422,7 +422,7 @@ function App() {
         id: 'saved-polygons-line',
         type: 'line',
         source: 'saved-polygons',
-        minzoom: 9.5,
+        minzoom: 11.5,
         paint: {
           'line-color': [
             'match', ['get', 'status_color'],
@@ -435,12 +435,12 @@ function App() {
         },
       })
 
-      // На общем плане вместо мелких полигонов показываем крупные цветные точки с иконками.
+      // На общем плане вместо мелких полигонов показываем цветные точки с белой обводкой.
       map.addLayer({
         id: 'sector-overview-points',
         type: 'circle',
         source: 'saved-polygons',
-        maxzoom: 9.5,
+        maxzoom: 11.5,
         paint: {
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 7, 9.5, 11],
           'circle-color': [
@@ -454,29 +454,6 @@ function App() {
           'circle-stroke-width': 2,
         },
       })
-      map.addLayer({
-        id: 'sector-overview-icons',
-        type: 'symbol',
-        source: 'saved-polygons',
-        maxzoom: 9.5,
-        layout: {
-          'text-field': [
-            'case',
-            ['==', ['get', 'status_color'], 'green'], '☀️',
-            ['==', ['get', 'algae'], 'high'], '🌿',
-            ['==', ['get', 'algae'], 'low'], '🌿',
-            ['==', ['get', 'waves'], 'high'], '🌊',
-            ['==', ['get', 'waves'], 'medium'], '🌊',
-            ['==', ['get', 'jellyfish'], 'high'], '🪼',
-            ['==', ['get', 'jellyfish'], 'low'], '🪼',
-            '•',
-          ],
-          'text-size': ['interpolate', ['linear'], ['zoom'], 4, 13, 9.5, 17],
-          'text-allow-overlap': true,
-          'text-ignore-placement': true,
-        },
-      })
-
 
       // Клик по полигону открывает карточку состояния сектора.
       const openSectorFromFeature = (feature: maplibregl.MapGeoJSONFeature | undefined) => {
