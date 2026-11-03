@@ -912,3 +912,15 @@ body,
   .sector-panel { width: min(440px, calc(100vw - 32px)); }
   .sector-panel-scroll { max-height: min(44dvh, 420px); }
 }
+
+
+/* Реальные фотографии пляжа в шапке карточки сектора */
+.sector-panel .beach-photo {
+  background-position: center 58%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.sector-panel .beach-photo::before,
+.sector-panel .beach-photo::after {
+  content: none;
+}
