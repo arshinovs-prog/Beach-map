@@ -112,6 +112,30 @@ function App() {
   const [surfaceFilter, setSurfaceFilter] = useState<'all' | 'sand' | 'pebble'>('all')
   const [statusFilters, setStatusFilters] = useState<Array<'green' | 'yellow' | 'red' | 'gray'>>(['green','yellow','red','gray'])
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const filtersOpenRef = useRef(false)
+  const filterTouchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const panelTouchStartRef = useRef<{ x: number; y: number; scrollTop: number } | null>(null)
+  useEffect(() => { filtersOpenRef.current = filtersOpen }, [filtersOpen])
+  const handleFilterTouchStart = (event: React.TouchEvent<HTMLElement>) => {
+    const touch = event.touches[0]
+    filterTouchStartRef.current = { x: touch.clientX, y: touch.clientY }
+  }
+  const handleFilterTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
+    const start = filterTouchStartRef.current
+    const touch = event.changedTouches[0]
+    filterTouchStartRef.current = null
+    if (start && touch.clientY - start.y > 75 && Math.abs(touch.clientY - start.y) > Math.abs(touch.clientX - start.x) * 1.2) setFiltersOpen(false)
+  }
+  const handlePanelTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0]
+    panelTouchStartRef.current = { x: touch.clientX, y: touch.clientY, scrollTop: event.currentTarget.scrollTop }
+  }
+  const handlePanelTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const start = panelTouchStartRef.current
+    const touch = event.changedTouches[0]
+    panelTouchStartRef.current = null
+    if (start && start.scrollTop <= 0 && event.currentTarget.scrollTop <= 0 && touch.clientY - start.y > 85 && Math.abs(touch.clientY - start.y) > Math.abs(touch.clientX - start.x) * 1.2) setSelectedSector(null)
+  }
   const [expandedConditions, setExpandedConditions] = useState<string[]>([])
   const hasActiveFilters = surfaceFilter !== 'all' || statusFilters.length !== 4
   const resetFilters = () => {
@@ -507,6 +531,10 @@ function App() {
     })
 
     map.on('click', (event) => {
+      if (!drawingModeRef.current && filtersOpenRef.current) {
+        const sectorHits = map.queryRenderedFeatures(event.point, { layers: ['saved-polygons-fill', 'sector-overview-points'] })
+        if (sectorHits.length === 0) setFiltersOpen(false)
+      }
       if (!drawingModeRef.current) return
       // Не добавляем вершину, если кликнули по уже существующей точке.
       const pointFeatures = map.queryRenderedFeatures(event.point, { layers: ['editor-draft-points'] })
@@ -1072,7 +1100,7 @@ function App() {
 
       {selectedSector && (
         <div className="sector-panel" role="dialog" aria-label={'Состояние пляжа: ' + selectedSector.name}>
-          <div className="sector-panel-scroll">
+          <div className="sector-panel-scroll" onTouchStart={handlePanelTouchStart} onTouchEnd={handlePanelTouchEnd}>
             <div className="sector-panel-content">
           {reportMode === 'view' ? <>
             <div
@@ -1160,7 +1188,7 @@ function App() {
           </section>
         </div>
       )}
-      {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'}>
+      {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'} onTouchStart={handleFilterTouchStart} onTouchEnd={handleFilterTouchEnd}>
         {filtersOpen && <div className="footer-legend">
           <div className="footer-status-filters">
             {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}><span className={'status-dot status-dot-' + item.value} aria-hidden="true" />{item.label}</button>)}
