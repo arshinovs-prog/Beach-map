@@ -102,6 +102,7 @@ function App() {
 
   const mapRef =
     useRef<maplibregl.Map | null>(null)
+  const initialMapViewSetRef = useRef(false)
 
   const sectorsRef =
     useRef<Sector[]>([])
@@ -339,12 +340,10 @@ function App() {
 
         style: 'https://tiles.openfreemap.org/styles/positron',
 
-        center: [
-          37.29,
-          44.96,
-        ],
-
-        zoom: 12,
+        // Стартовый центр — ориентировочная середина пляжей Анапы и Витязево.
+        // Точный охват будет рассчитан по геометрии всех секторов после загрузки.
+        center: [37.285, 44.945],
+        zoom: 10,
       })
 
     map.addControl(
@@ -567,6 +566,66 @@ function App() {
       if (timer) clearInterval(timer)
     }
   }, [savedGeometry, sectors, surfaceFilter, statusFilters])
+
+  // При первом открытии показываем весь пляжный участок по геометрии секторов.
+  // Небольшой дополнительный отступ оставляет за краями пляжей часть побережья.
+  useEffect(() => {
+    if (initialMapViewSetRef.current || savedGeometry.length === 0) return
+
+    const map = mapRef.current
+    if (!map) return
+
+    const fitInitialView = () => {
+      if (initialMapViewSetRef.current || !mapRef.current) return
+
+      const bounds = new maplibregl.LngLatBounds()
+      const extendCoordinates = (value: unknown): void => {
+        if (
+          Array.isArray(value) &&
+          typeof value[0] === 'number' &&
+          typeof value[1] === 'number'
+        ) {
+          bounds.extend([value[0], value[1]])
+        } else if (Array.isArray(value)) {
+          value.forEach(extendCoordinates)
+        }
+      }
+
+      savedGeometry.forEach((sector) => {
+        let geometry: any = sector.geometry
+        if (typeof geometry === 'string') {
+          try {
+            geometry = JSON.parse(geometry)
+          } catch {
+            return
+          }
+        }
+        if (geometry?.type === 'Feature') geometry = geometry.geometry
+        if (geometry?.type === 'Polygon' || geometry?.type === 'MultiPolygon') {
+          extendCoordinates(geometry.coordinates)
+        }
+      })
+
+      if (bounds.isEmpty()) return
+
+      initialMapViewSetRef.current = true
+      map.fitBounds(bounds, {
+        padding: { top: 70, bottom: 90, left: 70, right: 70 },
+        maxZoom: 10.8,
+        duration: 0,
+      })
+    }
+
+    if (map.isStyleLoaded()) {
+      fitInitialView()
+    } else {
+      map.once('load', fitInitialView)
+    }
+
+    return () => {
+      map.off('load', fitInitialView)
+    }
+  }, [savedGeometry])
 
   useEffect(() => {
     drawingModeRef.current = drawingMode
