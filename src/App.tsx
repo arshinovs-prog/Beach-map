@@ -401,6 +401,7 @@ function App() {
       )
 
       map.addSource('saved-polygons', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
+      map.addSource('sector-overview', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
        map.addLayer({
         id: 'saved-polygons-fill',
         type: 'fill',
@@ -439,7 +440,7 @@ function App() {
       map.addLayer({
         id: 'sector-overview-points',
         type: 'circle',
-        source: 'saved-polygons',
+        source: 'sector-overview',
         maxzoom: 11.5,
         paint: {
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 7, 9.5, 11],
@@ -616,6 +617,33 @@ function App() {
         } as Feature<Polygon>]
       })
       source.setData({ type: 'FeatureCollection', features })
+
+      // Для обзорного масштаба создаём ровно одну точку в центре каждого сектора.
+      const overviewFeatures = features.map((feature) => {
+        const ring = feature.geometry.coordinates[0] ?? []
+        const vertices = ring.slice(0, -1)
+        let twiceArea = 0
+        let centerX = 0
+        let centerY = 0
+        for (let i = 0; i < vertices.length; i++) {
+          const [x1, y1] = vertices[i]
+          const [x2, y2] = vertices[(i + 1) % vertices.length]
+          const cross = x1 * y2 - x2 * y1
+          twiceArea += cross
+          centerX += (x1 + x2) * cross
+          centerY += (y1 + y2) * cross
+        }
+        const center = Math.abs(twiceArea) > 1e-12
+          ? [centerX / (3 * twiceArea), centerY / (3 * twiceArea)]
+          : vertices.reduce((sum, point) => [sum[0] + point[0] / vertices.length, sum[1] + point[1] / vertices.length], [0, 0])
+        return {
+          type: 'Feature' as const,
+          properties: feature.properties,
+          geometry: { type: 'Point' as const, coordinates: center },
+        }
+      })
+      const overviewSource = map.getSource('sector-overview') as maplibregl.GeoJSONSource | undefined
+      overviewSource?.setData({ type: 'FeatureCollection', features: overviewFeatures })
       console.log(`Загружено полигонов на карту: ${features.length}`)
       return true
     }
