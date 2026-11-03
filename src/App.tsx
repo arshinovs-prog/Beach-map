@@ -113,28 +113,64 @@ function App() {
   const [statusFilters, setStatusFilters] = useState<Array<'green' | 'yellow' | 'red' | 'gray'>>(['green','yellow','red','gray'])
   const [filtersOpen, setFiltersOpen] = useState(false)
   const filtersOpenRef = useRef(false)
-  const filterTouchStartRef = useRef<{ x: number; y: number } | null>(null)
-  const panelTouchStartRef = useRef<{ x: number; y: number; scrollTop: number } | null>(null)
+  const filterDragRef = useRef<{ pointerId: number; startY: number; deltaY: number } | null>(null)
+  const panelDragRef = useRef<{ pointerId: number; startY: number; deltaY: number } | null>(null)
   useEffect(() => { filtersOpenRef.current = filtersOpen }, [filtersOpen])
-  const handleFilterTouchStart = (event: React.TouchEvent<HTMLElement>) => {
-    const touch = event.touches[0]
-    filterTouchStartRef.current = { x: touch.clientX, y: touch.clientY }
+  const handleFilterDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!filtersOpen || event.button !== 0) return
+    filterDragRef.current = { pointerId: event.pointerId, startY: event.clientY, deltaY: 0 }
+    event.currentTarget.setPointerCapture(event.pointerId)
   }
-  const handleFilterTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
-    const start = filterTouchStartRef.current
-    const touch = event.changedTouches[0]
-    filterTouchStartRef.current = null
-    if (start && touch.clientY - start.y > 75 && Math.abs(touch.clientY - start.y) > Math.abs(touch.clientX - start.x) * 1.2) setFiltersOpen(false)
+  const handleFilterDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = filterDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    drag.deltaY = Math.max(0, event.clientY - drag.startY)
+    const panel = event.currentTarget.closest('.footer') as HTMLElement | null
+    if (panel) panel.style.transform = 'translate3d(-50%, ' + drag.deltaY + 'px, 0)'
   }
-  const handlePanelTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0]
-    panelTouchStartRef.current = { x: touch.clientX, y: touch.clientY, scrollTop: event.currentTarget.scrollTop }
+  const handleFilterDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = filterDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    filterDragRef.current = null
+    const panel = event.currentTarget.closest('.footer') as HTMLElement | null
+    if (!panel) return
+    const threshold = Math.max(90, panel.getBoundingClientRect().height * 0.28)
+    if (drag.deltaY >= threshold) {
+      panel.style.transform = 'translate3d(-50%, ' + (panel.getBoundingClientRect().height + 40) + 'px, 0)'
+      panel.style.opacity = '0'
+      window.setTimeout(() => { setFiltersOpen(false); panel.style.transform = ''; panel.style.opacity = '' }, 230)
+    } else {
+      panel.style.transform = 'translate3d(-50%, 0, 0)'
+      window.setTimeout(() => { panel.style.transform = '' }, 230)
+    }
   }
-  const handlePanelTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    const start = panelTouchStartRef.current
-    const touch = event.changedTouches[0]
-    panelTouchStartRef.current = null
-    if (start && start.scrollTop <= 0 && event.currentTarget.scrollTop <= 0 && touch.clientY - start.y > 85 && Math.abs(touch.clientY - start.y) > Math.abs(touch.clientX - start.x) * 1.2) setSelectedSector(null)
+  const handlePanelDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return
+    panelDragRef.current = { pointerId: event.pointerId, startY: event.clientY, deltaY: 0 }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const handlePanelDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = panelDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    drag.deltaY = Math.max(0, event.clientY - drag.startY)
+    const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
+    if (panel) panel.style.transform = 'translate3d(0, ' + drag.deltaY + 'px, 0)'
+  }
+  const handlePanelDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = panelDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    panelDragRef.current = null
+    const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
+    if (!panel) return
+    const threshold = Math.max(90, panel.getBoundingClientRect().height * 0.28)
+    if (drag.deltaY >= threshold) {
+      panel.style.transform = 'translate3d(0, ' + (panel.getBoundingClientRect().height + 40) + 'px, 0)'
+      panel.style.opacity = '0'
+      window.setTimeout(() => { setSelectedSector(null); panel.style.transform = ''; panel.style.opacity = '' }, 230)
+    } else {
+      panel.style.transform = 'translate3d(0, 0, 0)'
+      window.setTimeout(() => { panel.style.transform = '' }, 230)
+    }
   }
   const [expandedConditions, setExpandedConditions] = useState<string[]>([])
   const hasActiveFilters = surfaceFilter !== 'all' || statusFilters.length !== 4
@@ -1100,7 +1136,8 @@ function App() {
 
       {selectedSector && (
         <div className="sector-panel" role="dialog" aria-label={'Состояние пляжа: ' + selectedSector.name}>
-          <div className="sector-panel-scroll" onTouchStart={handlePanelTouchStart} onTouchEnd={handlePanelTouchEnd}>
+          <div className="sector-panel-scroll">
+            <div className="panel-drag-handle" onPointerDown={handlePanelDragStart} onPointerMove={handlePanelDragMove} onPointerUp={handlePanelDragEnd} onPointerCancel={handlePanelDragEnd} role="button" aria-label="Потяните вниз, чтобы закрыть карточку"><span /></div>
             <div className="sector-panel-content">
           {reportMode === 'view' ? <>
             <div
@@ -1188,14 +1225,14 @@ function App() {
           </section>
         </div>
       )}
-      {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'} onTouchStart={handleFilterTouchStart} onTouchEnd={handleFilterTouchEnd}>
-        {filtersOpen && <div className="footer-legend">
+      {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'}>
+        {filtersOpen && <><div className="filter-drag-handle" onPointerDown={handleFilterDragStart} onPointerMove={handleFilterDragMove} onPointerUp={handleFilterDragEnd} onPointerCancel={handleFilterDragEnd} role="button" aria-label="Потяните вниз, чтобы закрыть фильтр"><span /></div><div className="footer-legend">
           <div className="footer-status-filters">
             {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}><span className={'status-dot status-dot-' + item.value} aria-hidden="true" />{item.label}</button>)}
           </div>
           <div className="footer-surfaces">{([{value:'all',label:'Все пляжи'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" aria-pressed={surfaceFilter===item.value} className={surfaceFilter===item.value?'active':''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
           <small className={visibleSectors.length === 0 ? 'filter-results empty' : 'filter-results'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</small>
-        </div>}
+        </div></>}
         {!filtersOpen && hasActiveFilters && <div className={visibleSectors.length === 0 ? 'filter-result-banner empty' : 'filter-result-banner'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</div>}
         <div className="filter-actions">
           <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтр' : 'Открыть фильтр'}{hasActiveFilters && !filtersOpen && <span className="filter-active-indicator" aria-label="Фильтр активен" />}</button>
