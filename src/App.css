@@ -1002,3 +1002,256 @@ body,
 .filter-results{font-size:11px;color:#63727c;white-space:nowrap}
 .filter-results.empty,.filter-result-banner.empty{color:#b94b50;font-weight:700}
 .filter-result-banner{width:100%;text-align:center;font-size:12px;color:#287d52;font-weight:700;padding:2px 0}
+
+
+/* =========================================================
+   BEACH MAP — COASTAL DESIGN SYSTEM
+   Последний слой намеренно переопределяет старые стили,
+   чтобы обновлять интерфейс постепенно без риска для логики.
+   ========================================================= */
+:root {
+  --coast-ink: #193a3a;
+  --coast-muted: #71817d;
+  --coast-teal: #176b68;
+  --coast-teal-hover: #105653;
+  --coast-sand: #f5f1e8;
+  --coast-surface: #fffefa;
+  --coast-line: rgba(25, 58, 58, .12);
+  --coast-shadow: 0 12px 34px rgba(25, 58, 58, .12);
+  --coast-radius: 18px;
+}
+
+/* Header: компактная редакционная шапка, без ощущения админ-панели */
+.header {
+  position: relative;
+  z-index: 15;
+  flex: 0 0 66px;
+  height: 66px;
+  padding: 0 clamp(18px, 3vw, 42px);
+  background: rgba(255, 254, 250, .96);
+  border-bottom: 1px solid var(--coast-line);
+  box-shadow: 0 3px 18px rgba(25, 58, 58, .045);
+  backdrop-filter: blur(16px);
+}
+.header h1 {
+  color: var(--coast-ink);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(21px, 2vw, 27px);
+  font-weight: 700;
+  letter-spacing: -.55px;
+}
+.sector-count {
+  padding: 7px 12px;
+  border: 1px solid rgba(23, 107, 104, .15);
+  border-radius: 999px;
+  background: #edf5f0;
+  color: var(--coast-teal);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+.map-container { isolation: isolate; }
+
+/* MapLibre controls — единый тихий стиль */
+.maplibregl-ctrl-group {
+  overflow: hidden;
+  border: 1px solid rgba(25, 58, 58, .13) !important;
+  border-radius: 13px !important;
+  background: rgba(255, 254, 250, .96) !important;
+  box-shadow: 0 5px 18px rgba(25, 58, 58, .12) !important;
+}
+.maplibregl-ctrl-group button {
+  width: 38px !important;
+  height: 38px !important;
+}
+.maplibregl-ctrl-group button + button { border-top-color: var(--coast-line) !important; }
+
+/* Filter footer becomes a light floating dock */
+.footer {
+  z-index: 18;
+  flex: 0 0 auto;
+  min-height: 66px;
+  padding: 10px 18px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255, 254, 250, .97);
+  border-top: 1px solid var(--coast-line);
+  box-shadow: 0 -7px 24px rgba(25, 58, 58, .055);
+  backdrop-filter: blur(16px);
+}
+.filter-actions { gap: 10px; }
+.filter-actions .filter-toggle,
+.filter-actions .filter-reset {
+  min-height: 42px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 750;
+  transition: transform .2s ease, background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.filter-actions .filter-toggle {
+  border-color: var(--coast-teal);
+  background: var(--coast-teal);
+  color: white;
+  box-shadow: 0 5px 13px rgba(23, 107, 104, .18);
+}
+.filter-actions .filter-toggle:hover {
+  transform: translateY(-2px);
+  border-color: var(--coast-teal-hover);
+  background: var(--coast-teal-hover);
+  box-shadow: 0 8px 18px rgba(23, 107, 104, .22);
+}
+.filter-actions .filter-reset {
+  border-color: rgba(191, 91, 79, .25);
+  background: #fff8f5;
+  color: #a64f46;
+}
+.filter-actions .filter-reset:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #fcece7;
+}
+.filter-actions button:active { transform: translateY(0) scale(.98); }
+.filter-result-banner,
+.filter-results { color: var(--coast-teal); font-weight: 750; }
+
+/* Filter panel and selection chips */
+.footer-legend {
+  gap: 8px;
+  padding: 3px 0 8px;
+}
+.footer-filter,
+.footer-surfaces button {
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid var(--coast-line);
+  border-radius: 999px;
+  background: #fff;
+  color: #52635f;
+  font-size: 12px;
+  font-weight: 650;
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+.footer-filter:hover,
+.footer-surfaces button:hover { transform: translateY(-1px); border-color: rgba(23,107,104,.35); }
+.footer-filter.active,
+.footer-surfaces button.active {
+  border-color: rgba(23,107,104,.25);
+  background: #eaf4ef;
+  color: var(--coast-teal);
+}
+.footer-filter[aria-pressed="false"] { opacity: .48; }
+
+/* Sector panel: premium surface and restrained entrance */
+.sector-panel {
+  color: var(--coast-ink);
+  filter: drop-shadow(0 10px 28px rgba(18, 48, 48, .13));
+  animation: coast-panel-in .34s cubic-bezier(.2,.75,.25,1) both;
+}
+@keyframes coast-panel-in {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.sector-panel-content {
+  border-color: rgba(25, 58, 58, .10);
+  background: var(--coast-surface);
+}
+.sector-panel-header {
+  background: linear-gradient(180deg, rgba(16, 49, 49, .78), rgba(16, 49, 49, .12));
+}
+.sector-panel-title h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -.2px;
+}
+.sector-panel .status {
+  width: auto;
+  max-width: 100%;
+  padding: 7px 13px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.sector-panel .beach-photo {
+  box-shadow: none;
+}
+.sector-panel .beach-photo-caption {
+  padding-bottom: 11px;
+  font-size: 11px;
+  letter-spacing: .01em;
+}
+.sector-panel .condition-circle,
+.sector-panel .condition-detail-option,
+.sector-panel .report-confirm,
+.sector-panel .report-edit-action,
+.report-review-actions button {
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease;
+}
+.sector-panel .condition-circle:hover,
+.sector-panel .condition-detail-option:hover,
+.report-review-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+.sector-panel .condition-circle:active,
+.sector-panel .condition-detail-option:active { transform: scale(.98); }
+.sector-panel .report-confirm.primary-action {
+  background: var(--coast-teal);
+  box-shadow: 0 6px 16px rgba(23, 107, 104, .16);
+}
+.sector-panel .report-confirm.primary-action:hover:not(:disabled) {
+  background: var(--coast-teal-hover);
+  transform: translateY(-1px);
+}
+.sector-panel .report-edit-action.changed {
+  border-color: var(--coast-teal);
+  background: var(--coast-teal);
+  color: #fff;
+}
+.sector-panel .report-edit-action.changed:hover:not(:disabled) { background: var(--coast-teal-hover); }
+.sector-panel .close-button {
+  border-color: rgba(255,255,255,.65);
+  background: rgba(255,254,250,.94);
+  color: var(--coast-ink);
+  transition: transform .18s ease, background-color .18s ease;
+}
+.sector-panel .close-button:hover { transform: rotate(90deg); background: #fff; }
+
+/* Keyboard access and reduced motion */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid rgba(23, 107, 104, .55);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Small screens: keep the map dominant and controls thumb-friendly */
+@media (max-width: 600px) {
+  .header {
+    flex-basis: 58px;
+    height: 58px;
+    padding: 0 16px;
+  }
+  .header h1 { font-size: 21px; }
+  .sector-count { padding: 6px 10px; font-size: 11px; }
+  .footer {
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  }
+  .filter-actions .filter-toggle,
+  .filter-actions .filter-reset {
+    min-height: 42px;
+    padding: 9px 17px;
+    font-size: 12px;
+  }
+  .footer-filter,
+  .footer-surfaces button { min-height: 36px; }
+  .sector-panel { filter: drop-shadow(0 -8px 24px rgba(18,48,48,.14)); }
+  .sector-panel-content { background: #fffefa; }
+}
+@media (min-width: 1600px) {
+  .header { padding-inline: clamp(42px, 4vw, 88px); }
+  .sector-panel { width: clamp(360px, 23vw, 440px); }
+}
