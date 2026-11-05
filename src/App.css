@@ -1518,7 +1518,9 @@ button:focus-visible,
   min-height: 22px;
   background: transparent;
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .sector-panel .panel-drag-handle span {
   width: 42px;
@@ -1548,7 +1550,7 @@ button:focus-visible,
 .beach-photo-topline {
   position: absolute;
   z-index: 2;
-  top: 15px;
+  top: 40px;
   left: 17px;
   right: 17px;
   display: flex;
