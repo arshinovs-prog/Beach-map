@@ -1166,16 +1166,18 @@ function App() {
                 <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
                 <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>×</button>
               </div>
+            </div>
+            <div className="beach-photo-info">
               <div className="beach-photo-caption">
-                <div className="beach-photo-place"><span className="beach-photo-pin" aria-hidden="true">⌖</span><h2>{selectedSector.name}</h2></div>
+                <div className="beach-photo-place"><h2>{selectedSector.name}</h2></div>
                 <span className="beach-photo-type">{selectedSector.beach_type === 'pebble' ? 'Галечный пляж' : 'Песчаный пляж'}{selectedSector.access_name ? ' · ' + selectedSector.access_name : ''}</span>
                 <span className="beach-photo-updated">{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
               </div>
+              <div className="beach-weather-summary" aria-label="Погода: данные пока недоступны">
+                <span className="beach-weather-icon" aria-hidden="true">☀</span>
+                <span className="beach-weather-reading"><strong>—°</strong><small>Погода</small></span>
+              </div>
             </div>
-            <section className="sector-weather" aria-label="Погода">
-              <div className="sector-section-heading"><span>СЕГОДНЯ</span><small>Погода</small></div>
-              <div className="sector-weather-placeholder"><span className="weather-sun" aria-hidden="true">☀</span><div><strong>Погода уточняется</strong><small>Температура воздуха и условия будут доступны позже</small></div></div>
-            </section>
             <div className="sector-condition-heading"><h3>Состояние пляжа</h3><span>По сообщениям посетителей</span></div>
             {(() => {
               const conditions = [
