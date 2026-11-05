@@ -1731,3 +1731,100 @@ button:focus-visible,
     border-radius: 16px;
   }
 }
+
+/* Card refinement — typography, rhythm and readable touch targets */
+.app {
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.sector-panel-content {
+  color: var(--color-deep-sea);
+}
+.sector-panel .beach-photo {
+  background-size: cover;
+}
+.sector-panel .beach-photo-place h2 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.sector-panel .sector-weather {
+  margin-bottom: 22px;
+}
+.sector-panel .sector-condition-heading {
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.sector-panel .sector-condition-heading h3 {
+  font-size: 17px;
+  letter-spacing: -.02em;
+}
+.sector-panel .sector-condition-heading > span {
+  font-size: 11px;
+  line-height: 1.45;
+}
+.sector-panel .condition-selector {
+  gap: 11px;
+}
+.sector-panel .condition-circle {
+  min-height: 110px;
+  gap: 7px;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.sector-panel .condition-circle:focus-visible,
+.sector-panel .condition-detail-option:focus-visible {
+  outline: 3px solid rgba(23, 107, 104, .42);
+  outline-offset: 3px;
+}
+.sector-panel .condition-circle-icon svg {
+  width: 32px;
+  height: 32px;
+}
+.sector-panel .condition-detail {
+  padding: 12px;
+}
+.sector-panel .condition-detail-hint {
+  margin-bottom: 11px;
+  font-size: 12px;
+}
+.sector-panel .condition-detail-option {
+  min-height: 54px;
+  padding: 8px 5px;
+  font-size: 11px;
+}
+.sector-panel .condition-detail-option b {
+  font-size: 11px;
+}
+.sector-panel .sector-actions {
+  gap: 9px;
+  margin-top: 15px;
+}
+.sector-panel .report-confirm.primary-action,
+.sector-panel .report-edit-action {
+  min-height: 48px;
+  font-size: 13px;
+}
+.sector-panel .sector-extra-section {
+  margin-top: 23px;
+}
+.sector-panel .sector-section-heading h3 {
+  font-size: 15px;
+}
+@media (max-width: 600px) {
+  .sector-panel .condition-circle {
+    min-height: 104px;
+    padding-inline: 4px;
+  }
+  .sector-panel .condition-detail {
+    padding: 9px;
+  }
+  .sector-panel .condition-detail-option {
+    min-height: 52px;
+    font-size: 10px;
+  }
+}
+@media (hover: hover) {
+  .sector-panel .condition-circle:hover:not(.active) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(25, 58, 58, .09);
+  }
+}
