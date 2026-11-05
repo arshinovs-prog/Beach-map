@@ -1828,3 +1828,90 @@ button:focus-visible,
     box-shadow: 0 6px 16px rgba(25, 58, 58, .09);
   }
 }
+
+
+
+/* Sector identity strip: metadata and weather sit below the photo, not over it. */
+.sector-panel .beach-photo { margin-bottom: 0; }
+.sector-panel .beach-photo::before { display: none; }
+.sector-panel .beach-photo-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 -18px 20px;
+  padding: 15px 18px 16px;
+  color: #fff;
+  background: var(--color-sea);
+}
+.sector-panel .beach-photo-caption {
+  position: static;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  color: #fff;
+  background: none;
+  text-shadow: none;
+}
+.sector-panel .beach-photo-place h2 {
+  color: #fff;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(19px, 4.7vw, 24px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+.sector-panel .beach-photo-type {
+  color: rgba(255,255,255,.92);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.sector-panel .beach-photo-updated {
+  margin-top: 2px;
+  color: rgba(255,255,255,.72);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.beach-weather-summary {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 72px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255,255,255,.22);
+}
+.beach-weather-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  color: #ffe2a8;
+  font-size: 23px;
+}
+.beach-weather-reading { display: flex; flex-direction: column; gap: 1px; }
+.beach-weather-reading strong { color: #fff; font-size: 20px; line-height: 1; font-weight: 800; }
+.beach-weather-reading small { color: rgba(255,255,255,.78); font-size: 9px; }
+@media (min-width: 900px) {
+  .sector-panel .beach-photo-info { margin-inline: -18px; }
+}
+@media (max-width: 600px) {
+  .sector-panel .beach-photo-info {
+    margin-inline: -15px;
+    padding: 13px 15px 14px;
+    gap: 8px;
+  }
+  .sector-panel .beach-photo-place h2 { font-size: 19px; }
+  .sector-panel .beach-photo-type { font-size: 10px; }
+  .sector-panel .beach-photo-updated { font-size: 9px; }
+  .beach-weather-summary { gap: 6px; min-width: 66px; padding-left: 9px; }
+  .beach-weather-icon { width: 31px; height: 31px; font-size: 20px; }
+  .beach-weather-reading strong { font-size: 18px; }
+}
