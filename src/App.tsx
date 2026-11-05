@@ -11,6 +11,8 @@ import './App.css'
 
 maplibregl.setWorkerUrl(workerUrl)
 
+type SectorWeather = { temperature: number; cloudCover: number }
+
 type Sector = {
   sector_id: number
   name: string
@@ -179,6 +181,55 @@ function App() {
   }
   const [selectedSector, setSelectedSector] =
     useState<Sector | null>(null)
+
+  const [sectorWeather, setSectorWeather] = useState<SectorWeather | null>(null)
+  const [weatherLoading, setWeatherLoading] = useState(false)
+
+  useEffect(() => {
+    if (!selectedSector) {
+      setSectorWeather(null)
+      setWeatherLoading(false)
+      return
+    }
+
+    const controller = new AbortController()
+    setSectorWeather(null)
+    setWeatherLoading(true)
+
+    const params = new URLSearchParams({
+      latitude: String(selectedSector.latitude),
+      longitude: String(selectedSector.longitude),
+      current: 'temperature_2m,cloud_cover',
+      timezone: 'auto',
+    })
+
+    fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`, {
+      signal: controller.signal,
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`Weather API: ${response.status}`)
+        return response.json()
+      })
+      .then(data => {
+        const temperature = Number(data?.current?.temperature_2m)
+        const cloudCover = Number(data?.current?.cloud_cover)
+        if (!Number.isFinite(temperature) || !Number.isFinite(cloudCover)) {
+          throw new Error('Weather data is incomplete')
+        }
+        setSectorWeather({ temperature: Math.round(temperature), cloudCover: Math.round(cloudCover) })
+      })
+      .catch(error => {
+        if (error.name !== 'AbortError') {
+          console.error('Не удалось загрузить погоду:', error)
+          setSectorWeather(null)
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setWeatherLoading(false)
+      })
+
+    return () => controller.abort()
+  }, [selectedSector?.sector_id])
 
   useEffect(() => {
     if (!selectedSector) {
@@ -1173,9 +1224,12 @@ function App() {
                 <span className="beach-photo-type">{selectedSector.beach_type === 'pebble' ? 'Галечный пляж' : 'Песчаный пляж'}{selectedSector.access_name ? ' · ' + selectedSector.access_name : ''}</span>
                 <span className="beach-photo-updated">{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
               </div>
-              <div className="beach-weather-summary" aria-label="Погода: данные пока недоступны">
-                <span className="beach-weather-icon" aria-hidden="true">☀</span>
-                <span className="beach-weather-reading"><strong>—°</strong><small>Погода</small></span>
+              <div className="beach-weather-summary" aria-label={sectorWeather ? `Температура воздуха ${sectorWeather.temperature} градусов, облачность ${sectorWeather.cloudCover} процентов` : 'Погода загружается или временно недоступна'}>
+                <span className="beach-weather-icon" aria-hidden="true">{sectorWeather ? (sectorWeather.cloudCover < 20 ? '☀' : sectorWeather.cloudCover < 70 ? '⛅' : '☁') : '…'}</span>
+                <span className="beach-weather-reading">
+                  <strong>{sectorWeather ? `${sectorWeather.temperature}°` : '—°'}</strong>
+                  <small>{sectorWeather ? `Облачность ${sectorWeather.cloudCover}%` : weatherLoading ? 'Загрузка погоды' : 'Погода недоступна'}</small>
+                </span>
               </div>
             </div>
             <div className="sector-condition-heading"><h3>Состояние пляжа</h3><span>По сообщениям посетителей</span></div>
