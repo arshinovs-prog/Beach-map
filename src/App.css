@@ -787,6 +787,10 @@ body,
 
 .sector-panel .beach-photo {
   position: relative;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
   height: 164px;
   margin: 0 -14px 13px;
   overflow: hidden;
@@ -1505,29 +1509,6 @@ button:focus-visible,
   background: var(--color-surface);
   border: 0;
   border-radius: inherit;
-}
-.sector-panel .panel-drag-handle {
-  position: absolute;
-  z-index: 5;
-  top: 5px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 22px;
-  background: transparent;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-.sector-panel .panel-drag-handle span {
-  width: 42px;
-  height: 4px;
-  border-radius: 99px;
-  background: rgba(255,255,255,.78);
-  box-shadow: 0 1px 5px rgba(0,0,0,.22);
 }
 .sector-panel .beach-photo {
   position: relative;
