@@ -177,6 +177,17 @@ function App() {
       window.setTimeout(() => { panel.style.transform = '' }, 230)
     }
   }
+  useEffect(() => {
+    if (!selectedSector) {
+      setExpandedConditions([])
+      return
+    }
+    setReportAlgae(selectedSector.algae ?? 'none')
+    setReportWaves(selectedSector.waves ?? 'none')
+    setReportJellyfish(selectedSector.jellyfish ?? 'none')
+    setExpandedConditions([])
+  }, [selectedSector?.sector_id])
+
   const [expandedConditions, setExpandedConditions] = useState<string[]>([])
   const hasActiveFilters = surfaceFilter !== 'all' || statusFilters.length !== 4
   const resetFilters = () => {
