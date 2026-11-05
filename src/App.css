@@ -1561,22 +1561,26 @@ button:focus-visible,
 .sector-panel .beach-photo .status {
   width: auto;
   max-width: calc(100% - 54px);
+  min-height: 40px;
   margin: 0;
-  padding: 8px 12px;
-  border: 1px solid rgba(255,255,255,.32);
+  padding: 10px 17px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(255,255,255,.58);
   border-radius: 999px;
   color: #fff;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 850;
   letter-spacing: .01em;
-  background: rgba(25,58,58,.66);
-  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  line-height: 1;
+  box-shadow: 0 5px 18px rgba(0,0,0,.2);
   backdrop-filter: blur(12px);
 }
-.sector-panel .status-green { background: rgba(48,116,83,.88); }
-.sector-panel .status-yellow { background: rgba(151,99,34,.91); }
-.sector-panel .status-red { background: rgba(169,66,67,.91); }
-.sector-panel .status-gray { background: rgba(76,91,104,.86); }
+.sector-panel .beach-photo .status.status-green { background: rgba(79,155,122,.96); }
+.sector-panel .beach-photo .status.status-yellow { background: rgba(233,168,91,.97); color: #193A3A; }
+.sector-panel .beach-photo .status.status-red { background: rgba(231,111,112,.97); }
+.sector-panel .beach-photo .status.status-gray { background: rgba(168,176,187,.96); color: #193A3A; }
 .sector-panel .beach-photo .close-button {
   position: static;
   flex: 0 0 38px;
