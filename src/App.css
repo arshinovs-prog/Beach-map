@@ -1708,3 +1708,26 @@ button:focus-visible,
   .sector-panel .beach-photo-caption { right: 15px; bottom: 15px; left: 15px; }
   .sector-panel .condition-circle { min-height: 98px; }
 }
+
+
+/* Раскрытое состояние: общий фон селектора всегда имеет скруглённые края */
+.sector-panel .condition-selector.has-expanded {
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid rgba(25, 58, 58, .08);
+  border-radius: 18px;
+  background: #f5f1e8;
+}
+.sector-panel .condition-selector.has-expanded .condition-circles {
+  margin: 0;
+}
+.sector-panel .condition-selector.has-expanded .condition-detail-attached {
+  border-radius: 13px;
+  background: #fffdf8;
+}
+@media (max-width: 600px) {
+  .sector-panel .condition-selector.has-expanded {
+    padding: 8px;
+    border-radius: 16px;
+  }
+}
