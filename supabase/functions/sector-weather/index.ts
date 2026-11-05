@@ -1,10 +1,10 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-type Weather = { temperature: number; cloudCover: number; fetchedAt: number };
+type Weather = { temperature: number; weatherCode: number; fetchedAt: number };
 
 const cache = new Map<string, Weather>();
-const CACHE_TTL_MS = 5 * 60 * 1000;
-const STALE_TTL_MS = 30 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 60 * 1000;
+const STALE_TTL_MS = 2 * 60 * 60 * 1000;
 const MAX_CACHE_ENTRIES = 2000;
 
 const corsHeaders = {
@@ -55,14 +55,14 @@ Deno.serve(async (req: Request) => {
   const cached = cache.get(key);
 
   if (cached && now - cached.fetchedAt < CACHE_TTL_MS) {
-    return json({ temperature: cached.temperature, cloudCover: cached.cloudCover, cached: true });
+    return json({ temperature: cached.temperature, weatherCode: cached.weatherCode, cached: true });
   }
 
   try {
     const params = new URLSearchParams({
       latitude: String(lat),
       longitude: String(lon),
-      current: "temperature_2m,cloud_cover",
+      current: "temperature_2m,weather_code",
       timezone: "auto",
     });
     const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, {
@@ -73,7 +73,7 @@ Deno.serve(async (req: Request) => {
 
     const payload = await response.json();
     const temperature = Number(payload?.current?.temperature_2m);
-    const cloudCover = Number(payload?.current?.cloud_cover);
+    const weatherCode = Number(payload?.current?.weather_code);
     if (
       !Number.isFinite(temperature) || !Number.isFinite(cloudCover) ||
       cloudCover < 0 || cloudCover > 100
@@ -81,18 +81,18 @@ Deno.serve(async (req: Request) => {
       throw new Error("Weather provider returned invalid data");
     }
 
-    const value = { temperature, cloudCover, fetchedAt: now };
+    const value = { temperature, weatherCode, fetchedAt: now };
     if (cache.size >= MAX_CACHE_ENTRIES) {
       const firstKey = cache.keys().next().value;
       if (firstKey) cache.delete(firstKey);
     }
     cache.set(key, value);
-    return json({ temperature, cloudCover, cached: false });
+    return json({ temperature, weatherCode, cached: false });
   } catch (error) {
     if (cached && now - cached.fetchedAt < STALE_TTL_MS) {
       return json({
         temperature: cached.temperature,
-        cloudCover: cached.cloudCover,
+        weatherCode: cached.weatherCode,
         cached: true,
         stale: true,
       });
