@@ -1935,3 +1935,51 @@ button:focus-visible,
   .sector-panel .beach-weather-icon { width: 34px; height: 34px; }
   .sector-panel .beach-weather-icon svg { width: 28px; height: 28px; }
 }
+
+
+/* Weather indicator: standalone cloud and balanced typography. */
+.sector-panel .beach-weather-summary {
+  gap: 7px;
+  min-width: 0;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255,255,255,.22);
+}
+.sector-panel .beach-weather-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255,255,255,.96);
+}
+.sector-panel .beach-weather-icon svg {
+  display: block;
+  width: 34px;
+  height: 34px;
+  stroke-width: 2.35;
+}
+.sector-panel .beach-weather-reading strong {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -.035em;
+}
+@media (max-width: 600px) {
+  .sector-panel .beach-weather-summary {
+    gap: 5px;
+    min-width: 0;
+    padding-left: 9px;
+  }
+  .sector-panel .beach-weather-icon,
+  .sector-panel .beach-weather-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+  .sector-panel .beach-weather-reading strong {
+    font-size: 17px;
+    font-weight: 650;
+  }
+}
