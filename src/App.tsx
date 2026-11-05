@@ -177,6 +177,9 @@ function App() {
       window.setTimeout(() => { panel.style.transform = '' }, 230)
     }
   }
+  const [selectedSector, setSelectedSector] =
+    useState<Sector | null>(null)
+
   useEffect(() => {
     if (!selectedSector) {
       setExpandedConditions([])
@@ -196,9 +199,6 @@ function App() {
   }
   const visibleSectors = sectors.filter(sector => (surfaceFilter === 'all' || sector.beach_type === surfaceFilter) && statusFilters.includes(sector.status_color))
 
-
-  const [selectedSector, setSelectedSector] =
-    useState<Sector | null>(null)
 
   const isAdminRoute = window.location.pathname.replace(/\/+$/, '') === '/admin'
   const [editorOpen, setEditorOpen] = useState(isAdminRoute)
