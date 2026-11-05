@@ -1506,3 +1506,223 @@ button:focus-visible,
   transition: transform .23s cubic-bezier(.2,.75,.25,1), opacity .23s ease;
 }
 .sector-panel-scroll { will-change: transform; }
+
+
+/* =========================================================
+   SECTOR CARD — PHOTO-LED BEACH EXPERIENCE
+   Визуальный слой: не меняет обработчики и модель отчётов.
+   ========================================================= */
+.sector-panel { color: var(--color-deep-sea); }
+.sector-panel-scroll {
+  background: var(--color-surface);
+  border-radius: 22px 22px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(25,58,58,.22) transparent;
+}
+.sector-panel-content {
+  padding: 0 18px 24px;
+  background: var(--color-surface);
+  border: 0;
+  border-radius: inherit;
+}
+.sector-panel .panel-drag-handle { min-height: 23px; flex-basis: 23px; background: var(--color-surface); }
+.sector-panel .panel-drag-handle span { background: rgba(25,58,58,.22); }
+.sector-panel .beach-photo {
+  position: relative;
+  height: clamp(210px, 29vh, 270px);
+  margin: 0 -18px 18px;
+  overflow: hidden;
+  border-radius: 0;
+  background-color: #8bbbc7;
+  background-position: center 56%;
+  box-shadow: none;
+  isolation: isolate;
+}
+.sector-panel .beach-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(12,38,39,.34) 0%, transparent 32%, transparent 43%, rgba(10,32,34,.76) 100%);
+}
+.beach-photo-topline {
+  position: absolute;
+  z-index: 2;
+  top: 15px;
+  left: 17px;
+  right: 17px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sector-panel .beach-photo .status {
+  width: auto;
+  max-width: calc(100% - 54px);
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  background: rgba(25,58,58,.66);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  backdrop-filter: blur(12px);
+}
+.sector-panel .status-green { background: rgba(48,116,83,.88); }
+.sector-panel .status-yellow { background: rgba(151,99,34,.91); }
+.sector-panel .status-red { background: rgba(169,66,67,.91); }
+.sector-panel .status-gray { background: rgba(76,91,104,.86); }
+.sector-panel .beach-photo .close-button {
+  position: static;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  background: rgba(255,254,250,.92);
+  color: var(--color-deep-sea);
+  box-shadow: 0 4px 14px rgba(0,0,0,.14);
+}
+.sector-panel .beach-photo-caption {
+  position: absolute;
+  z-index: 1;
+  right: 18px;
+  bottom: 17px;
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 0;
+  color: white;
+  background: none;
+  text-shadow: 0 1px 3px rgba(0,0,0,.38);
+}
+.beach-photo-place { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.beach-photo-place h2 {
+  margin: 0;
+  color: #fff;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(24px, 6vw, 31px);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -.35px;
+}
+.beach-photo-pin { font-size: 23px; line-height: 1; }
+.sector-panel .beach-photo-type { font-size: 12px; font-weight: 650; opacity: .94; }
+.sector-panel .beach-photo-updated { margin-top: 5px; font-size: 10px; opacity: .82; }
+.sector-weather {
+  margin: 0 0 20px;
+  padding: 13px 14px;
+  border: 1px solid rgba(25,58,58,.08);
+  border-radius: 15px;
+  background: #f5f7f2;
+}
+.sector-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.sector-section-heading > span,
+.sector-section-heading > small {
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.sector-section-heading h3,
+.sector-condition-heading h3 {
+  margin: 0;
+  color: var(--color-deep-sea);
+  font-size: 16px;
+  font-weight: 800;
+}
+.sector-weather-placeholder { display: flex; align-items: center; gap: 12px; }
+.weather-sun { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 50%; background: #fff0d9; color: #d28a36; font-size: 23px; }
+.sector-weather-placeholder div,
+.sector-route-placeholder > span:last-child { display: flex; flex-direction: column; gap: 3px; }
+.sector-weather-placeholder strong,
+.sector-route-placeholder strong { color: var(--color-deep-sea); font-size: 12px; }
+.sector-weather-placeholder small,
+.sector-route-placeholder small { color: var(--color-muted); font-size: 10px; line-height: 1.4; }
+.sector-condition-heading { display: flex; flex-direction: column; gap: 3px; margin: 0 0 10px; }
+.sector-condition-heading > span { color: var(--color-muted); font-size: 10px; }
+.sector-panel .condition-selector { margin: 0 0 15px; }
+.sector-panel .condition-circles { gap: 8px; margin: 0; }
+.sector-panel .condition-circle {
+  min-height: 106px;
+  padding: 10px 6px 12px;
+  border: 1px solid rgba(25,58,58,.09);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(25,58,58,.045);
+}
+.sector-panel .condition-circle strong { font-size: 10px; line-height: 1.25; }
+.sector-panel .condition-circle.active { border-color: var(--color-sea); box-shadow: 0 0 0 2px rgba(23,107,104,.10); }
+.sector-panel .condition-detail { border-radius: 14px; }
+.sector-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+.sector-panel .report-confirm.primary-action,
+.sector-panel .report-edit-action {
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+  border-radius: 13px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.sector-panel .report-edit-action {
+  border: 1px solid rgba(23,107,104,.22);
+  background: #eef5f1;
+  color: var(--color-sea);
+}
+.sector-panel .report-edit-action:disabled,
+.sector-panel .report-confirm:disabled { opacity: .48; }
+.sector-extra-section { margin-top: 19px; }
+.sector-route-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 13px;
+  background: #fff;
+  text-align: left;
+  opacity: .8;
+}
+.sector-route-placeholder > span:first-child { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #eaf3ef; color: var(--color-sea); font-size: 20px; }
+.sector-gallery-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 76px;
+  padding: 12px;
+  border: 1px dashed rgba(25,58,58,.2);
+  border-radius: 13px;
+  background: #fafbf8;
+}
+.sector-gallery-empty > span { color: #91a29b; font-size: 27px; }
+.sector-gallery-empty p { margin: 0; color: var(--color-muted); font-size: 11px; line-height: 1.45; }
+@media (min-width: 900px) {
+  .sector-panel { width: clamp(330px, 27vw, 420px); }
+  .sector-panel-scroll { max-height: 100dvh; height: 100dvh; border-radius: 0 20px 20px 0; }
+  .sector-panel-content { padding: 0 18px 26px; }
+  .sector-panel .beach-photo { height: clamp(230px, 31vh, 300px); margin-inline: -18px; border-radius: 0 20px 0 0; }
+  .sector-panel .condition-circle { min-height: 102px; }
+}
+@media (max-width: 600px) {
+  .sector-panel-scroll { max-height: min(82dvh, 760px); border-radius: 22px 22px 0 0; }
+  .sector-panel-content { padding-inline: 15px; }
+  .sector-panel .beach-photo { height: 218px; margin-inline: -15px; }
+  .beach-photo-topline { top: 13px; left: 15px; right: 15px; }
+  .sector-panel .beach-photo-caption { right: 15px; bottom: 15px; left: 15px; }
+  .sector-panel .condition-circle { min-height: 98px; }
+}
