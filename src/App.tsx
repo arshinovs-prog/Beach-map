@@ -11,7 +11,7 @@ import './App.css'
 
 maplibregl.setWorkerUrl(workerUrl)
 
-type SectorWeather = { temperature: number; cloudCover: number }
+type SectorWeather = { temperature: number; weatherCode: number }
 
 type Sector = {
   sector_id: number
@@ -94,6 +94,18 @@ function ConditionIcon({ kind }: { kind: 'algae' | 'waves' | 'jellyfish' }) {
       {kind === 'algae' && <><path d="M24 39V10M24 25c-9 0-13-6-12-13 8 0 13 5 12 13ZM24 31c9 0 13-6 12-13-8 0-13 5-12 13ZM24 19c-5-2-7-6-6-11 5 1 7 5 6 11Z" /><path d="M17 40h14" /></>}
       {kind === 'waves' && <><path d="M5 17c5 0 5-5 10-5s5 5 10 5 5-5 10-5 5 5 8 5" /><path d="M5 27c5 0 5-5 10-5s5 5 10 5 5-5 10-5 5 5 8 5" /><path d="M5 37c5 0 5-5 10-5s5 5 10 5 5-5 10-5 5 5 8 5" /></>}
       {kind === 'jellyfish' && <><path d="M8 23a16 16 0 0 1 32 0c0 6-7 9-16 9S8 29 8 23Z" /><path d="M15 32c1 4-2 6-1 10M23 32v9M31 32c-1 4 2 6 1 10M12 22c2-2 4-2 6 0M30 22c2-2 4-2 6 0" /></>}
+    </svg>
+  )
+}
+
+function WeatherIcon({ code }: { code: number }) {
+  const kind = code === 0 ? 'sun' : code <= 3 ? 'cloud' : code >= 51 ? 'rain' : 'cloud'
+  const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  return (
+    <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true" {...common}>
+      {kind === 'sun' && <><circle cx="24" cy="24" r="8" /><path d="M24 4v6M24 38v6M4 24h6M38 24h6M9.9 9.9l4.2 4.2M33.9 33.9l4.2 4.2M38.1 9.9l-4.2 4.2M14.1 33.9l-4.2 4.2" /></>}
+      {kind === 'cloud' && <><path d="M13 32h22a7 7 0 0 0 .5-14A12 12 0 0 0 12 20a6 6 0 0 0 1 12Z" /><path d="M17 12a12 12 0 0 1 16 2" opacity=".55" /></>}
+      {kind === 'rain' && <><path d="M12 27h23a7 7 0 0 0 .5-14A12 12 0 0 0 12 15a6 6 0 0 0 0 12Z" /><path d="m17 33-2 5m11-5-2 5m11-5-2 5" /></>}
     </svg>
   )
 }
@@ -210,7 +222,7 @@ function App() {
         if (!Number.isFinite(temperature) || !Number.isFinite(cloudCover)) {
           throw new Error('Weather data is incomplete')
         }
-        setSectorWeather({ temperature: Math.round(temperature), cloudCover: Math.round(cloudCover) })
+        setSectorWeather({ temperature: Math.round(temperature), weatherCode: Math.round(weatherCode) })
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
@@ -1218,11 +1230,11 @@ function App() {
                 <span className="beach-photo-type">{selectedSector.beach_type === 'pebble' ? 'Галечный пляж' : 'Песчаный пляж'}{selectedSector.access_name ? ' · ' + selectedSector.access_name : ''}</span>
                 <span className="beach-photo-updated">{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
               </div>
-              <div className="beach-weather-summary" aria-label={sectorWeather ? `Температура воздуха ${sectorWeather.temperature} градусов, облачность ${sectorWeather.cloudCover} процентов` : 'Погода загружается или временно недоступна'}>
-                <span className="beach-weather-icon" aria-hidden="true">{sectorWeather ? (sectorWeather.cloudCover < 20 ? '☀' : sectorWeather.cloudCover < 70 ? '⛅' : '☁') : '…'}</span>
+              <div className="beach-weather-summary" aria-label={sectorWeather ? `Температура воздуха ${sectorWeather.temperature} градусов` : 'Погода загружается или временно недоступна'}>
+                <span className="beach-weather-icon" aria-hidden="true">{sectorWeather ? <WeatherIcon code={sectorWeather.weatherCode} /> : <span className="weather-loading-mark">…</span>}</span>
                 <span className="beach-weather-reading">
                   <strong>{sectorWeather ? `${sectorWeather.temperature}°` : '—°'}</strong>
-                  <small>{sectorWeather ? `Облачность ${sectorWeather.cloudCover}%` : weatherLoading ? 'Загрузка погоды' : 'Погода недоступна'}</small>
+                  {!sectorWeather && <small>{weatherLoading ? 'Загрузка погоды' : 'Погода недоступна'}</small>}
                 </span>
               </div>
             </div>
