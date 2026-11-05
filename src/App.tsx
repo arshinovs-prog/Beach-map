@@ -218,11 +218,14 @@ function App() {
       .then(({ data, error }) => {
         if (error) throw error
         const temperature = Number(data?.temperature)
-        const cloudCover = Number(data?.cloudCover)
-        if (!Number.isFinite(temperature) || !Number.isFinite(cloudCover)) {
+        const weatherCode = Number(data?.weatherCode)
+        if (!Number.isFinite(temperature) || !Number.isFinite(weatherCode)) {
           throw new Error('Weather data is incomplete')
         }
-        setSectorWeather({ temperature: Math.round(temperature), weatherCode: Math.round(weatherCode) })
+        setSectorWeather({
+          temperature: Math.round(temperature),
+          weatherCode: Math.round(weatherCode),
+        })
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
