@@ -1915,3 +1915,23 @@ button:focus-visible,
   .beach-weather-icon { width: 31px; height: 31px; font-size: 20px; }
   .beach-weather-reading strong { font-size: 18px; }
 }
+
+
+/* Minimal weather indicator — matches the translucent beach-status language. */
+.sector-panel .beach-weather-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 50%;
+  background: rgba(255,255,255,.10);
+  color: rgba(255,255,255,.92);
+}
+.sector-panel .beach-weather-icon svg { display: block; width: 31px; height: 31px; }
+.sector-panel .weather-loading-mark { color: rgba(255,255,255,.8); font-size: 20px; }
+.sector-panel .beach-weather-reading small { display: none; }
+@media (max-width: 600px) {
+  .sector-panel .beach-weather-icon { width: 34px; height: 34px; }
+  .sector-panel .beach-weather-icon svg { width: 28px; height: 28px; }
+}
