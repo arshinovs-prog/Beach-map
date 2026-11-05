@@ -1151,17 +1151,21 @@ function App() {
               aria-label={selectedSector.status_color === 'gray' ? 'Море, актуальных данных о пляже нет' : 'Фотография пляжа с учётом его типа и текущего состояния'}
               style={{ backgroundImage: `url("${getBeachPhotoPath(selectedSector)}")` }}
             >
-              <div className="sector-panel-header">
-                <div className="sector-panel-title">
-                  <h2>{selectedSector.name}</h2>
-                  <div className="sector-access">{selectedSector.beach_type === 'pebble' ? 'Галечный пляж' : 'Песчаный пляж'}</div>
-                  {selectedSector.access_name && <div className="sector-access">{selectedSector.access_name}</div>}
-                  <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
-                </div>
+              <div className="beach-photo-topline">
+                <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
                 <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>×</button>
               </div>
-              <div className="beach-photo-caption"><span>{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span></div>
+              <div className="beach-photo-caption">
+                <div className="beach-photo-place"><span className="beach-photo-pin" aria-hidden="true">⌖</span><h2>{selectedSector.name}</h2></div>
+                <span className="beach-photo-type">{selectedSector.beach_type === 'pebble' ? 'Галечный пляж' : 'Песчаный пляж'}{selectedSector.access_name ? ' · ' + selectedSector.access_name : ''}</span>
+                <span className="beach-photo-updated">{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
+              </div>
             </div>
+            <section className="sector-weather" aria-label="Погода">
+              <div className="sector-section-heading"><span>СЕГОДНЯ</span><small>Погода</small></div>
+              <div className="sector-weather-placeholder"><span className="weather-sun" aria-hidden="true">☀</span><div><strong>Погода уточняется</strong><small>Температура воздуха и условия будут доступны позже</small></div></div>
+            </section>
+            <div className="sector-condition-heading"><h3>Состояние пляжа</h3><span>По сообщениям посетителей</span></div>
             {(() => {
               const conditions = [
                 {key:'algae',icon:<ConditionIcon kind="algae" />,title:'Водоросли',draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',count:selectedSector.algae_none_count,tone:'green'},{value:'low',label:'Мало водорослей',count:selectedSector.algae_low_count,tone:'yellow'},{value:'high',label:'Много водорослей',count:selectedSector.algae_high_count,tone:'red'}]},
@@ -1188,10 +1192,20 @@ function App() {
                 </div>}
               </div>
             })()}
-            <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
-            <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => setReviewReportOpen(true)} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Отправить изменения'}</button>
-            {cooldownUntil && <p className="cooldown-message">Новый отчёт можно отправить через {cooldownText || '5:00'}.</p>}
+            <div className="sector-actions">
+              <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
+              <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => setReviewReportOpen(true)} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Сообщить об изменении'}</button>
+            </div>
+            {cooldownUntil && <p className="cooldown-message">{'Новый отчёт можно отправить через ' + (cooldownText || '5:00') + '.'}</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
+            <section className="sector-extra-section">
+              <div className="sector-section-heading"><h3>Как добраться</h3><small>Маршрут</small></div>
+              <button type="button" className="sector-route-placeholder" disabled><span aria-hidden="true">↗</span><span><strong>Построить маршрут</strong><small>Скоро появится</small></span></button>
+            </section>
+            <section className="sector-extra-section sector-gallery-placeholder">
+              <div className="sector-section-heading"><h3>Фото посетителей</h3><small>Галерея</small></div>
+              <div className="sector-gallery-empty"><span aria-hidden="true">▧</span><p>Здесь появятся фотографии этого участка пляжа</p></div>
+            </section>
           </> : <div className="report-form">
             <div className="edit-mode-heading"><h3>{myReport ? 'Изменить мой отчёт' : 'Сообщить о состоянии'}</h3><button type="button" className="text-action" onClick={() => { setReportMode('view'); setReportMessage('') }}>Назад</button></div>
             <p className="report-hint">Как сейчас выглядит море?</p>
