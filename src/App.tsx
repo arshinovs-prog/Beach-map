@@ -196,10 +196,18 @@ function App() {
 
   const [sectorWeather, setSectorWeather] = useState<SectorWeather | null>(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
+  const weatherCache = useRef(new Map<number, { value: SectorWeather; savedAt: number }>())
 
   useEffect(() => {
     if (!selectedSector) {
       setSectorWeather(null)
+      setWeatherLoading(false)
+      return
+    }
+
+    const cached = weatherCache.current.get(selectedSector.sector_id)
+    if (cached && Date.now() - cached.savedAt < 30 * 60 * 1000) {
+      setSectorWeather(cached.value)
       setWeatherLoading(false)
       return
     }
@@ -222,10 +230,12 @@ function App() {
         if (!Number.isFinite(temperature) || !Number.isFinite(weatherCode)) {
           throw new Error('Weather data is incomplete')
         }
-        setSectorWeather({
+        const value = {
           temperature: Math.round(temperature),
           weatherCode: Math.round(weatherCode),
-        })
+        }
+        weatherCache.current.set(selectedSector.sector_id, { value, savedAt: Date.now() })
+        setSectorWeather(value)
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
@@ -1213,8 +1223,8 @@ function App() {
       {selectedSector && (
         <div className="sector-panel" role="dialog" aria-label={'Состояние пляжа: ' + selectedSector.name}>
           <div className="sector-panel-scroll">
-            <div className="panel-drag-handle" onPointerDown={handlePanelDragStart} onPointerMove={handlePanelDragMove} onPointerUp={handlePanelDragEnd} onPointerCancel={handlePanelDragEnd} role="button" aria-label="Потяните вниз, чтобы закрыть карточку"><span /></div>
             <div className="sector-panel-content">
+            <div className="panel-drag-handle" onPointerDown={handlePanelDragStart} onPointerMove={handlePanelDragMove} onPointerUp={handlePanelDragEnd} onPointerCancel={handlePanelDragEnd} role="button" aria-label="Потяните вниз, чтобы закрыть карточку"><span /></div>
           {reportMode === 'view' ? <>
             <div
               className="beach-photo"
@@ -1234,7 +1244,7 @@ function App() {
                 <span className="beach-photo-updated">{selectedSector.confirmation_count > 0 ? 'Данные ' + selectedSector.confirmation_count + ' участников' : 'Пока нет отчётов'}{selectedSector.last_updated ? ' · обновлено в ' + new Date(selectedSector.last_updated).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : ''}</span>
               </div>
               <div className="beach-weather-summary" aria-label={sectorWeather ? `Температура воздуха ${sectorWeather.temperature} градусов` : 'Погода загружается или временно недоступна'}>
-                <span className="beach-weather-icon" aria-hidden="true">{sectorWeather ? <WeatherIcon code={sectorWeather.weatherCode} /> : <span className="weather-loading-mark">…</span>}</span>
+                <span className="beach-weather-icon" aria-hidden="true">{sectorWeather ? <WeatherIcon code={sectorWeather.weatherCode} /> : <span className="weather-loading-mark" />}</span>
                 <span className="beach-weather-reading">
                   <strong>{sectorWeather ? `${sectorWeather.temperature}°` : '—°'}</strong>
                   {!sectorWeather && <small>{weatherLoading ? 'Загрузка погоды' : 'Погода недоступна'}</small>}
