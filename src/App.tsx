@@ -162,7 +162,7 @@ function App() {
     }
   }
   const handlePanelDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return
+    if (event.button !== 0 || (event.target as HTMLElement).closest('button')) return
     const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
     if (panel) { panel.style.animation = 'none'; panel.style.transition = 'none' }
     panelDragRef.current = { pointerId: event.pointerId, startY: event.clientY, deltaY: 0 }
@@ -1224,12 +1224,15 @@ function App() {
         <div className="sector-panel" role="dialog" aria-label={'Состояние пляжа: ' + selectedSector.name}>
           <div className="sector-panel-scroll">
             <div className="sector-panel-content">
-            <div className="panel-drag-handle" onPointerDown={handlePanelDragStart} onPointerMove={handlePanelDragMove} onPointerUp={handlePanelDragEnd} onPointerCancel={handlePanelDragEnd} role="button" aria-label="Потяните вниз, чтобы закрыть карточку"><span /></div>
           {reportMode === 'view' ? <>
             <div
               className="beach-photo"
               role="img"
-              aria-label={selectedSector.status_color === 'gray' ? 'Море, актуальных данных о пляже нет' : 'Фотография пляжа с учётом его типа и текущего состояния'}
+              aria-label={selectedSector.status_color === 'gray' ? 'Море, актуальных данных о пляже нет. Проведите вниз по фотографии, чтобы закрыть карточку.' : 'Фотография пляжа. Проведите вниз по фотографии, чтобы закрыть карточку.'}
+              onPointerDown={handlePanelDragStart}
+              onPointerMove={handlePanelDragMove}
+              onPointerUp={handlePanelDragEnd}
+              onPointerCancel={handlePanelDragEnd}
               style={{ backgroundImage: `url("${getBeachPhotoPath(selectedSector)}")` }}
             >
               <div className="beach-photo-topline">
