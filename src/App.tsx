@@ -196,23 +196,17 @@ function App() {
     setSectorWeather(null)
     setWeatherLoading(true)
 
-    const params = new URLSearchParams({
-      latitude: String(selectedSector.latitude),
-      longitude: String(selectedSector.longitude),
-      current: 'temperature_2m,cloud_cover',
-      timezone: 'auto',
-    })
-
-    fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`, {
+    supabase.functions.invoke('sector-weather', {
+      body: {
+        latitude: selectedSector.latitude,
+        longitude: selectedSector.longitude,
+      },
       signal: controller.signal,
     })
-      .then(response => {
-        if (!response.ok) throw new Error(`Weather API: ${response.status}`)
-        return response.json()
-      })
-      .then(data => {
-        const temperature = Number(data?.current?.temperature_2m)
-        const cloudCover = Number(data?.current?.cloud_cover)
+      .then(({ data, error }) => {
+        if (error) throw error
+        const temperature = Number(data?.temperature)
+        const cloudCover = Number(data?.cloudCover)
         if (!Number.isFinite(temperature) || !Number.isFinite(cloudCover)) {
           throw new Error('Weather data is incomplete')
         }
