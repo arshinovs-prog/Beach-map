@@ -3,9 +3,11 @@ name: CI
 on:
   push:
     branches:
+      - main
       - feature/anonymous-auth-bootstrap
   pull_request:
     branches:
+      - main
       - feature/anonymous-auth-bootstrap
 
 jobs:
@@ -24,6 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
 
       - name: Build production bundle
         run: npm run build
