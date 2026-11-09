@@ -75,8 +75,8 @@ Deno.serve(async (req: Request) => {
     const temperature = Number(payload?.current?.temperature_2m);
     const weatherCode = Number(payload?.current?.weather_code);
     if (
-      !Number.isFinite(temperature) || !Number.isFinite(cloudCover) ||
-      cloudCover < 0 || cloudCover > 100
+      !Number.isFinite(temperature) ||
+      !Number.isInteger(weatherCode) || weatherCode < 0
     ) {
       throw new Error("Weather provider returned invalid data");
     }
