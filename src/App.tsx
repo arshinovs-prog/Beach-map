@@ -3,6 +3,7 @@ import * as maplibregl from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 
 import { supabase } from './lib/supabase'
+import { ensureAnonymousSession } from './lib/anonymousAuth'
 import { isBeachMapAdmin, loadActiveSectorGeometries, saveBeachSector, deactivateBeachSector, signInBeachMapAdmin, signOutBeachMapAdmin, type SavedSector } from './lib/beachSectorGeometry'
 import type { Feature, Polygon, Position } from 'geojson'
 
@@ -996,23 +997,22 @@ function App() {
   }
 
   async function handleConfirmReport() {
-    if (!selectedSector || reportBusy || hasDraftChanges || cooldownUntil) return
+    if (!selectedSector?.report_id || reportBusy || hasDraftChanges || cooldownUntil) return
     setReportBusy(true); setReportMessage('')
     try {
-      const { error } = await supabase.rpc('submit_beach_report', {
-        p_sector_id: selectedSector.sector_id,
-        p_algae: selectedSector.algae ?? 'none',
-        p_waves: selectedSector.waves ?? 'none',
-        p_jellyfish: selectedSector.jellyfish ?? 'none',
+      await ensureAnonymousSession()
+      const { error } = await supabase.rpc('confirm_beach_report', {
+        p_report_id: selectedSector.report_id,
       })
       if (error) {
-        if (error.message.includes('Report cooldown')) throw new Error('Повторно отправить отчёт по этому сектору можно через 5 минут после предыдущего.')
-        if (error.message.includes('Report rate limit')) throw new Error('Достигнут лимит: не более 5 отчётов в час.')
+        if (error.message.includes('You cannot confirm your own report')) throw new Error('Нельзя подтвердить собственный отчёт.')
+        if (error.message.includes('already confirmed')) throw new Error('Вы уже подтверждали этот отчёт.')
+        if (error.message.includes('Confirmation rate limit')) throw new Error('Достигнут лимит подтверждений: не более 20 в час.')
         throw error
       }
       await refreshSectorStatuses()
       await loadMySectorActivity(selectedSector.sector_id)
-      setReportMessage('Спасибо! Вы подтвердили текущее состояние пляжа.')
+      setReportMessage('Спасибо! Вы подтвердили актуальность отчёта.')
     } catch (e) { setReportMessage(e instanceof Error ? e.message : 'Не удалось подтвердить состояние.') }
     finally { setReportBusy(false) }
   }
@@ -1282,7 +1282,7 @@ function App() {
               </div>
             })()}
             <div className="sector-actions">
-              <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
+              <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || !selectedSector.report_id || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Подтверждаем…' : 'Подтвердить состояние'}</button>
               <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => setReviewReportOpen(true)} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Сообщить об изменении'}</button>
             </div>
             {cooldownUntil && <p className="cooldown-message">{'Новый отчёт можно отправить через ' + (cooldownText || '5:00') + '.'}</p>}
