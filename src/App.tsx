@@ -342,7 +342,6 @@ function App() {
   const [reportMessage, setReportMessage] = useState('')
   const [reportMode, setReportMode] = useState<'view' | 'edit'>('view')
   const [myReport, setMyReport] = useState<{ id: number; algae: string; waves: string; jellyfish: string; created_at: string } | null>(null)
-  const [, setMyConfirmedReportId] = useState<number | null>(null)
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
   const [cooldownText, setCooldownText] = useState('')
   useEffect(() => {
@@ -937,7 +936,7 @@ function App() {
   async function loadMySectorActivity(sectorId: number) {
     const { data: authData } = await supabase.auth.getUser()
     const userId = authData.user?.id
-    if (!userId) { setIsAuthenticated(false); setMyReport(null); setMyConfirmedReportId(null); setCooldownUntil(null); return }
+    if (!userId) { setIsAuthenticated(false); setMyReport(null); setCooldownUntil(null); return }
     setIsAuthenticated(true)
     const { data, error } = await supabase.rpc('get_my_sector_activity', { p_sector_id: sectorId })
     if (error) throw error
@@ -951,13 +950,10 @@ function App() {
     } : null)
     const until = own?.created_at ? new Date(own.created_at).getTime() + 5 * 60 * 1000 : 0
     setCooldownUntil(until > Date.now() ? until : null)
-    setMyConfirmedReportId(own?.has_confirmed_current_report && sectorsRef.current.find(s => s.sector_id === sectorId)?.report_id
-      ? sectorsRef.current.find(s => s.sector_id === sectorId)!.report_id
-      : null)
   }
 
   useEffect(() => {
-    if (!selectedSector) { setReportMode('view'); setMyReport(null); setMyConfirmedReportId(null); return }
+    if (!selectedSector) { setReportMode('view'); setMyReport(null); return }
     setReportMode('view'); setReportMessage('')
     setReportAlgae(selectedSector.algae ?? 'none')
     setReportWaves(selectedSector.waves ?? 'none')
