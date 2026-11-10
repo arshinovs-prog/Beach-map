@@ -936,6 +936,7 @@ function App() {
   }
 
   async function loadMySectorActivity(sectorId: number) {
+    await ensureAnonymousSession()
     const { data: authData } = await supabase.auth.getUser()
     const userId = authData.user?.id
     if (!userId) { setIsAuthenticated(false); setMyReport(null); setMyConfirmedReportId(null); setCooldownUntil(null); return }
@@ -983,6 +984,7 @@ function App() {
     setReviewReportOpen(false)
     setReportBusy(true); setReportMessage('')
     try {
+      await ensureAnonymousSession()
       const { error } = await supabase.rpc('submit_beach_report', { p_sector_id: selectedSector.sector_id, p_algae: reportAlgae, p_waves: reportWaves, p_jellyfish: reportJellyfish })
       if (error) {
         if (error.message.includes('Report cooldown')) throw new Error('Повторно отправить отчёт по этому сектору можно через 5 минут после предыдущего.')
