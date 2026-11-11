@@ -300,7 +300,7 @@ function App() {
       })
 
     return () => controller.abort()
-  }, [selectedSector?.sector_id])
+  }, [selectedSector?.sector_id, selectedSector?.latitude, selectedSector?.longitude])
 
   const [expandedConditions, setExpandedConditions] = useState<string[]>([])
   const hasActiveFilters = surfaceFilter !== 'all' || statusFilters.length !== 4
@@ -911,8 +911,11 @@ function App() {
 
   useEffect(() => {
     if (!selectedSector) return
-    void loadMySectorActivity(selectedSector.sector_id).catch(error => console.error('Не удалось загрузить ваши действия:', error))
-  }, [selectedSector])
+    const timer = window.setTimeout(() => {
+      void loadMySectorActivity(selectedSector.sector_id).catch(error => console.error('Не удалось загрузить ваши действия:', error))
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [selectedSector?.sector_id])
 
   useEffect(() => {
     if (!cooldownUntil) return
