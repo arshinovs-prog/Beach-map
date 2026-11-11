@@ -49,6 +49,68 @@ type Sector = {
   beach_type: 'sand' | 'pebble'
 }
 
+
+type SectorStatusRow = Record<string, unknown>
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function normalizeSectorStatus(value: unknown): Sector {
+  const row: SectorStatusRow = isRecord(value) ? value : {}
+  const number = (key: string) => Number(row[key] ?? 0)
+  const nullableText = (key: string) => typeof row[key] === 'string' ? row[key] as string : null
+  const status = row.status_color
+  return {
+    sector_id: number('sector_id'),
+    name: typeof row['Имя'] === 'string' ? row['Имя'] : typeof row.name === 'string' ? row.name : 'Без названия',
+    access_name: nullableText('access_name'),
+    latitude: number('latitude'),
+    longitude: number('longitude'),
+    report_id: row.report_id == null ? null : Number(row.report_id),
+    algae: nullableText('algae'),
+    waves: nullableText('waves'),
+    jellyfish: nullableText('jellyfish'),
+    status_color: status === 'green' || status === 'yellow' || status === 'red' || status === 'gray' ? status : 'gray',
+    main_icon: nullableText('main_icon'),
+    last_updated: nullableText('last_updated'),
+    confirmation_count: number('confirmation_count'),
+    algae_none_count: number('algae_none_count'),
+    algae_low_count: number('algae_low_count'),
+    algae_high_count: number('algae_high_count'),
+    waves_none_count: number('waves_none_count'),
+    waves_medium_count: number('waves_medium_count'),
+    waves_high_count: number('waves_high_count'),
+    jellyfish_none_count: number('jellyfish_none_count'),
+    jellyfish_low_count: number('jellyfish_low_count'),
+    jellyfish_high_count: number('jellyfish_high_count'),
+    beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
+  }
+}
+
+function parsePolygon(value: unknown): Polygon | null {
+  let parsed = value
+  if (typeof parsed === 'string') {
+    try { parsed = JSON.parse(parsed) as unknown } catch { return null }
+  }
+  if (!isRecord(parsed)) return null
+  if (parsed.type === 'Feature') parsed = parsed.geometry
+  if (!isRecord(parsed) || parsed.type !== 'Polygon' || !Array.isArray(parsed.coordinates)) return null
+  return parsed as unknown as Polygon
+}
+
+function parsePolygonOrMultiPolygon(value: unknown): Polygon | import('geojson').MultiPolygon | null {
+  let parsed = value
+  if (typeof parsed === 'string') {
+    try { parsed = JSON.parse(parsed) as unknown } catch { return null }
+  }
+  if (!isRecord(parsed)) return null
+  if (parsed.type === 'Feature') parsed = parsed.geometry
+  if (!isRecord(parsed) || !Array.isArray(parsed.coordinates)) return null
+  if (parsed.type === 'Polygon' || parsed.type === 'MultiPolygon') return parsed as unknown as Polygon | import('geojson').MultiPolygon
+  return null
+}
+
 function getBeachPhotoPath(sector: Sector) {
   const surface = sector.beach_type === 'pebble' ? 'pebble' : 'sand'
 
@@ -314,14 +376,8 @@ function App() {
     }
     savedGeometry.forEach(item => {
       if (!matchingIds.has(Number(item.id))) return
-      let geometry: any = item.geometry
-      if (typeof geometry === 'string') {
-        try { geometry = JSON.parse(geometry) } catch { return }
-      }
-      if (geometry?.type === 'Feature') geometry = geometry.geometry
-      if (geometry?.type === 'Polygon' || geometry?.type === 'MultiPolygon') {
-        extendCoordinates(geometry.coordinates)
-      }
+      const geometry = parsePolygonOrMultiPolygon(item.geometry)
+      if (geometry) extendCoordinates(geometry.coordinates)
     })
     const map = mapRef.current
     if (map && !bounds.isEmpty()) {
@@ -361,7 +417,9 @@ function App() {
           value.forEach(addCoordinates)
         }
       }
-      addCoordinates((feature.geometry as any).coordinates)
+      if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+        addCoordinates(feature.geometry.coordinates)
+      }
       if (!bounds.isEmpty()) {
         const panelHeight = document.querySelector('.sector-panel')?.getBoundingClientRect().height ?? 0
         map.fitBounds(bounds, {
@@ -412,64 +470,7 @@ function App() {
         data
       )
 
-      const normalizedSectors: Sector[] =
-        (data ?? []).map((row: any) => ({
-          sector_id:
-            Number(row.sector_id),
-
-          name:
-            row['Имя'] ??
-            row.name ??
-            'Без названия',
-
-          access_name:
-            row.access_name ?? null,
-
-          latitude:
-            Number(row.latitude),
-
-          longitude:
-            Number(row.longitude),
-
-          report_id:
-            row.report_id !== null &&
-            row.report_id !== undefined
-              ? Number(row.report_id)
-              : null,
-
-          algae:
-            row.algae ?? null,
-
-          waves:
-            row.waves ?? null,
-
-          jellyfish:
-            row.jellyfish ?? null,
-
-          status_color:
-            row.status_color ?? 'gray',
-
-          main_icon:
-            row.main_icon ?? null,
-
-          last_updated:
-            row.last_updated ?? null,
-
-          confirmation_count:
-            Number(
-              row.confirmation_count ?? 0
-            ),
-          algae_none_count: Number(row.algae_none_count ?? 0),
-          algae_low_count: Number(row.algae_low_count ?? 0),
-          algae_high_count: Number(row.algae_high_count ?? 0),
-          waves_none_count: Number(row.waves_none_count ?? 0),
-          waves_medium_count: Number(row.waves_medium_count ?? 0),
-          waves_high_count: Number(row.waves_high_count ?? 0),
-          jellyfish_none_count: Number(row.jellyfish_none_count ?? 0),
-          jellyfish_low_count: Number(row.jellyfish_low_count ?? 0),
-          jellyfish_high_count: Number(row.jellyfish_high_count ?? 0),
-          beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
-        }))
+      const normalizedSectors: Sector[] = (data ?? []).map(normalizeSectorStatus)
 
       console.log(
         'Нормализованные сектора:',
@@ -741,14 +742,8 @@ function App() {
         const beachType = status?.beach_type ?? sector.beach_type ?? 'sand'
         if (surfaceFilter !== 'all' && beachType !== surfaceFilter) return []
         if (status && !statusFilters.includes(status.status_color)) return []
-        const raw: any = sector.geometry
-        if (!raw) return []
-        let geometry = raw
-        if (typeof geometry === 'string') {
-          try { geometry = JSON.parse(geometry) } catch { return [] }
-        }
-        if (geometry?.type === 'Feature') geometry = geometry.geometry
-        if (geometry?.type !== 'Polygon' || !Array.isArray(geometry.coordinates)) return []
+        const geometry = parsePolygon(sector.geometry)
+        if (!geometry) return []
         return [{
           type: 'Feature',
           properties: {
@@ -838,18 +833,8 @@ function App() {
       }
 
       savedGeometry.forEach((sector) => {
-        let geometry: any = sector.geometry
-        if (typeof geometry === 'string') {
-          try {
-            geometry = JSON.parse(geometry)
-          } catch {
-            return
-          }
-        }
-        if (geometry?.type === 'Feature') geometry = geometry.geometry
-        if (geometry?.type === 'Polygon' || geometry?.type === 'MultiPolygon') {
-          extendCoordinates(geometry.coordinates)
-        }
+        const geometry = parsePolygonOrMultiPolygon(sector.geometry)
+        if (geometry) extendCoordinates(geometry.coordinates)
       })
 
       if (bounds.isEmpty()) return
@@ -901,31 +886,7 @@ function App() {
     const { data, error } = await supabase
       .rpc('get_sector_current_status')
     if (error) throw error
-    const normalized: Sector[] = (data ?? []).map((row: any) => ({
-      sector_id: Number(row.sector_id),
-      name: row['Имя'] ?? row.name ?? 'Без названия',
-      access_name: row.access_name ?? null,
-      latitude: Number(row.latitude),
-      longitude: Number(row.longitude),
-      report_id: row.report_id != null ? Number(row.report_id) : null,
-      algae: row.algae ?? null,
-      waves: row.waves ?? null,
-      jellyfish: row.jellyfish ?? null,
-      status_color: row.status_color ?? 'gray',
-      main_icon: row.main_icon ?? null,
-      last_updated: row.last_updated ?? null,
-      confirmation_count: Number(row.confirmation_count ?? 0),
-      algae_none_count: Number(row.algae_none_count ?? 0),
-      algae_low_count: Number(row.algae_low_count ?? 0),
-      algae_high_count: Number(row.algae_high_count ?? 0),
-      waves_none_count: Number(row.waves_none_count ?? 0),
-      waves_medium_count: Number(row.waves_medium_count ?? 0),
-      waves_high_count: Number(row.waves_high_count ?? 0),
-      jellyfish_none_count: Number(row.jellyfish_none_count ?? 0),
-      jellyfish_low_count: Number(row.jellyfish_low_count ?? 0),
-      jellyfish_high_count: Number(row.jellyfish_high_count ?? 0),
-      beach_type: row.beach_type === 'pebble' ? 'pebble' : 'sand',
-    }))
+    const normalized: Sector[] = (data ?? []).map(normalizeSectorStatus)
     sectorsRef.current = normalized
     setSectors(normalized)
     setSelectedSector((current) => current
@@ -1060,9 +1021,8 @@ function App() {
     setDraftVertices([])
     draftVerticesRef.current = []
     setAdminMessage(`Выбран сектор #${sector.id}. Нажмите «Редактировать», чтобы перемещать вершины.`)
-    const raw: any = sector.geometry
-    const geometry = raw?.type === 'Feature' ? raw.geometry : raw
-    const coords = geometry?.coordinates?.[0] as Position[] | undefined
+    const geometry = parsePolygon(sector.geometry)
+    const coords = geometry?.coordinates[0] as Position[] | undefined
     const map = mapRef.current
     if (map && coords?.length) {
       const first = coords[0]
@@ -1073,9 +1033,8 @@ function App() {
   function beginEditingSelected() {
     const sector = selectedSavedSector
     if (!sector) return
-    const raw: any = sector.geometry
-    const geometry = raw?.type === 'Feature' ? raw.geometry : raw
-    if (geometry?.type !== 'Polygon' || !geometry.coordinates?.[0]) { setAdminMessage('У этого сектора нет сохранённого полигона.'); return }
+    const geometry = parsePolygon(sector.geometry)
+    if (!geometry?.coordinates[0]) { setAdminMessage('У этого сектора нет сохранённого полигона.'); return }
     const ring = geometry.coordinates[0] as Position[]
     const openRing = ring.length > 1 ? ring.slice(0, -1) : ring
     const vertices: [number, number][] = openRing.map((pos) => [Number(pos[0]), Number(pos[1])])
@@ -1122,17 +1081,21 @@ function App() {
   }
 
   function exportDraftGeoJSON() {
-    let features: any[] = []
-    if ((editorMode === 'new' || editorMode === 'editing') && draftVertices.length >= 3) {
-      const ring = [...draftVertices, draftVertices[0]]
-      features = [{ type: 'Feature', properties: { name: sectorName || 'Новый сектор', id: editingId }, geometry: { type: 'Polygon', coordinates: [ring] } }]
-    } else {
-      features = savedGeometry.map((sector: any) => ({
-        type: 'Feature',
-        properties: { id: sector.id, name: sector.name, access_name: sector.access_name },
-        geometry: typeof sector.geometry === 'string' ? JSON.parse(sector.geometry) : sector.geometry,
-      }))
-    }
+    const features: Feature<Polygon>[] =
+      (editorMode === 'new' || editorMode === 'editing') && draftVertices.length >= 3
+        ? [{
+            type: 'Feature',
+            properties: { name: sectorName || 'Новый сектор', id: editingId },
+            geometry: { type: 'Polygon', coordinates: [[...draftVertices, draftVertices[0]]] },
+          }]
+        : savedGeometry.flatMap((sector) => {
+            const geometry = parsePolygon(sector.geometry)
+            return geometry ? [{
+              type: 'Feature' as const,
+              properties: { id: sector.id, name: sector.name, access_name: sector.access_name },
+              geometry,
+            }] : []
+          })
     if (!features.length) { window.alert('Нет полигонов для экспорта.'); return }
     const geojson = { type: 'FeatureCollection', features }
     const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/geo+json' })
