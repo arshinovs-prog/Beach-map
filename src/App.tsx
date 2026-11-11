@@ -247,7 +247,7 @@ function App() {
     if (drag.deltaY >= threshold) {
       panel.style.transform = 'translate3d(0, ' + (panel.getBoundingClientRect().height + 40) + 'px, 0)'
       panel.style.opacity = '0'
-      window.setTimeout(() => { setSelectedSector(null); panel.style.transform = ''; panel.style.opacity = '' }, 230)
+      window.setTimeout(() => { handleSelectSector(null); panel.style.transform = ''; panel.style.opacity = '' }, 230)
     } else {
       panel.style.transform = 'translate3d(0, 0, 0)'
       window.setTimeout(() => { panel.style.transform = '' }, 230)
@@ -261,22 +261,12 @@ function App() {
   const weatherCache = useRef(new Map<number, { value: SectorWeather; savedAt: number }>())
 
   useEffect(() => {
-    if (!selectedSector) {
-      setSectorWeather(null)
-      setWeatherLoading(false)
-      return
-    }
+    if (!selectedSector) return
 
     const cached = weatherCache.current.get(selectedSector.sector_id)
-    if (cached && Date.now() - cached.savedAt < 30 * 60 * 1000) {
-      setSectorWeather(cached.value)
-      setWeatherLoading(false)
-      return
-    }
+    if (cached && Date.now() - cached.savedAt < 30 * 60 * 1000) return
 
     const controller = new AbortController()
-    setSectorWeather(null)
-    setWeatherLoading(true)
 
     supabase.functions.invoke('sector-weather', {
       body: {
@@ -310,17 +300,6 @@ function App() {
       })
 
     return () => controller.abort()
-  }, [selectedSector?.sector_id])
-
-  useEffect(() => {
-    if (!selectedSector) {
-      setExpandedConditions([])
-      return
-    }
-    setReportAlgae(selectedSector.algae ?? 'none')
-    setReportWaves(selectedSector.waves ?? 'none')
-    setReportJellyfish(selectedSector.jellyfish ?? 'none')
-    setExpandedConditions([])
   }, [selectedSector?.sector_id])
 
   const [expandedConditions, setExpandedConditions] = useState<string[]>([])
@@ -387,7 +366,7 @@ function App() {
         duration: 700,
       })
     }
-  }, [surfaceFilter, statusFilters, sectors, savedGeometry])
+  }, [surfaceFilter, statusFilters, sectors, savedGeometry, visibleSectors])
   const [saving, setSaving] = useState(false)
   const [reportAlgae, setReportAlgae] = useState('none')
   const [reportWaves, setReportWaves] = useState('none')
@@ -402,8 +381,7 @@ function App() {
   const [cooldownText, setCooldownText] = useState('')
   useEffect(() => {
     const map = mapRef.current
-    if (!selectedSector || !map) { setExpandedConditions([]); return }
-    setFiltersOpen(false)
+    if (!selectedSector || !map) return
     // Подбираем масштаб по границам самого сектора, чтобы он целиком
     // помещался в свободной области карты над карточкой.
     const features = map.querySourceFeatures('saved-polygons')
@@ -431,7 +409,7 @@ function App() {
     } else if (selectedSector.latitude && selectedSector.longitude) {
       map.flyTo({ center: [selectedSector.longitude, selectedSector.latitude], zoom: 12.8, duration: 850 })
     }
-  }, [selectedSector?.sector_id])
+  }, [selectedSector])
 
   const hasDraftChanges = !!selectedSector && (
     reportAlgae !== (selectedSector.algae ?? 'none') ||
@@ -609,10 +587,10 @@ function App() {
         if (!Number.isFinite(id)) return
         const sector = sectorsRef.current.find((item) => item.sector_id === id)
         if (sector) {
-          setSelectedSector(sector)
+          handleSelectSector(sector)
         } else {
           // Даже если строка отсутствует во view статусов, показываем сектор с серым статусом.
-          setSelectedSector({
+          handleSelectSector({
             sector_id: id,
             name: String(feature?.properties?.name ?? 'Пляжный сектор'),
             access_name: null,
@@ -882,6 +860,24 @@ function App() {
     ;(map.getSource('editor-draft') as maplibregl.GeoJSONSource).setData({ type: 'FeatureCollection', features })
   }, [draftVertices, editorMode])
 
+  function handleSelectSector(sector: Sector | null) {
+    setSelectedSector(sector)
+    setExpandedConditions([])
+    setReportAlgae(sector?.algae ?? 'none')
+    setReportWaves(sector?.waves ?? 'none')
+    setReportJellyfish(sector?.jellyfish ?? 'none')
+    setReportMode('view')
+    setReportMessage('')
+    setMyReport(null)
+    setCooldownUntil(null)
+    setCooldownText('')
+    setFiltersOpen(false)
+    const cached = sector ? weatherCache.current.get(sector.sector_id) : undefined
+    const cacheIsFresh = !!cached && Date.now() - cached.savedAt < 30 * 60 * 1000
+    setSectorWeather(cacheIsFresh ? cached.value : null)
+    setWeatherLoading(!!sector && !cacheIsFresh)
+  }
+
   async function refreshSectorStatuses() {
     const { data, error } = await supabase
       .rpc('get_sector_current_status')
@@ -914,24 +910,23 @@ function App() {
   }
 
   useEffect(() => {
-    if (!selectedSector) { setReportMode('view'); setMyReport(null); return }
-    setReportMode('view'); setReportMessage('')
-    setReportAlgae(selectedSector.algae ?? 'none')
-    setReportWaves(selectedSector.waves ?? 'none')
-    setReportJellyfish(selectedSector.jellyfish ?? 'none')
+    if (!selectedSector) return
     void loadMySectorActivity(selectedSector.sector_id).catch(error => console.error('Не удалось загрузить ваши действия:', error))
-  }, [selectedSector?.sector_id, selectedSector?.report_id])
+  }, [selectedSector])
 
   useEffect(() => {
-    if (!cooldownUntil) { setCooldownText(''); return }
+    if (!cooldownUntil) return
     const update = () => {
       const seconds = Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000))
       if (!seconds) { setCooldownUntil(null); setCooldownText(''); return }
       setCooldownText(`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`)
     }
-    update()
+    const initialTimer = window.setTimeout(update, 0)
     const timer = window.setInterval(update, 1000)
-    return () => window.clearInterval(timer)
+    return () => {
+      window.clearTimeout(initialTimer)
+      window.clearInterval(timer)
+    }
   }, [cooldownUntil])
 
   async function handleSubmitReport() {
@@ -1196,7 +1191,7 @@ function App() {
             >
               <div className="beach-photo-topline">
                 <div className={'status status-' + selectedSector.status_color}>{getStatusText(selectedSector.status_color)}</div>
-                <button className="close-button" aria-label="Закрыть карточку" onClick={() => setSelectedSector(null)}>×</button>
+                <button className="close-button" aria-label="Закрыть карточку" onClick={() => handleSelectSector(null)}>×</button>
               </div>
             </div>
             <div className="beach-photo-info">
