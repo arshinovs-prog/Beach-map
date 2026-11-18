@@ -270,8 +270,7 @@ function App() {
 
     supabase.functions.invoke('sector-weather', {
       body: {
-        latitude: selectedSector.latitude,
-        longitude: selectedSector.longitude,
+        sector_id: selectedSector.sector_id,
       },
       signal: controller.signal,
     })
