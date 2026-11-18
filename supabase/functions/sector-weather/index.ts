@@ -39,23 +39,17 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
-  let latitude: number;
-  let longitude: number;
+  let sectorId: number;
   try {
     const body = await req.json();
-    latitude = Number(body?.latitude);
-    longitude = Number(body?.longitude);
+    sectorId = Number(body?.sector_id);
   } catch {
     return json({ error: "Invalid JSON body" }, 400);
   }
 
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
-      latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-    return json({ error: "Invalid coordinates" }, 400);
+  if (!Number.isSafeInteger(sectorId) || sectorId <= 0) {
+    return json({ error: "Invalid sector" }, 400);
   }
-
-  const lat = Number(latitude.toFixed(3));
-  const lon = Number(longitude.toFixed(3));
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceKey) {
@@ -66,6 +60,28 @@ Deno.serve(async (req: Request) => {
   const db = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+
+  // Resolve coordinates on the server. Never let callers populate the
+  // shared weather cache for arbitrary coordinates.
+  const { data: sector, error: sectorError } = await db
+    .from("beach_sectors")
+    .select("latitude,longitude")
+    .eq("id", sectorId)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (sectorError) {
+    console.error("Weather sector lookup failed:", sectorError.message);
+    return json({ error: "Weather temporarily unavailable" }, 503);
+  }
+  if (!sector) return json({ error: "Active sector not found" }, 404);
+
+  const lat = Number(Number(sector.latitude).toFixed(3));
+  const lon = Number(Number(sector.longitude).toFixed(3));
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    console.error("Active sector has invalid coordinates:", sectorId);
+    return json({ error: "Weather temporarily unavailable" }, 503);
+  }
 
   const { data: cached, error: readError } = await db
     .from("sector_weather_cache")
