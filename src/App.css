@@ -1999,3 +1999,176 @@ button:focus-visible,
     font-weight: 650;
   }
 }
+
+
+/* =========================================================
+   BEACH MAP — COASTAL GLASS HOME
+   Главный экран карты. Логика карты и отчётов не затрагивается.
+   ========================================================= */
+:root {
+  --coast-glass: rgba(255, 255, 255, .76);
+  --coast-glass-strong: rgba(255, 255, 255, .90);
+  --coast-glass-border: rgba(255, 255, 255, .82);
+  --coast-glass-shadow: 0 12px 34px rgba(20, 62, 76, .16);
+  --coast-accent: #16a6ad;
+}
+.app { background: #edf5f5; }
+.map-container { background: #e9f0ef; }
+
+/* Brand is deliberately a small, replaceable identity block. */
+.map-brand {
+  top: max(16px, env(safe-area-inset-top));
+  left: max(16px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 10px;
+  border: 1px solid var(--coast-glass-border);
+  border-radius: 22px;
+  background: var(--coast-glass);
+  box-shadow: var(--coast-glass-shadow);
+  backdrop-filter: blur(18px) saturate(155%);
+  -webkit-backdrop-filter: blur(18px) saturate(155%);
+}
+.map-brand-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(22,166,173,.16);
+  border-radius: 15px;
+  background: linear-gradient(145deg, rgba(35,190,195,.18), rgba(22,125,165,.10));
+  color: #087f91;
+}
+.map-brand-mark svg { display: block; width: 30px; height: 30px; }
+.map-brand-copy { display: flex; flex-direction: column; gap: 2px; }
+.map-brand h1 {
+  color: #153e4a;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.12;
+  letter-spacing: -.045em;
+}
+.map-brand > .map-brand-copy > span {
+  color: #637d83;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .015em;
+}
+
+/* MapLibre controls become floating glass circles. */
+.maplibregl-ctrl-top-right {
+  top: max(76px, calc(env(safe-area-inset-top) + 70px));
+  right: max(14px, env(safe-area-inset-right));
+}
+.maplibregl-ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: visible;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.maplibregl-ctrl-group button {
+  width: 44px !important;
+  height: 44px !important;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.9) !important;
+  border-radius: 50% !important;
+  background: var(--coast-glass-strong) !important;
+  box-shadow: 0 5px 18px rgba(20,62,76,.15) !important;
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+.maplibregl-ctrl-group button + button { border-top: 1px solid rgba(255,255,255,.9) !important; }
+.maplibregl-ctrl-group button:hover { background: #fff !important; }
+
+/* Hybrid bottom dock: one glass filter action, with round map controls above. */
+.footer {
+  bottom: max(14px, env(safe-area-inset-bottom));
+  width: min(460px, calc(100vw - 28px));
+  min-height: 58px;
+  padding: 7px;
+  border: 1px solid rgba(255,255,255,.88);
+  border-radius: 24px;
+  background: var(--coast-glass);
+  box-shadow: 0 14px 36px rgba(20,62,76,.18);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+.footer .filter-actions {
+  width: 100%;
+  justify-content: center;
+  gap: 8px;
+}
+.footer .filter-toggle,
+.footer .filter-reset {
+  min-height: 44px;
+  border: 1px solid rgba(22,133,151,.13);
+  border-radius: 17px;
+  background: rgba(255,255,255,.78);
+  color: #185463;
+  box-shadow: 0 3px 10px rgba(20,62,76,.05);
+  font-weight: 800;
+}
+.footer .filter-toggle {
+  flex: 1 1 auto;
+  background: linear-gradient(135deg, rgba(224,250,247,.96), rgba(237,248,255,.92));
+}
+.footer .filter-reset { padding-inline: 14px; }
+.footer.filters-open {
+  width: min(520px, calc(100vw - 28px));
+  border-radius: 24px;
+  background: rgba(250,253,253,.88);
+}
+.footer.filters-open .filter-toggle { flex: 0 1 auto; }
+.footer .footer-filter,
+.footer .footer-surfaces button {
+  border-radius: 14px;
+  background: rgba(255,255,255,.72);
+  border-color: rgba(25,92,106,.10);
+}
+.footer .footer-filter.active,
+.footer .footer-surfaces button.active {
+  background: rgba(218,246,237,.94);
+  border-color: rgba(27,151,112,.28);
+  color: #176b52;
+}
+.footer .filter-result-banner {
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 999px;
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+@media (max-width: 600px) {
+  .map-brand {
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    gap: 8px;
+    padding: 8px 13px 8px 8px;
+    border-radius: 19px;
+  }
+  .map-brand-mark { flex-basis: 38px; width: 38px; height: 38px; border-radius: 13px; }
+  .map-brand-mark svg { width: 27px; height: 27px; }
+  .map-brand h1 { font-size: 16px; }
+  .map-brand > .map-brand-copy > span { font-size: 9px; }
+  .maplibregl-ctrl-top-right {
+    top: max(76px, calc(env(safe-area-inset-top) + 70px));
+    right: 12px;
+  }
+  .maplibregl-ctrl-group button { width: 42px !important; height: 42px !important; }
+  .footer {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: calc(100vw - 24px);
+    border-radius: 21px;
+  }
+  .footer.filters-open { width: calc(100vw - 24px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer, .maplibregl-ctrl-group button { transition: none !important; }
+}
