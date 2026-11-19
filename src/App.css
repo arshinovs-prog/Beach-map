@@ -2288,3 +2288,64 @@ button:focus-visible,
     -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   }
 }
+
+
+/* Filter UX: explicit "All" preset and stable two-button action row. */
+.footer-status-filters {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 8px;
+}
+.footer .footer-filter {
+  min-width: 0;
+  width: 100%;
+  white-space: nowrap;
+  border-radius: 14px;
+}
+.footer .footer-filter-all {
+  color: #28616c;
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(35,119,133,.13);
+  font-weight: 750;
+}
+.footer .footer-filter-all.active {
+  background: rgba(218,246,247,.92);
+  border-color: rgba(22,142,157,.28);
+}
+.footer.filters-open .filter-actions {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.footer.filters-open .filter-toggle {
+  display: inline-flex;
+  flex: 1 1 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  white-space: nowrap;
+  padding-inline: 12px !important;
+  font-size: 12px;
+}
+.footer.filters-open .filter-reset {
+  display: inline-flex;
+  flex: 0 0 auto !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  margin: 0 !important;
+  padding: 0 13px !important;
+  min-height: 44px;
+  white-space: nowrap;
+  border-radius: 999px;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .footer.filters-open .filter-actions { gap: 7px; }
+  .footer.filters-open .filter-toggle { min-height: 44px; }
+  .footer.filters-open .filter-reset { min-width: 82px; padding-inline: 10px !important; }
+  .footer-status-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .footer .footer-filter { min-height: 42px; padding-inline: 6px; font-size: 11px; }
+}
