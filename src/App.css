@@ -2349,3 +2349,72 @@ button:focus-visible,
   .footer-status-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
   .footer .footer-filter { min-height: 42px; padding-inline: 6px; font-size: 11px; }
 }
+
+
+/* Map presentation polish: crisp, calm cartography with floating controls. */
+.map-container {
+  background: #e8f1f0;
+}
+.map-container .maplibregl-canvas {
+  outline: none;
+}
+.maplibregl-ctrl-top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+}
+.maplibregl-ctrl-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.maplibregl-ctrl-group button {
+  width: 46px !important;
+  height: 46px !important;
+  border: 1px solid rgba(255,255,255,.94) !important;
+  border-radius: 50% !important;
+  background: rgba(248,253,253,.78) !important;
+  box-shadow: 0 7px 20px rgba(20,62,76,.16), inset 0 1px 0 rgba(255,255,255,.92) !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgba(255,255,255,.94) !important;
+}
+.maplibregl-ctrl-group button:hover {
+  background: rgba(255,255,255,.94) !important;
+  box-shadow: 0 9px 24px rgba(20,62,76,.2), inset 0 1px 0 #fff !important;
+}
+.maplibregl-ctrl-group button:active { transform: scale(.94); }
+.maplibregl-ctrl button .maplibregl-ctrl-icon {
+  opacity: .82;
+}
+.map-brand {
+  padding: 11px 17px 11px 11px;
+  gap: 11px;
+  border-radius: 23px;
+  background: rgba(249,254,254,.78);
+  border-color: rgba(255,255,255,.92);
+  box-shadow: 0 10px 30px rgba(20,62,76,.14), inset 0 1px 0 rgba(255,255,255,.95);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+}
+.map-brand-mark {
+  flex-basis: 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(31,190,191,.22), rgba(38,133,177,.13));
+}
+.map-brand h1 { font-size: 18px; letter-spacing: -.05em; }
+@media (max-width: 600px) {
+  .maplibregl-ctrl-top-right { gap: 8px; }
+  .maplibregl-ctrl-group { gap: 7px; }
+  .maplibregl-ctrl-group button { width: 44px !important; height: 44px !important; }
+  .map-brand { padding: 9px 14px 9px 9px; border-radius: 21px; }
+  .map-brand-mark { flex-basis: 40px; width: 40px; height: 40px; border-radius: 14px; }
+  .map-brand h1 { font-size: 16px; }
+}
