@@ -374,7 +374,6 @@ function App() {
     return () => controller.abort()
   }, [selectedSector?.sector_id, selectedSector?.latitude, selectedSector?.longitude])
 
-  const [expandedConditions, setExpandedConditions] = useState<string[]>([])
   const hasActiveFilters = surfaceFilter !== 'all' || statusFilters.length !== 4
   const resetFilters = () => {
     setSurfaceFilter('all')
@@ -934,7 +933,6 @@ function App() {
 
   function handleSelectSector(sector: Sector | null) {
     setSelectedSector(sector)
-    setExpandedConditions([])
     setReportAlgae(sector?.algae ?? 'none')
     setReportWaves(sector?.waves ?? 'none')
     setReportJellyfish(sector?.jellyfish ?? 'none')
