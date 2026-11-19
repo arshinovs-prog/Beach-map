@@ -1300,7 +1300,8 @@ function App() {
       {!selectedSector && <footer className={filtersOpen ? 'footer filters-open' : 'footer'}>
         {filtersOpen && <><div className="filter-drag-handle" onPointerDown={handleFilterDragStart} onPointerMove={handleFilterDragMove} onPointerUp={handleFilterDragEnd} onPointerCancel={handleFilterDragEnd} role="button" aria-label="Потяните вниз, чтобы закрыть фильтр"><span /></div><div className="footer-legend">
           <div className="footer-status-filters">
-            {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.includes(item.value) ? current.filter(value => value !== item.value) : [...current,item.value])}><span className={'status-dot status-dot-' + item.value} aria-hidden="true" />{item.label}</button>)}
+            <button type="button" aria-pressed={statusFilters.length === 4} className={statusFilters.length === 4 ? 'footer-filter footer-filter-all active' : 'footer-filter footer-filter-all'} onClick={() => setStatusFilters(['green','yellow','red','gray'])}>Все</button>
+            {([{value:'green',label:'Отличные'},{value:'yellow',label:'Средние'},{value:'red',label:'Плохие'},{value:'gray',label:'Нет данных'}] as const).map(item => <button key={item.value} type="button" aria-pressed={statusFilters.includes(item.value)} className={statusFilters.includes(item.value) ? 'footer-filter active' : 'footer-filter'} onClick={() => setStatusFilters(current => current.length === 4 ? [item.value] : current.includes(item.value) ? (current.length === 1 ? ['green','yellow','red','gray'] : current.filter(value => value !== item.value)) : [...current,item.value])}><span className={'status-dot status-dot-' + item.value} aria-hidden="true" />{item.label}</button>)}
           </div>
           <div className="footer-surfaces">{([{value:'all',label:'Все пляжи'},{value:'sand',label:'Песок'},{value:'pebble',label:'Галька'}] as const).map(item => <button key={item.value} type="button" aria-pressed={surfaceFilter===item.value} className={surfaceFilter===item.value?'active':''} onClick={() => setSurfaceFilter(item.value)}>{item.label}</button>)}</div>
           <small className={visibleSectors.length === 0 ? 'filter-results empty' : 'filter-results'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</small>
@@ -1313,7 +1314,7 @@ function App() {
             {hasActiveFilters && <span className="filter-active-indicator" aria-label="Фильтры активны" />}
             <svg className="filter-toggle-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={filtersOpen ? "m4 10 4-4 4 4" : "m4 6 4 4 4-4"} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-          {(filtersOpen || hasActiveFilters) && <button type="button" className="filter-reset" onClick={resetFilters} disabled={!hasActiveFilters}>Сбросить фильтр</button>}
+          {(filtersOpen || hasActiveFilters) && <button type="button" className="filter-reset" onClick={resetFilters} disabled={!hasActiveFilters}>Сбросить</button>}
         </div>
       </footer>}
 
