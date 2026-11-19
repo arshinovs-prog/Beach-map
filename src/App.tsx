@@ -538,7 +538,7 @@ function App() {
             'red', '#E76F70',
             '#A8B0BB',
           ],
-          'fill-opacity': 0.4,
+          'fill-opacity': 0.46,
         },
       })
 
@@ -555,7 +555,7 @@ function App() {
             'red', '#B94B50',
             '#737D8A',
           ],
-          'line-width': 1.5,
+          'line-width': 2,
         },
       })
 
@@ -566,7 +566,7 @@ function App() {
         source: 'sector-overview',
         maxzoom: 11.5,
         paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 7, 9.5, 11],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 8, 9.5, 12],
           'circle-color': [
             'match', ['get', 'status_color'],
             'green', '#4F9B7A',
@@ -575,7 +575,7 @@ function App() {
             '#A8B0BB',
           ],
           'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 2,
+          'circle-stroke-width': 2.5,
         },
       })
 
