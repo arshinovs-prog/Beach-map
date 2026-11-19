@@ -2654,3 +2654,44 @@ button:focus-visible,
   .sector-panel .condition-detail-attached,
   .sector-panel .report-edit-action { background-color: rgba(255, 255, 255, .94); }
 }
+
+
+/* Photo header cleanup: remove the legacy overlay that creates a visible
+   translucent band across the beach image. Keep the photo itself crisp. */
+.sector-panel .beach-photo::before,
+.sector-panel .beach-photo::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Status pill — colored frosted glass, visually related to the map filters. */
+.sector-panel .beach-photo .status {
+  min-height: 36px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,.58);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  line-height: 1;
+  box-shadow: 0 5px 16px rgba(12,45,54,.16),
+              inset 0 1px 0 rgba(255,255,255,.28);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
+}
+.sector-panel .beach-photo .status.status-green {
+  color: #eafff1;
+  background: rgba(35,137,91,.58);
+}
+.sector-panel .beach-photo .status.status-yellow {
+  color: #fff8df;
+  background: rgba(202,143,30,.64);
+}
+.sector-panel .beach-photo .status.status-red {
+  color: #fff0f0;
+  background: rgba(190,57,66,.62);
+}
+.sector-panel .beach-photo .status.status-gray {
+  color: #f5f8fa;
+  background: rgba(91,111,124,.62);
+}
