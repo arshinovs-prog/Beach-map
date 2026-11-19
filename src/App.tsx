@@ -225,8 +225,9 @@ function App() {
   }
   const handlePanelDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 || (event.target as HTMLElement).closest('button')) return
-    const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
-    if (panel) { panel.style.animation = 'none'; panel.style.transition = 'none' }
+    const panel = event.currentTarget.closest('.sector-panel') as HTMLElement | null
+    if (!panel) return
+    panel.style.transition = 'none'
     panelDragRef.current = { pointerId: event.pointerId, startY: event.clientY, deltaY: 0 }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
@@ -234,23 +235,32 @@ function App() {
     const drag = panelDragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
     drag.deltaY = Math.max(0, event.clientY - drag.startY)
-    const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
-    if (panel) panel.style.transform = 'translate3d(0, ' + drag.deltaY + 'px, 0)'
+    const panel = event.currentTarget.closest('.sector-panel') as HTMLElement | null
+    if (panel) panel.style.setProperty('--panel-drag-y', drag.deltaY + 'px')
   }
   const handlePanelDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
     const drag = panelDragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
     panelDragRef.current = null
-    const panel = event.currentTarget.closest('.sector-panel-scroll') as HTMLElement | null
+    const panel = event.currentTarget.closest('.sector-panel') as HTMLElement | null
     if (!panel) return
     const threshold = Math.max(90, panel.getBoundingClientRect().height * 0.28)
+    panel.style.transition = 'transform .23s cubic-bezier(.2,.75,.25,1), opacity .23s ease'
     if (drag.deltaY >= threshold) {
-      panel.style.transform = 'translate3d(0, ' + (panel.getBoundingClientRect().height + 40) + 'px, 0)'
+      panel.style.setProperty('--panel-drag-y', (panel.getBoundingClientRect().height + 40) + 'px')
       panel.style.opacity = '0'
-      window.setTimeout(() => { handleSelectSector(null); panel.style.transform = ''; panel.style.opacity = '' }, 230)
+      window.setTimeout(() => {
+        handleSelectSector(null)
+        panel.style.removeProperty('--panel-drag-y')
+        panel.style.opacity = ''
+        panel.style.transition = ''
+      }, 230)
     } else {
-      panel.style.transform = 'translate3d(0, 0, 0)'
-      window.setTimeout(() => { panel.style.transform = '' }, 230)
+      panel.style.setProperty('--panel-drag-y', '0px')
+      window.setTimeout(() => {
+        panel.style.removeProperty('--panel-drag-y')
+        panel.style.transition = ''
+      }, 230)
     }
   }
   const [selectedSector, setSelectedSector] =
