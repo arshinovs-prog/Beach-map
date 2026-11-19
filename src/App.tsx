@@ -1305,10 +1305,10 @@ function App() {
               ))}
             </div>
             <div className="sector-actions sector-actions-report">
-              <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
               <button type="button" className="report-edit-action report-edit-primary" onClick={() => { setReportMode('edit'); setReportMessage(''); setReviewReportOpen(false) }} disabled={reportBusy || !!cooldownUntil}>
                 <span aria-hidden="true">✎</span> Изменить состояние
               </button>
+              <button className="report-confirm report-confirm-secondary" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
             </div>
             {cooldownUntil && <p className="cooldown-message">{'Новый отчёт можно отправить через ' + (cooldownText || '5:00') + '.'}</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
