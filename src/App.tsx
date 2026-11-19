@@ -265,6 +265,110 @@ function App() {
   }
   const [selectedSector, setSelectedSector] =
     useState<Sector | null>(null)
+  const panelTouchRef = useRef<{ startY: number; startX: number; dragging: boolean; deltaY: number } | null>(null)
+
+  // Native non-passive touch listeners let the content scroll normally first,
+  // then hand a downward gesture to the outer sheet at scrollTop === 0.
+  useEffect(() => {
+    if (!selectedSector) return
+    const scroll = document.querySelector('.sector-panel-scroll') as HTMLElement | null
+    if (!scroll) return
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        panelTouchRef.current = null
+        return
+      }
+      const target = event.target as HTMLElement | null
+      if (target?.closest('button, a, input, textarea, select, [data-no-panel-drag]')) {
+        panelTouchRef.current = null
+        return
+      }
+      const touch = event.touches[0]
+      panelTouchRef.current = { startY: touch.clientY, startX: touch.clientX, dragging: false, deltaY: 0 }
+    }
+
+    const onTouchMove = (event: TouchEvent) => {
+      const gesture = panelTouchRef.current
+      if (!gesture || event.touches.length !== 1) return
+      const touch = event.touches[0]
+      const deltaX = touch.clientX - gesture.startX
+      const deltaY = touch.clientY - gesture.startY
+
+      // Preserve horizontal photo galleries and other horizontal gestures.
+      if (!gesture.dragging && Math.abs(deltaX) > Math.abs(deltaY) * 1.15) {
+        panelTouchRef.current = null
+        return
+      }
+
+      if (!gesture.dragging) {
+        if (deltaY <= 0) return
+        if (scroll.scrollTop > 0) return
+        gesture.dragging = true
+        gesture.startY = touch.clientY
+      }
+
+      if (gesture.dragging) {
+        event.preventDefault()
+        gesture.deltaY = Math.max(0, touch.clientY - gesture.startY)
+        const panel = scroll.closest('.sector-panel') as HTMLElement | null
+        if (panel) panel.style.setProperty('--panel-drag-y', gesture.deltaY + 'px')
+      }
+    }
+
+    const finishTouchDrag = () => {
+      const gesture = panelTouchRef.current
+      panelTouchRef.current = null
+      if (!gesture?.dragging) return
+      const panel = scroll.closest('.sector-panel') as HTMLElement | null
+      if (!panel) return
+      const threshold = Math.max(90, panel.getBoundingClientRect().height * 0.28)
+      panel.style.transition = 'transform .23s cubic-bezier(.2,.75,.25,1), opacity .23s ease'
+      if (gesture.deltaY >= threshold) {
+        panel.style.setProperty('--panel-drag-y', (panel.getBoundingClientRect().height + 40) + 'px')
+        panel.style.opacity = '0'
+        window.setTimeout(() => {
+          handleSelectSector(null)
+          panel.style.removeProperty('--panel-drag-y')
+          panel.style.opacity = ''
+          panel.style.transition = ''
+        }, 230)
+      } else {
+        panel.style.setProperty('--panel-drag-y', '0px')
+        window.setTimeout(() => {
+          panel.style.removeProperty('--panel-drag-y')
+          panel.style.transition = ''
+        }, 230)
+      }
+    }
+
+    const onTouchEnd = () => finishTouchDrag()
+    const onTouchCancel = () => {
+      const gesture = panelTouchRef.current
+      panelTouchRef.current = null
+      if (!gesture?.dragging) return
+      const panel = scroll.closest('.sector-panel') as HTMLElement | null
+      if (!panel) return
+      panel.style.transition = 'transform .18s ease'
+      panel.style.setProperty('--panel-drag-y', '0px')
+      window.setTimeout(() => {
+        panel.style.removeProperty('--panel-drag-y')
+        panel.style.transition = ''
+      }, 180)
+    }
+
+    scroll.addEventListener('touchstart', onTouchStart, { passive: true })
+    scroll.addEventListener('touchmove', onTouchMove, { passive: false })
+    scroll.addEventListener('touchend', onTouchEnd, { passive: true })
+    scroll.addEventListener('touchcancel', onTouchCancel, { passive: true })
+    return () => {
+      scroll.removeEventListener('touchstart', onTouchStart)
+      scroll.removeEventListener('touchmove', onTouchMove)
+      scroll.removeEventListener('touchend', onTouchEnd)
+      scroll.removeEventListener('touchcancel', onTouchCancel)
+      panelTouchRef.current = null
+    }
+  }, [selectedSector?.sector_id])
 
   const [sectorWeather, setSectorWeather] = useState<SectorWeather | null>(null)
   const [weatherLoading, setWeatherLoading] = useState(false)
@@ -1202,11 +1306,7 @@ function App() {
             <div
               className="beach-photo"
               role="img"
-              aria-label={selectedSector.status_color === 'gray' ? 'Море, актуальных данных о пляже нет. Проведите вниз по фотографии, чтобы закрыть карточку.' : 'Фотография пляжа. Проведите вниз по фотографии, чтобы закрыть карточку.'}
-              onPointerDown={handlePanelDragStart}
-              onPointerMove={handlePanelDragMove}
-              onPointerUp={handlePanelDragEnd}
-              onPointerCancel={handlePanelDragEnd}
+              aria-label={selectedSector.status_color === 'gray' ? 'Море, актуальных данных о пляже нет. Прокручивайте карточку, чтобы посмотреть подробности; потяните вниз от верхней границы, чтобы закрыть её.' : 'Фотография пляжа. Прокручивайте карточку для просмотра подробностей; потяните вниз от верхней границы, чтобы закрыть её.'}
               style={{ backgroundImage: `url("${getBeachPhotoPath(selectedSector)}")` }}
             >
               <div className="beach-photo-topline">
