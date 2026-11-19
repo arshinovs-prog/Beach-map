@@ -1287,36 +1287,30 @@ function App() {
                 </span>
               </div>
             </div>
-            <div className="sector-condition-heading"><h3>Состояние пляжа</h3><span>По сообщениям посетителей</span></div>
-            {(() => {
-              const conditions = [
-                {key:'algae',icon:<ConditionIcon kind="algae" />,title:'Водоросли',draft:reportAlgae,set:setReportAlgae,options:[{value:'none',label:'Нет водорослей',count:selectedSector.algae_none_count,tone:'green'},{value:'low',label:'Мало водорослей',count:selectedSector.algae_low_count,tone:'yellow'},{value:'high',label:'Много водорослей',count:selectedSector.algae_high_count,tone:'red'}]},
-                {key:'waves',icon:<ConditionIcon kind="waves" />,title:'Волны',draft:reportWaves,set:setReportWaves,options:[{value:'none',label:'Нет волн',count:selectedSector.waves_none_count,tone:'green'},{value:'medium',label:'Средние волны',count:selectedSector.waves_medium_count,tone:'yellow'},{value:'high',label:'Большие волны',count:selectedSector.waves_high_count,tone:'red'}]},
-                {key:'jellyfish',icon:<ConditionIcon kind="jellyfish" />,title:'Медузы',draft:reportJellyfish,set:setReportJellyfish,options:[{value:'none',label:'Нет медуз',count:selectedSector.jellyfish_none_count,tone:'green'},{value:'low',label:'Мало медуз',count:selectedSector.jellyfish_low_count,tone:'yellow'},{value:'high',label:'Много медуз',count:selectedSector.jellyfish_high_count,tone:'red'}]},
-              ]
-              const active = conditions.find(item => expandedConditions.includes(item.key))
-              const activeTone = active?.options.find(option => option.value === active.draft)?.tone ?? 'green'
-              return <div className={'condition-selector' + (active ? ' has-expanded tone-' + activeTone : '')}>
-                <div className="condition-circles">
-                  {conditions.map(item => {
-                    const chosen = item.options.find(option => option.value === item.draft) ?? item.options[0]
-                    const expanded = active?.key === item.key
-                    return <button type="button" key={item.key} className={'condition-circle condition-' + chosen.tone + (expanded ? ' active' : '')} aria-expanded={!!expanded} onClick={() => setExpandedConditions(current => current.includes(item.key) ? [] : [item.key])}>
-                      <span className="condition-circle-icon">{item.icon}</span><strong>{chosen.label}</strong><span className="condition-circle-arrow">{expanded ? '⌃' : '⌄'}</span>
-                    </button>
-                  })}
-                </div>
-                {active && <div className="condition-detail condition-detail-attached" >
-                  <div className="condition-detail-content">
-                    <p className="condition-detail-hint">Вы можете изменить данные о состоянии пляжа и отправить нам обновление.</p>
-                    <div className="condition-detail-options">{active.options.map(option => <button type="button" key={option.value} className={'condition-detail-option tone-' + option.tone + (active.draft === option.value ? ' selected' : '')} aria-pressed={active.draft === option.value} onClick={() => active.set(option.value)}><span>{option.label}</span><b>Подтвердили: {option.count}{isAuthenticated && !myReport && active.draft === option.value ? ' · Ваш голос: +1' : ''}</b></button>)}</div>
-                  </div>
-                </div>}
+            <div className="sector-condition-heading">
+              <div>
+                <h3>Состояние пляжа</h3>
+                <span>По сообщениям посетителей</span>
               </div>
-            })()}
-            <div className="sector-actions">
+              <small>Нажмите «Изменить состояние», чтобы отправить свой отчёт</small>
+            </div>
+            <div className="condition-selector condition-selector-readonly">
+              {([
+                { key: 'algae', title: 'Водоросли', value: selectedSector.algae, options: { none: 'Нет', low: 'Мало', high: 'Много' } },
+                { key: 'waves', title: 'Волны', value: selectedSector.waves, options: { none: 'Нет', medium: 'Средние', high: 'Большие' } },
+                { key: 'jellyfish', title: 'Медузы', value: selectedSector.jellyfish, options: { none: 'Нет', low: 'Мало', high: 'Много' } },
+              ] as const).map(item => (
+                <div className="condition-summary-card" key={item.key}>
+                  <strong>{item.title}</strong>
+                  <span>{item.value ? item.options[item.value as keyof typeof item.options] : 'Нет данных'}</span>
+                </div>
+              ))}
+            </div>
+            <div className="sector-actions sector-actions-report">
               <button className="report-confirm primary-action" onClick={() => void handleConfirmReport()} disabled={reportBusy || hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Отправляем…' : 'Подтвердить состояние'}</button>
-              <button className={'report-edit-action' + (hasDraftChanges ? ' changed' : '')} onClick={() => setReviewReportOpen(true)} disabled={reportBusy || !hasDraftChanges || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : 'Сообщить об изменении'}</button>
+              <button type="button" className="report-edit-action report-edit-primary" onClick={() => { setReportMode('edit'); setReportMessage(''); setReviewReportOpen(false) }} disabled={reportBusy || !!cooldownUntil}>
+                <span aria-hidden="true">✎</span> Изменить состояние
+              </button>
             </div>
             {cooldownUntil && <p className="cooldown-message">{'Новый отчёт можно отправить через ' + (cooldownText || '5:00') + '.'}</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
@@ -1334,7 +1328,8 @@ function App() {
             <div className="report-group"><div className="report-group-title">🌿 Водоросли</div><div className="report-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🌿'},{value:'high',label:'Много',icon:'🌱'}].map(o => <button key={o.value} type="button" className={reportAlgae === o.value ? 'report-option selected' : 'report-option'} aria-pressed={reportAlgae === o.value} onClick={() => setReportAlgae(o.value)}><span className="report-option-image">{o.icon}</span><span>{o.label}</span>{reportAlgae === o.value && <span className="report-option-check">✓</span>}</button>)}</div></div>
             <div className="report-group"><div className="report-group-title">🌊 Волны</div><div className="report-options">{[{value:'none',label:'Нет',icon:'🏖️'},{value:'medium',label:'Средние',icon:'🌊'},{value:'high',label:'Большие',icon:'🌊'}].map(o => <button key={o.value} type="button" className={reportWaves === o.value ? 'report-option selected' : 'report-option'} aria-pressed={reportWaves === o.value} onClick={() => setReportWaves(o.value)}><span className="report-option-image">{o.icon}</span><span>{o.label}</span>{reportWaves === o.value && <span className="report-option-check">✓</span>}</button>)}</div></div>
             <div className="report-group"><div className="report-group-title">🪼 Медузы</div><div className="report-options">{[{value:'none',label:'Нет',icon:'🌊'},{value:'low',label:'Мало',icon:'🪼'},{value:'high',label:'Много',icon:'🪼'}].map(o => <button key={o.value} type="button" className={reportJellyfish === o.value ? 'report-option selected' : 'report-option'} aria-pressed={reportJellyfish === o.value} onClick={() => setReportJellyfish(o.value)}><span className="report-option-image">{o.icon}</span><span>{o.label}</span>{reportJellyfish === o.value && <span className="report-option-check">✓</span>}</button>)}</div></div>
-            <button className="report-submit" onClick={() => void handleSubmitReport()} disabled={reportBusy || !!cooldownUntil}>{reportBusy ? 'Сохраняем…' : myReport ? 'Изменить мой отчёт' : 'Отправить отчёт'}</button>
+            <button className="report-submit" onClick={() => setReviewReportOpen(true)} disabled={reportBusy || !!cooldownUntil}>{myReport ? 'Проверить изменения' : 'Проверить отчёт'} <span aria-hidden="true">→</span></button>
+            <button type="button" className="report-form-cancel" onClick={() => { setReportMode('view'); setReportMessage(''); setReviewReportOpen(false) }} disabled={reportBusy}>Отмена</button>
             {cooldownUntil && <p className="cooldown-message">Повторно отправить отчёт можно через {cooldownText || '5:00'}.</p>}
             {reportMessage && <p className="report-message" role="status">{reportMessage}</p>}
           </div>}
