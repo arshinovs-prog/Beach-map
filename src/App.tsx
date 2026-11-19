@@ -1307,7 +1307,12 @@ function App() {
         </div></>}
         {!filtersOpen && hasActiveFilters && <div className={visibleSectors.length === 0 ? 'filter-result-banner empty' : 'filter-result-banner'}>{visibleSectors.length === 0 ? 'Подходящих пляжей нет' : `Найдено пляжей: ${visibleSectors.length}`}</div>}
         <div className="filter-actions">
-          <button type="button" className="filter-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>{filtersOpen ? 'Скрыть фильтр' : 'Открыть фильтр'}{hasActiveFilters && !filtersOpen && <span className="filter-active-indicator" aria-label="Фильтр активен" />}</button>
+          <button type="button" className="filter-toggle" aria-label={filtersOpen ? 'Скрыть фильтры' : 'Открыть фильтры'} aria-expanded={filtersOpen} onClick={() => setFiltersOpen(open => !open)}>
+            <svg className="filter-toggle-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M7 12h10m-7 6h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+            <span>{filtersOpen ? 'Скрыть фильтры' : 'Фильтры'}</span>
+            {hasActiveFilters && <span className="filter-active-indicator" aria-label="Фильтры активны" />}
+            <svg className="filter-toggle-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d={filtersOpen ? "m4 10 4-4 4 4" : "m4 6 4 4 4-4"} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
           {(filtersOpen || hasActiveFilters) && <button type="button" className="filter-reset" onClick={resetFilters} disabled={!hasActiveFilters}>Сбросить фильтр</button>}
         </div>
       </footer>}
