@@ -2249,3 +2249,42 @@ button:focus-visible,
   .footer .filter-toggle { min-height: 52px; }
   .footer .filter-reset { margin-left: 6px; padding-inline: 13px; }
 }
+
+
+/* FINAL OVERRIDE: the dock itself must be invisible when filters are collapsed.
+   Only the filter trigger is the frosted-glass surface. */
+@media (max-width: 600px) {
+  .footer:not(.filters-open) {
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .footer:not(.filters-open) .filter-actions {
+    width: min(360px, calc(100vw - 40px)) !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .footer:not(.filters-open) .filter-toggle {
+    width: 100% !important;
+    min-height: 54px !important;
+    padding: 0 24px !important;
+    border: 1px solid rgba(255,255,255,.78) !important;
+    border-radius: 999px !important;
+    background: rgba(226,247,248,.48) !important;
+    color: #15596a !important;
+    box-shadow: 0 8px 28px rgba(21,73,91,.13), inset 0 1px 0 rgba(255,255,255,.72) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  }
+}
