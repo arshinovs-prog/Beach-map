@@ -2590,3 +2590,67 @@ button:focus-visible,
 @media (min-width: 601px) and (max-width: 899px) {
   .sector-panel { transform: translate3d(-50%, var(--panel-drag-y), 0); }
 }
+
+
+/* COASTAL GLASS v2 — make the sector sheet visibly translucent while
+   keeping the content and controls readable on top of the live map. */
+.sector-panel {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.sector-panel-scroll {
+  background: transparent;
+}
+.sector-panel-content {
+  background: rgba(246, 252, 251, .82);
+  border: 1px solid rgba(255, 255, 255, .72);
+  border-bottom: 0;
+  box-shadow: 0 -12px 38px rgba(17, 61, 72, .16),
+              inset 0 1px 0 rgba(255, 255, 255, .78);
+  -webkit-backdrop-filter: blur(24px) saturate(155%);
+  backdrop-filter: blur(24px) saturate(155%);
+}
+.sector-panel .beach-photo-info {
+  background: linear-gradient(125deg,
+    rgba(20, 111, 121, .91) 0%,
+    rgba(21, 91, 111, .88) 58%,
+    rgba(23, 76, 104, .91) 100%);
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-top: 0;
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  backdrop-filter: blur(18px) saturate(145%);
+}
+.sector-panel .condition-circle {
+  background: rgba(255, 255, 255, .68);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+  backdrop-filter: blur(14px) saturate(145%);
+}
+.sector-panel .condition-circle.active {
+  background: rgba(233, 249, 247, .82);
+}
+.sector-panel .condition-detail-attached {
+  background: rgba(239, 248, 247, .76);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+  backdrop-filter: blur(16px) saturate(145%);
+}
+.sector-panel .report-edit-action {
+  border: 1px solid rgba(255, 255, 255, .78);
+  background: rgba(232, 246, 245, .68);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+  backdrop-filter: blur(16px) saturate(145%);
+}
+.sector-panel .report-confirm.primary-action {
+  background: linear-gradient(120deg, rgba(22, 139, 145, .94), rgba(18, 109, 124, .94));
+}
+@media (max-width: 600px) {
+  .sector-panel-content {
+    background: rgba(246, 252, 251, .86);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .sector-panel-content { background: rgba(246, 252, 251, .96); }
+  .sector-panel .condition-circle,
+  .sector-panel .condition-detail-attached,
+  .sector-panel .report-edit-action { background-color: rgba(255, 255, 255, .94); }
+}
