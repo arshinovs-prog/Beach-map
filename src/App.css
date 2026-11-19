@@ -2418,3 +2418,159 @@ button:focus-visible,
   .map-brand-mark { flex-basis: 40px; width: 40px; height: 40px; border-radius: 14px; }
   .map-brand h1 { font-size: 16px; }
 }
+
+
+/* =========================================================
+   SECTOR CARD — COASTAL GLASS v1
+   Visual-only refinement. Report and aggregation logic untouched.
+   ========================================================= */
+.sector-panel {
+  border: 1px solid rgba(255,255,255,.76);
+  background: rgba(250,253,252,.94);
+  box-shadow: 0 -14px 42px rgba(18,58,69,.18);
+}
+.sector-panel-scroll {
+  background: rgba(250,253,252,.96);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(36,119,128,.22) transparent;
+}
+.sector-panel-content {
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+}
+.sector-panel .beach-photo {
+  position: relative;
+  min-height: 248px;
+  overflow: hidden;
+  background-color: #8ab8c0;
+  background-position: center 48%;
+  border-radius: 22px 22px 0 0;
+  margin: 0 -18px;
+}
+.sector-panel .beach-photo::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(9,35,44,.22) 0%, transparent 34%, rgba(7,35,43,.48) 100%);
+}
+.sector-panel .beach-photo-topline {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sector-panel .beach-photo .status {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 13px;
+  border: 1px solid rgba(255,255,255,.52);
+  border-radius: 999px;
+  box-shadow: 0 5px 18px rgba(10,35,42,.14);
+  backdrop-filter: blur(16px) saturate(145%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+  font-size: 12px;
+  font-weight: 800;
+}
+.sector-panel .beach-photo .close-button {
+  position: static;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,.58);
+  border-radius: 50%;
+  background: rgba(245,252,252,.42);
+  color: #fff;
+  box-shadow: 0 5px 18px rgba(10,35,42,.14);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  font-size: 25px;
+}
+.sector-panel .beach-photo-info {
+  margin: 0 -18px 22px;
+  padding: 17px 20px 19px;
+  border: 0;
+  border-radius: 0 0 22px 22px;
+  background: linear-gradient(125deg, #176f79 0%, #155d70 58%, #174c68 100%);
+  box-shadow: 0 10px 24px rgba(20,86,98,.13);
+}
+.sector-panel .beach-photo-place h2 {
+  font-size: clamp(21px, 5vw, 25px);
+  letter-spacing: -.045em;
+}
+.sector-panel .beach-photo-type { font-size: 12px; }
+.sector-panel .beach-photo-updated { font-size: 10px; }
+.sector-panel .sector-condition-heading {
+  margin-top: 4px;
+  margin-bottom: 13px;
+}
+.sector-panel .condition-circle {
+  min-height: 112px;
+  border: 1px solid rgba(255,255,255,.88);
+  border-radius: 20px;
+  box-shadow: 0 7px 20px rgba(30,76,76,.07), inset 0 1px 0 rgba(255,255,255,.72);
+}
+.sector-panel .condition-circle.active {
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(22,126,133,.24), 0 9px 22px rgba(30,76,76,.11);
+}
+.sector-panel .condition-detail-attached {
+  border: 1px solid rgba(255,255,255,.94);
+  border-radius: 18px;
+  background: rgba(239,248,247,.82);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+}
+.sector-panel .condition-detail-option {
+  border-radius: 13px;
+}
+.sector-panel .report-confirm.primary-action {
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 16px;
+  background: linear-gradient(120deg, #168b91, #126d7c);
+  box-shadow: 0 8px 20px rgba(17,112,122,.19);
+  font-weight: 800;
+}
+.sector-panel .report-edit-action {
+  border-radius: 16px;
+  background: rgba(230,244,243,.72);
+}
+.sector-panel .sector-extra-section {
+  padding-top: 17px;
+  border-top: 1px solid rgba(31,91,99,.09);
+}
+@media (max-width: 600px) {
+  .sector-panel-scroll {
+    border-radius: 24px 24px 0 0;
+  }
+  .sector-panel-content { padding-inline: 15px; }
+  .sector-panel .beach-photo {
+    min-height: 224px;
+    height: 224px;
+    margin-inline: -15px;
+    border-radius: 24px 24px 0 0;
+  }
+  .sector-panel .beach-photo-info {
+    margin-inline: -15px;
+    padding: 15px 16px 17px;
+    border-radius: 0 0 19px 19px;
+  }
+  .sector-panel .beach-photo-topline { top: 12px; left: 13px; right: 13px; }
+  .sector-panel .beach-photo .close-button { width: 36px; height: 36px; }
+  .sector-panel .condition-circles { gap: 7px; }
+  .sector-panel .condition-circle {
+    min-height: 104px;
+    border-radius: 17px;
+  }
+  .sector-panel .report-confirm.primary-action,
+  .sector-panel .report-edit-action { min-height: 48px; border-radius: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sector-panel .condition-circle { transition: none !important; }
+}
