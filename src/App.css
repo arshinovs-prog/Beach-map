@@ -2574,3 +2574,19 @@ button:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .sector-panel .condition-circle { transition: none !important; }
 }
+
+
+/* Drag the complete sector sheet, not its transparent scrolling viewport. */
+.sector-panel {
+  --panel-drag-y: 0px;
+  transition: transform .23s cubic-bezier(.2,.75,.25,1), opacity .23s ease;
+}
+@media (min-width: 900px) {
+  .sector-panel { transform: translate3d(0, var(--panel-drag-y), 0); }
+}
+@media (max-width: 899px) {
+  .sector-panel { transform: translate3d(0, var(--panel-drag-y), 0); }
+}
+@media (min-width: 601px) and (max-width: 899px) {
+  .sector-panel { transform: translate3d(-50%, var(--panel-drag-y), 0); }
+}
