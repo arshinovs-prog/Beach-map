@@ -1166,9 +1166,17 @@ function App() {
         </div>
       )}
       {!isAdminRoute && (
-        <div className="map-brand" aria-label="Куда купаться? Пляжи Анапы">
-          <h1>Куда купаться?</h1>
-          <span>Пляжи Анапы сегодня</span>
+        <div className="map-brand" aria-label="Beach Map — состояние пляжей сегодня">
+          <span className="map-brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none">
+              <path d="M5 22c5-5 9-5 14 0s9 5 16 0" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"/>
+              <path d="M5 29c5-5 9-5 14 0s9 5 16 0" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" opacity=".55"/>
+            </svg>
+          </span>
+          <span className="map-brand-copy">
+            <h1>Beach Map</h1>
+            <span>Пляжи и море сегодня</span>
+          </span>
         </div>
       )}
       <main
