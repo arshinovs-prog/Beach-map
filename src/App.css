@@ -2844,3 +2844,21 @@ button:focus-visible,
   .report-form .report-group { padding: 13px 10px; }
   .report-form .report-option { min-height: 80px; font-size: 11px; }
 }
+
+/* Make the report-edit entry point the primary action in read mode. */
+.sector-panel .report-edit-primary {
+  border: 1px solid rgba(255,255,255,.35);
+  background: linear-gradient(120deg, #168b91, #126d7c);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(17,112,122,.2);
+}
+.sector-panel .report-confirm-secondary {
+  min-height: 44px;
+  border: 1px solid rgba(31,103,111,.13);
+  border-radius: 14px;
+  background: rgba(255,255,255,.48);
+  color: #52747a;
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 750;
+}
